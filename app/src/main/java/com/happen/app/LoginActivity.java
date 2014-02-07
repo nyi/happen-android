@@ -165,6 +165,7 @@ public class LoginActivity extends Activity {
                         onPostExecute(true);
                     } else {
                         // Signup failed. Look at the ParseException to see what happened.
+                        System.out.println(e);
                         onPostExecute(false);
                     }
                 }
@@ -181,7 +182,7 @@ public class LoginActivity extends Activity {
             Intent i = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(i);
         } else {
-            mPasswordView.setError(getString(R.string.error_incorrect_password));
+            mPasswordView.setError(getString(R.string.error_incorrect_login));
             mPasswordView.requestFocus();
         }
     }
