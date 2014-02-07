@@ -27,20 +27,11 @@ import com.parse.SignUpCallback;
  * well.
  */
 public class LoginActivity extends Activity {
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello",
-            "bar@example.com:world"
-    };
 
     /**
      * The default email to populate the email field with.
      */
     public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
-
 
     // Values for email and password at the time of the login attempt.
     private String mEmail;
@@ -110,7 +101,6 @@ public class LoginActivity extends Activity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -125,8 +115,7 @@ public class LoginActivity extends Activity {
      */
     public void attemptLogin() {
 
-
-        // Reset errorrs
+        // Reset errors
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
@@ -167,8 +156,6 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
-            //showProgress(true);
-            //showProgress(true);
             showProgress(true);
             Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
 
@@ -182,8 +169,6 @@ public class LoginActivity extends Activity {
                         onPostExecute(false);
                     }
                 }
-            //mAuthTask = new UserLoginTask();
-            //mAuthTask.execute((Void) null));
             });
         }
     }
