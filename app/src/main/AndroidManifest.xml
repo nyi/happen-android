@@ -11,8 +11,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.happen.app.MainActivity"
-            android:label="@string/app_name" >
+            android:name="com.happen.app.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,10 +21,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.happen.app.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:name="com.happen.app.MainActivity"
+            android:label="@string/app_name" >
+
         </activity>
+
     </application>
 
 </manifest>
