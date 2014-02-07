@@ -83,14 +83,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
-    public void createTestUser() {
+    public void createUser(String username, String password, String email, String phone) {
         ParseUser user = new ParseUser();
-        user.setUsername("spencer");
-        user.setPassword("password");
-        user.setEmail("email@eple.com");
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setEmail(email);
 
         // other fields can be set just like with ParseObject
-        user.put("phone", "650-555-0000");
+        user.put("phone", phone);
 
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
