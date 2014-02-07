@@ -15,6 +15,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.parse.LogInCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
+
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
@@ -53,9 +59,8 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_login);
-
+        createUser("ksui@usc.edu", "password", "ksui@usc.edu", "111111203");
         // Set up the login form.
         mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
         mEmailView = (EditText) findViewById(R.id.email);
@@ -85,6 +90,28 @@ public class LoginActivity extends Activity {
         });
     }
 
+    public void createUser(String username, String password, String email, String phone) {
+        ParseUser user = new ParseUser();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setEmail(email);
+
+        // other fields can be set just like with ParseObject
+        user.put("phone", phone);
+
+        user.signUpInBackground(new SignUpCallback() {
+            public void done(ParseException e) {
+                if (e == null) {
+                    // Hooray! Let them use the app now.
+                } else {
+                    // Sign up didn't succeed. Look at the ParseException
+                    // to figure out what went wrong
+                }
+            }
+        });
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -103,7 +130,7 @@ public class LoginActivity extends Activity {
             return;
         }
 
-        // Reset errors.
+        // Reset errorrs
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
@@ -144,11 +171,36 @@ public class LoginActivity extends Activity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
+            //showProgress(true);
+            //showProgress(true);
             showProgress(true);
-            mAuthTask = new UserLoginTask();
-            mAuthTask.execute((Void) null);
+            ParseUser.logInInBackground(mEmail, mPassword, new LogInCallback() {
+                public void done(ParseUser user, ParseException e) {
+                    if (user != null) {
+                        onPostExecute(true);
+                    } else {
+                        // Signup failed. Look at the ParseException to see what happened.
+                        onPostExecute(false);
+                    }
+                }
+            //mAuthTask = new UserLoginTask();
+            //mAuthTask.execute((Void) null));
+            });
         }
     }
+
+
+        protected void onPostExecute(final Boolean success) {
+            mAuthTask = null;
+            showProgress(false);
+
+            if (success) {
+                finish();
+            } else {
+                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.requestFocus();
+            }
+        }
 
     /**
      * Shows the progress UI and hides the login form.
@@ -200,22 +252,33 @@ public class LoginActivity extends Activity {
             // TODO: attempt authentication against a network service.
 
             try {
+
                 // Simulate network access.
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
+            final boolean result;
+
+
+            ParseUser.logInInBackground(mEmail, mPassword, new LogInCallback() {
+
+                 public void done(ParseUser user, ParseException e) {
+                            if (user != null) {
+                                onPostExecute(true);
+                            } else {
+                                // Signup failed. Look at the ParseException to see what happened.
+                                onPostExecute(false);
+                            }
+                 }
+            });
+
+
+
 
             // TODO: register the new account here.
-            return true;
+            return false;
         }
 
         @Override
