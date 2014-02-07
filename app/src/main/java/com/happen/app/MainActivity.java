@@ -166,7 +166,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            //Spencer edit Kevin edit too
+            //Spencer edit Kevin edit too + Nelson edit
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
