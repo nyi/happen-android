@@ -43,7 +43,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
-    FeedFragment feedFragment;
+    protected FeedFragment feedFragment;
+    protected MyListFragment mylistFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +138,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return FeedFragment.newInstance(position + 1);
+            switch (position) {
+                case 0:
+                    return FeedFragment.newInstance(position);
+                case 1:
+                    return FeedFragment.newInstance(position);
+                case 2:
+                    return FeedFragment.newInstance(position);
+                case 3:
+                    return MyListFragment.newInstance(position);
+            }
+            return null;
         }
 
         @Override
@@ -196,43 +207,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
-        }
-    }
-
-    public static class FeedFragment extends ListFragment {
-        String[] numbers_text = new String[] { "one", "two", "three", "four",
-                "five", "six", "seven", "eight", "nine", "ten", "eleven",
-                "twelve", "thirteen", "fourteen", "fifteen" };
-        String[] numbers_digits = new String[] { "1", "2", "3", "4", "5", "6", "7",
-                "8", "9", "10", "11", "12", "13", "14", "15" };
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-
-        public static FeedFragment newInstance(int sectionNumber) {
-            FeedFragment fragment = new FeedFragment();
-            Bundle args = new Bundle();
-            /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);*/
-            return fragment;
-        }
-
-        public FeedFragment() {
-
-        }
-
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            //do something
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    inflater.getContext(), android.R.layout.simple_list_item_1,
-                    numbers_text);
-            setListAdapter(adapter);
-            return super.onCreateView(inflater, container, savedInstanceState);
         }
     }
 
