@@ -129,14 +129,23 @@ public class SignupActivity extends Activity {
         }
 
         // Reset errors.
+        mUsernameView.setError(null);
+        mFirstNameView.setError(null);
+        mLastNameView.setError(null);
         mEmailView.setError(null);
         mPasswordView.setError(null);
         mConfirmPasswordView.setError(null);
+        mPhoneView.setError(null);
 
         // Store values at the time of the login attempt.
         mEmail = mEmailView.getText().toString();
         mPassword = mPasswordView.getText().toString();
         mConfirmPassword = mConfirmPasswordView.getText().toString();
+
+        mUsername = mUsernameView.getText().toString();
+        mFirstName = mFirstNameView.getText().toString();
+        mLastName = mLastNameView.getText().toString();
+        mPhone = mPhoneView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -168,19 +177,25 @@ public class SignupActivity extends Activity {
         }
 
         // Check for completion of other fields
+
         if (TextUtils.isEmpty(mPhone)) {
             mPhoneView.setError(getString(R.string.error_field_required));
             focusView = mPhoneView;
             cancel = true;
         }
-        if (TextUtils.isEmpty(mFirstName)) {
-            mFirstNameView.setError(getString(R.string.error_field_required));
-            focusView = mFirstNameView;
+        if (TextUtils.isEmpty(mUsername)) {
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
             cancel = true;
         }
         if (TextUtils.isEmpty(mLastName)) {
             mLastNameView.setError(getString(R.string.error_field_required));
             focusView = mLastNameView;
+            cancel = true;
+        }
+        if (TextUtils.isEmpty(mFirstName)) {
+            mFirstNameView.setError(getString(R.string.error_field_required));
+            focusView = mFirstNameView;
             cancel = true;
         }
 
