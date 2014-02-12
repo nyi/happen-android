@@ -133,9 +133,10 @@ public class SignupActivity extends Activity {
         mFirstNameView.setError(null);
         mLastNameView.setError(null);
         mEmailView.setError(null);
+        mPhoneView.setError(null);
+
         mPasswordView.setError(null);
         mConfirmPasswordView.setError(null);
-        mPhoneView.setError(null);
 
         // Store values at the time of the login attempt.
         mEmail = mEmailView.getText().toString();
@@ -159,7 +160,11 @@ public class SignupActivity extends Activity {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
-        } else if (mPassword != mConfirmPassword) {
+        } else if (TextUtils.isEmpty(mConfirmPassword)) {
+            mConfirmPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mConfirmPasswordView;
+            cancel = true;
+        } else if (!mPassword.toString().equals(mConfirmPassword.toString())) {
             mConfirmPasswordView.setError(getString(R.string.error_mismatch_password));
             focusView = mConfirmPasswordView;
             cancel = true;

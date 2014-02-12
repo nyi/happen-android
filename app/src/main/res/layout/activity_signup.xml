@@ -76,10 +76,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/prompt_confirm_password"
-                android:inputType="textPassword"
-                android:imeActionLabel="@string/action_sign_in_short"
-                android:imeActionId="@+id/login"
-                android:imeOptions="actionUnspecified" />
+                android:inputType="textPassword" />
 
             <EditText
                 android:id="@+id/email"
