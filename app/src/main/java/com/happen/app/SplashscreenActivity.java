@@ -69,7 +69,8 @@ public class SplashscreenActivity extends Activity {
     }
 
     public void loadSignup(View view){
-
+        Intent i = new Intent(SplashscreenActivity.this, SignupActivity.class);
+        startActivity(i);
     }
 
 }

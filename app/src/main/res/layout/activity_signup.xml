@@ -1,6 +1,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.happen.app.LoginActivity">
+    tools:context="com.happen.app.SignupActivity">
 
     <!-- Login progress -->
     <LinearLayout android:id="@+id/login_status"
@@ -34,12 +34,27 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/email"
+                android:id="@+id/fname"
                 android:singleLine="true"
                 android:maxLines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
+                android:hint="@string/prompt_fname" />
+
+            <EditText
+                android:id="@+id/lname"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_lname" />
+
+            <EditText
+                android:id="@+id/username"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:hint="@string/prompt_username" />
 
             <EditText
@@ -54,11 +69,40 @@
                 android:imeActionId="@+id/login"
                 android:imeOptions="actionUnspecified" />
 
+            <EditText
+                android:id="@+id/password2"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_confirm_password"
+                android:inputType="textPassword"
+                android:imeActionLabel="@string/action_sign_in_short"
+                android:imeActionId="@+id/login"
+                android:imeOptions="actionUnspecified" />
+
+            <EditText
+                android:id="@+id/email"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:hint="@string/prompt_email" />
+
+            <EditText
+                android:id="@+id/phone"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_phone" />
+
             <Button android:id="@+id/sign_in_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in_short"
+                android:text="@string/action_signup"
                 android:paddingLeft="32dp"
                 android:paddingRight="32dp"
                 android:layout_gravity="right" />
