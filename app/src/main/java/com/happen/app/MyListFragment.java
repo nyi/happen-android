@@ -19,10 +19,10 @@ public class MyListFragment extends ListFragment{
             "8", "9", "10", "11", "12", "13", "14", "15" };
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-
     public static MyListFragment newInstance(int sectionNumber) {
         MyListFragment fragment = new MyListFragment();
         Bundle args = new Bundle();
+        //for(int i = 0;)
             /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);*/
         return fragment;

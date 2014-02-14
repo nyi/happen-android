@@ -3,7 +3,9 @@ package com.happen.app;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 /**
@@ -38,11 +40,25 @@ public class DBUtil {
 
     }
 
-//    static void createEvent(String msg, ParseUser user, String date) {
-//        ParseObject event = new ParseObject("Event");
-//        event.put("details", msg);
-//        event.put()
-//    }
+    static void createEvent(String msg, ParseUser user, String date) {
+        ParseObject event = new ParseObject("Event");
+        event.put("details", msg);
+        event.put("date", date);
+        event.put("user", user);
+        event.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e==null){
+
+                }
+                else {
+
+                }
+
+            }
+        });
+    }
+
 
 
 }
