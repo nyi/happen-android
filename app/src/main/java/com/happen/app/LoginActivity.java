@@ -48,7 +48,6 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        //createUser("ksui@usc.edu", "password", "ksui@usc.edu", "111111203");
         // Set up the login form.
         mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
         mEmailView = (EditText) findViewById(R.id.email);
@@ -77,8 +76,6 @@ public class LoginActivity extends Activity {
             }
         });
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -116,17 +113,6 @@ public class LoginActivity extends Activity {
             cancel = true;
         }
 
-        // Check for a valid email address.
-//        if (TextUtils.isEmpty(mEmail)) {
-//            mEmailView.setError(getString(R.string.error_field_required));
-//            focusView = mEmailView;
-//            cancel = true;
-//        } else if (!mEmail.contains("@")) {
-//            mEmailView.setError(getString(R.string.error_invalid_email));
-//            focusView = mEmailView;
-//            cancel = true;
-//        }
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -152,14 +138,14 @@ public class LoginActivity extends Activity {
         }
     }
 
-
     protected void onPostExecute(final Boolean success) {
 
         showProgress(false);
 
         if (success) {
             Intent i = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(i);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+            this.startActivity(i);
         } else {
             mPasswordView.setError(getString(R.string.error_incorrect_login));
             mPasswordView.requestFocus();
