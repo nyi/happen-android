@@ -26,11 +26,13 @@ public class FeedFragment extends ListFragment{
     static final String KEY_EVENT = "event"; // parent node
     static final String KEY_FULL_NAME = "fullName";
     static final String KEY_EVENT_DETAILS = "eventDetails";
+    static final String KEY_USERNAME = "username";
     // Parse column names
     static final String TABLE_EVENT = "Event";
     static final String COL_CREATOR = "creator";
     static final String COL_FIRST_NAME = "firstName";
     static final String COL_LAST_NAME = "lastName";
+    static final String COL_USERNAME = "username";
     static final String COL_DETAILS = "details";
 
     EventFeedAdapter adapter;
@@ -72,8 +74,10 @@ public class FeedFragment extends ListFragment{
                         HashMap<String, String> event = new HashMap<String, String>();
                         if(object.get(i).has(COL_CREATOR)) {
                             event.put(KEY_FULL_NAME, object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME));
+                            event.put(KEY_USERNAME, "@" + object.get(i).getParseObject(COL_CREATOR).getString(COL_USERNAME));
                         } else { // Event doesn't have a creator associated with it
                             event.put(KEY_FULL_NAME, "");
+                            event.put(KEY_USERNAME, "");
                         }
                         event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
                         eventsList.add(event);

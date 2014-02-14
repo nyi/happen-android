@@ -48,6 +48,7 @@ public class EventFeedAdapter extends BaseAdapter {
 
         TextView fullName= (TextView)vi.findViewById(R.id.full_name);
         TextView eventDetails = (TextView)vi.findViewById(R.id.event_details);
+        TextView username = (TextView)vi.findViewById(R.id.username);
 
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);
@@ -55,6 +56,7 @@ public class EventFeedAdapter extends BaseAdapter {
         // Setting the values
         fullName.setText(event.get("fullName"));
         eventDetails.setText(event.get("eventDetails"));
+        username.setText(event.get("username"));
 
         return vi;
     }
