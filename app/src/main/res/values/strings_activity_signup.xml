@@ -9,7 +9,10 @@
     <string name="prompt_lname">Last name</string>
 
     <string name="action_signup">Create account</string>
+    <string name="signup_progress_signing_up">Creating account</string>
 
     <string name="error_mismatch_password">Passwords do not match</string>
+    <string name="error_username_taken">Username is already taken</string>
+    <string name="error_failed_signup">Unable to create account</string>
 
 </resources>

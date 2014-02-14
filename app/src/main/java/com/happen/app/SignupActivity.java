@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,29 +16,22 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.parse.LogInCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
+
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
 public class SignupActivity extends Activity {
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello",
-            "bar@example.com:world"
-    };
 
     /**
      * The default email to populate the email field with.
      */
     public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
-
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
 
     // Values for email and password at the time of the signup attempt.
     private String mEmail;
@@ -91,7 +85,7 @@ public class SignupActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptSignup();
                     return true;
                 }
                 return false;
@@ -105,7 +99,7 @@ public class SignupActivity extends Activity {
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptSignup();
             }
         });
     }
@@ -123,10 +117,7 @@ public class SignupActivity extends Activity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+    public void attemptSignup() {
 
         // Reset errors.
         mUsernameView.setError(null);
@@ -210,12 +201,57 @@ public class SignupActivity extends Activity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            mSignupStatusMessageView.setText(R.string.login_progress_signing_in);
-            showProgress(true);
-            mAuthTask = new UserLoginTask();
-            mAuthTask.execute((Void) null);
+            Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
+            createUser(mFirstName, mLastName, mUsername, mPassword, mEmail, mPhone);
+        }
+    }
+
+    public void createUser(String firstname, String lastname, String username, String password, String email, String phone) {
+
+        ParseUser user = new ParseUser();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setEmail(email);
+
+        // other fields can be set just like with ParseObject
+        user.put("firstName", firstname);
+        user.put("lastName", lastname);
+        user.put("phone", phone);
+
+        user.signUpInBackground(new SignUpCallback() {
+            public void done(ParseException e) {
+                if (e == null) {
+                    // Hooray! Let them use the app now.
+                    System.out.println("succeeded!");
+
+                    // Show a progress spinner, and kick off a background task to
+                    // perform the user login attempt.
+                    mSignupStatusMessageView.setText(R.string.signup_progress_signing_up);
+                    showProgress(true);
+
+                    Intent i = new Intent(SignupActivity.this, LoginActivity.class);
+                    startActivity(i);
+                } else {
+                    // Sign up didn't succeed. Look at the ParseException
+                    // to figure out what went wrong
+                    System.out.println(e);
+                    mUsernameView.setError(getString(R.string.error_username_taken));
+                    mUsernameView.requestFocus();
+                }
+            }
+        });
+    }
+
+    protected void onPostExecute(final Boolean success) {
+
+        showProgress(false);
+
+        if (success) {
+            Intent i = new Intent(SignupActivity.this, MainActivity.class);
+            startActivity(i);
+        } else {
+            mUsernameView.setError(getString(R.string.error_failed_signup));
+            mUsernameView.requestFocus();
         }
     }
 
@@ -256,54 +292,6 @@ public class SignupActivity extends Activity {
             // and hide the relevant UI components.
             mSignupStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
             mSignupFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
         }
     }
 }
