@@ -37,6 +37,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
+    protected SimpleFeedFragment simpleFeedFragment;
     protected FeedFragment feedFragment;
     protected MyListFragment mylistFragment;
 
@@ -136,9 +137,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 0:
                     return FeedFragment.newInstance(position);
                 case 1:
-                    return FeedFragment.newInstance(position);
+                    return SimpleFeedFragment.newInstance(position);
                 case 2:
-                    return FeedFragment.newInstance(position);
+                    return SimpleFeedFragment.newInstance(position);
                 case 3:
                     return MyListFragment.newInstance(position);
             }

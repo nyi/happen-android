@@ -6,17 +6,24 @@
     android:padding="5dip">
 
     <LinearLayout
-        android:id="@+id/profilepic"
+        android:id="@+id/profile_pic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="3dip"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="5dip">
+        <!--
+        <ImageView
+            android:id="@+id/list_image"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:src="@drawable/rihanna"/>
+        -->
     </LinearLayout>
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/full_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/profilepic"
@@ -28,10 +35,10 @@
         android:textStyle="bold"/>
 
     <TextView
-        android:id="@+id/artist"
+        android:id="@+id/event_details"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/title"
+        android:layout_below="@id/full_name"
         android:textColor="#343434"
         android:textSize="10dip"
         android:layout_marginTop="1dip"
