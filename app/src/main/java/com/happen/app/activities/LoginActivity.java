@@ -1,4 +1,4 @@
-package com.happen.app;
+package com.happen.app.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -6,7 +6,6 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,11 +16,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.happen.app.R;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
