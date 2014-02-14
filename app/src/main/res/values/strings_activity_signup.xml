@@ -9,6 +9,7 @@
     <string name="prompt_lname">Last name</string>
 
     <string name="action_signup">Create account</string>
+    <string name="action_upload_pic">Upload picture</string>
     <string name="signup_progress_signing_up">Creating account</string>
 
     <string name="error_mismatch_password">Passwords do not match</string>
