@@ -144,7 +144,8 @@ public class LoginActivity extends Activity {
 
         if (success) {
             Intent i = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(i);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+            this.startActivity(i);
         } else {
             mPasswordView.setError(getString(R.string.error_incorrect_login));
             mPasswordView.requestFocus();
