@@ -1,4 +1,4 @@
-package com.happen.app;
+package com.happen.app.util;
 
 import com.parse.LogInCallback;
 import com.parse.Parse;

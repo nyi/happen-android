@@ -1,4 +1,4 @@
-package com.happen.app;
+package com.happen.app.activities;
 
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import android.widget.ListView;
 /**
  * Created by Kevin on 2/10/14.
  */
-public class FeedFragment extends ListFragment {
+public class SimpleFeedFragment extends ListFragment {
     String[] numbers_text = new String[] { "one", "two", "three", "four",
             "five", "six", "seven", "eight", "nine", "ten", "eleven",
             "twelve", "thirteen", "fourteen", "fifteen" };
@@ -20,15 +20,15 @@ public class FeedFragment extends ListFragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
 
-    public static FeedFragment newInstance(int sectionNumber) {
-        FeedFragment fragment = new FeedFragment();
+    public static SimpleFeedFragment newInstance(int sectionNumber) {
+        SimpleFeedFragment fragment = new SimpleFeedFragment();
         Bundle args = new Bundle();
             /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);*/
         return fragment;
     }
 
-    public FeedFragment() {
+    public SimpleFeedFragment() {
 
     }
 
