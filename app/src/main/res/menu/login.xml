@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.happen.app.LoginActivity">
+    tools:context="com.happen.app.activities.LoginActivity">
     <item android:id="@+id/action_forgot_password"
         android:title="@string/action_forgot_password"
         android:showAsAction="never" />

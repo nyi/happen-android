@@ -1,4 +1,4 @@
-package com.happen.app;
+package com.happen.app.activities;
 
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -22,11 +21,6 @@ import java.util.List;
  * Created by Kevin on 2/10/14.
  */
 public class MyListFragment extends ListFragment{
-    String[] numbers_text = new String[] { "mylist_one", "mylist_two", "mylist_three", "mylist_four",
-            "mylist_five", "mylist_six", "mylist_seven", "mylist_eight", "mylist_nine", "mylist_ten", "mylist_eleven",
-            "mylist_twelve", "mylist_thirteen", "mylist_fourteen", "mylist_fifteen" };
-    String[] numbers_digits = new String[] { "1", "2", "3", "4", "5", "6", "7",
-            "8", "9", "10", "11", "12", "13", "14", "15" };
     private static final String ARG_SECTION_NUMBER = "section_number";
     ArrayAdapter<String> adapter;
 
@@ -56,6 +50,7 @@ public class MyListFragment extends ListFragment{
                 inflater.getContext(), android.R.layout.simple_list_item_1,
                 blankList);
         setListAdapter(adapter);
+
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Event");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {

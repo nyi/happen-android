@@ -1,4 +1,4 @@
-package com.happen.app;
+package com.happen.app.activities;
 
 import android.app.ListFragment;
 import android.os.Bundle;

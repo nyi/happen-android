@@ -1,4 +1,4 @@
-package com.happen.app;
+package com.happen.app.activities;
 
 import java.util.Locale;
 
@@ -7,24 +7,18 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
+
+import com.happen.app.R;
 import com.parse.Parse;
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.ParseAnalytics;
-import com.parse.SignUpCallback;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 

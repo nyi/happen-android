@@ -3,5 +3,5 @@
     android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.happen.app.MainActivity"
+    tools:context="com.happen.app.activities.MainActivity"
     android:visibility="visible" />
