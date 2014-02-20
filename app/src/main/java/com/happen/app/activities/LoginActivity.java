@@ -48,7 +48,7 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar bar = getActionBar();
-        //bar.hide();
+        bar.hide();
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
