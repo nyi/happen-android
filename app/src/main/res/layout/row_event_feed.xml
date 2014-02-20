@@ -28,10 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/profile_pic"
         android:layout_toRightOf="@+id/profile_pic"
-        android:text="Rihanna Love the way lie"
+        android:text="Full Name"
         android:textColor="#040404"
         android:typeface="sans"
-        android:textSize="15dip"
+        android:textSize="25dip"
         android:textStyle="bold"
         android:layout_marginRight="5dip"/>
 
@@ -41,18 +41,18 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/full_name"
         android:textColor="#343434"
-        android:textSize="10dip"
+        android:textSize="15dip"
         android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/profile_pic"
-        android:text="Just gona stand there and ..." />
+        android:text="Event Details" />
 
     <TextView
         android:id="@+id/username"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dip"
+        android:layout_marginTop="5dip"
         android:textColor="#343434"
-        android:textSize="10dip"
+        android:textSize="15dip"
         android:layout_toRightOf="@+id/full_name"
-        android:text="Just gona stand there and ..." />
+        android:text="Username" />
 </RelativeLayout>

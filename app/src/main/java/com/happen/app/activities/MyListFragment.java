@@ -70,12 +70,13 @@ public class MyListFragment extends ListFragment{
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
                     ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
-                    HashMap<String, String> event = new HashMap<String, String>();
                     if(object.size() == 0) { // User has not created any events yet
+                        HashMap<String, String> event = new HashMap<String, String>();
                         event.put(KEY_EVENT_DETAILS, "You have no events. You should create one!");
                         eventsList.add(event);
                     } else {
                         for (int i = 0; i < object.size(); i++) {
+                            HashMap<String, String> event = new HashMap<String, String>();
                             event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
                             eventsList.add(event);
                         }
