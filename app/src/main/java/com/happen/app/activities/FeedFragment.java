@@ -27,6 +27,7 @@ public class FeedFragment extends ListFragment{
     static final String KEY_FULL_NAME = "fullName";
     static final String KEY_EVENT_DETAILS = "eventDetails";
     static final String KEY_USERNAME = "username";
+    static final String KEY_TIME_FRAME = "timeFrame";
     // Parse column names
     static final String TABLE_EVENT = "Event";
     static final String COL_CREATOR = "creator";
@@ -34,6 +35,8 @@ public class FeedFragment extends ListFragment{
     static final String COL_LAST_NAME = "lastName";
     static final String COL_USERNAME = "username";
     static final String COL_DETAILS = "details";
+    static final String COL_TIME_FRAME = "timeFrame";
+    static final String COL_CREATED_AT = "createdAt";
 
     EventFeedAdapter adapter;
 
@@ -64,6 +67,7 @@ public class FeedFragment extends ListFragment{
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
+        query.orderByDescending(COL_CREATED_AT);
 
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {
@@ -79,7 +83,12 @@ public class FeedFragment extends ListFragment{
                             event.put(KEY_FULL_NAME, "");
                             event.put(KEY_USERNAME, "");
                         }
-                        event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
+                        if(object.get(i).has(COL_TIME_FRAME)) {
+                            event.put(KEY_TIME_FRAME, object.get(i).getString(COL_TIME_FRAME));
+                        }
+                        if(object.get(i).has(COL_DETAILS)) {
+                            event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
+                        }
                         eventsList.add(event);
                     }
 

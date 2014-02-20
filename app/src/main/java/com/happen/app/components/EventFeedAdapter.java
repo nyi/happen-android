@@ -15,6 +15,11 @@ import java.util.HashMap;
  * Created by Nelson on 2/14/14.
  */
 public class EventFeedAdapter extends BaseAdapter {
+    // XML node keys
+    static final String KEY_FULL_NAME = "fullName";
+    static final String KEY_EVENT_DETAILS = "eventDetails";
+    static final String KEY_USERNAME = "username";
+    static final String KEY_TIME_FRAME = "timeFrame";
 
     private ArrayList<HashMap<String,String>> data;
     private static LayoutInflater inflater = null;
@@ -49,14 +54,16 @@ public class EventFeedAdapter extends BaseAdapter {
         TextView fullName= (TextView)vi.findViewById(R.id.full_name);
         TextView eventDetails = (TextView)vi.findViewById(R.id.event_details);
         TextView username = (TextView)vi.findViewById(R.id.username);
+        TextView timeFrame = (TextView)vi.findViewById(R.id.time_frame);
 
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);
 
         // Setting the values
-        fullName.setText(event.get("fullName"));
-        eventDetails.setText(event.get("eventDetails"));
-        username.setText(event.get("username"));
+        fullName.setText(event.get(KEY_FULL_NAME));
+        eventDetails.setText(event.get(KEY_EVENT_DETAILS));
+        username.setText(event.get(KEY_USERNAME));
+        timeFrame.setText(event.get(KEY_TIME_FRAME));
 
         return vi;
     }

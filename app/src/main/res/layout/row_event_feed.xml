@@ -3,7 +3,10 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dip">
+    android:paddingBottom="15dip"
+    android:paddingTop="5dip"
+    android:paddingLeft="5dip"
+    android:paddingRight="10dip">
 
     <LinearLayout
         android:id="@+id/profile_pic"
@@ -26,20 +29,21 @@
         android:id="@+id/full_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/profile_pic"
         android:layout_toRightOf="@+id/profile_pic"
+        android:layout_below="@+id/time_frame"
         android:text="Full Name"
         android:textColor="#040404"
         android:typeface="sans"
-        android:textSize="25dip"
+        android:textSize="22dip"
         android:textStyle="bold"
-        android:layout_marginRight="5dip"/>
+        android:layout_marginRight="5dip"
+        android:layout_marginTop="-2dip"/>
 
     <TextView
         android:id="@+id/event_details"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/full_name"
+        android:layout_below="@+id/full_name"
         android:textColor="#343434"
         android:textSize="15dip"
         android:layout_marginTop="1dip"
@@ -48,11 +52,21 @@
 
     <TextView
         android:id="@+id/username"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dip"
+        android:layout_alignTop="@+id/full_name"
+        android:layout_marginTop="4dip"
         android:textColor="#343434"
         android:textSize="15dip"
         android:layout_toRightOf="@+id/full_name"
         android:text="Username" />
+
+    <TextView
+        android:id="@+id/time_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#343434"
+        android:textSize="10dip"
+        android:gravity="right"
+        android:text="Time Frame" />
 </RelativeLayout>
