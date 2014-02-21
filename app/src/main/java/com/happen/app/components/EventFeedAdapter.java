@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.happen.app.R;
@@ -55,6 +56,7 @@ public class EventFeedAdapter extends BaseAdapter {
         TextView eventDetails = (TextView)vi.findViewById(R.id.event_details);
         TextView username = (TextView)vi.findViewById(R.id.username);
         TextView timeFrame = (TextView)vi.findViewById(R.id.time_frame);
+        ImageView profilePic = (ImageView)vi.findViewById(R.id.profile_pic);
 
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);

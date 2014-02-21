@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.happen.app.R;
@@ -50,6 +51,7 @@ public class MyListAdapter extends BaseAdapter {
         }
 
         TextView eventDetails = (TextView)vi.findViewById(R.id.event_details);
+
 
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);
