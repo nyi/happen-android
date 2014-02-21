@@ -1,0 +1,6 @@
+<resources>
+
+    <!-- Strings related to event creation -->
+    <string name="prompt_find_friends">Search for friends here</string>
+
+</resources>

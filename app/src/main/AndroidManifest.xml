@@ -46,6 +46,14 @@
                 android:value=".activities.MainActivity" />
         </activity>
 
+        <activity
+            android:name=".activities.FindFriendActivity"
+            android:label="@string/action_find_friends" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
+
     </application>
 
 </manifest>
