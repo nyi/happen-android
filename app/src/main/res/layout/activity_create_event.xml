@@ -1,0 +1,45 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.happen.app.activities.CreateEventActivity">
+
+    <ScrollView
+        android:id="@+id/event_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout style="@style/EventFormContainer"
+            android:orientation="vertical">
+
+
+            <EditText
+                android:id="@+id/text"
+                android:singleLine="false"
+                android:maxLines="3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_event" />
+
+
+            <EditText
+                android:id="@+id/date"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_date" />
+
+
+            <Button android:id="@+id/create_event_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/button_create"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                android:layout_gravity="right" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+</merge>

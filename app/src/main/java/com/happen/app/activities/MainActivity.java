@@ -7,6 +7,7 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -44,6 +45,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        View decorView = getWindow().getDecorView();
         Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
         setContentView(R.layout.activity_main);
 
@@ -86,7 +88,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -98,10 +99,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_create_event) {
+            switchToCreateEventView();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void switchToCreateEventView() {
+        Intent i = new Intent(MainActivity.this, CreateEventActivity.class);
+     //   i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+        this.startActivity(i);
     }
 
     @Override
@@ -139,8 +147,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return SimpleFeedFragment.newInstance(position);
                 case 2:
-                    return SimpleFeedFragment.newInstance(position);
-                case 3:
                     return MyListFragment.newInstance(position);
             }
             return null;
@@ -149,7 +155,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         @Override
         public int getCount() {
             // Show 4 total pages.
-            return 4;
+            return 3;
         }
 
         @Override
@@ -162,8 +168,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-                case 3:
                     return getString(R.string.title_section4).toUpperCase(l);
             }
             return null;

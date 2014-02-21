@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.parse.ParseUser;
+
 /**
  * Created by Kevin on 2/10/14.
  */
 public class SimpleFeedFragment extends ListFragment {
-    String[] numbers_text = new String[] { "one", "two", "three", "four",
+    final ParseUser user = ParseUser.getCurrentUser();
+    String[] numbers_text = new String[] { "This is: " + user.getUsername(), "two", "three", "four",
             "five", "six", "seven", "eight", "nine", "ten", "eleven",
             "twelve", "thirteen", "fourteen", "fifteen" };
     String[] numbers_digits = new String[] { "1", "2", "3", "4", "5", "6", "7",
