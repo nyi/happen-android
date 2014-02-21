@@ -45,8 +45,6 @@ public class LoginActivity extends Activity {
     private View mLoginStatusView;
     private TextView mLoginStatusMessageView;
 
-    private Menu menu;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,23 +82,12 @@ public class LoginActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.login, menu);
         return true;
     }
 
-    private void setOptionTitle(int id, String title)
-    {
-        MenuItem item = menu.findItem(id);
-        item.setTitle(title);
-    }
 
-    private void setOptionIcon(int id, int iconRes)
-    {
-        MenuItem item = menu.findItem(id);
-        item.setIcon(iconRes);
-    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
