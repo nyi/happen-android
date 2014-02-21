@@ -88,7 +88,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -148,8 +147,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return SimpleFeedFragment.newInstance(position);
                 case 2:
-                    return SimpleFeedFragment.newInstance(position);
-                case 3:
                     return MyListFragment.newInstance(position);
             }
             return null;
@@ -158,7 +155,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         @Override
         public int getCount() {
             // Show 4 total pages.
-            return 4;
+            return 3;
         }
 
         @Override
@@ -171,8 +168,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-                case 3:
                     return getString(R.string.title_section4).toUpperCase(l);
             }
             return null;

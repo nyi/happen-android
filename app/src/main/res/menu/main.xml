@@ -6,4 +6,9 @@
         android:title="@string/action_create_event"
         android:orderInCategory="100"
         android:showAsAction="ifRoom" />
+
+    <item android:id="@+id/action_news"
+        android:title="News"
+        android:orderInCategory="99"
+        android:showAsAction="ifRoom"/>
 </menu>
