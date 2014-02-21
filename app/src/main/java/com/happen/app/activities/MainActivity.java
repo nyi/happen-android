@@ -42,6 +42,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     protected FeedFragment feedFragment;
     protected MyListFragment mylistFragment;
     protected Menu myMenu;
+    protected enum Pages {FEED, FRIENDS, MY_LIST};
+    protected Pages currentPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +51,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         View decorView = getWindow().getDecorView();
         Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
         setContentView(R.layout.activity_main);
-
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -85,6 +86,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+        currentPage = Pages.FEED;
     }
 
     private void setOptionTitle(int id, String title)
@@ -115,7 +117,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_create) {
-            switchToCreateEventView();
+            if(currentPage == Pages.FEED || currentPage == Pages.MY_LIST)
+                switchToCreateEventView();
+            else if(currentPage == Pages.FRIENDS)
+                switchToCreateFriendView();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -127,6 +132,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         this.startActivity(i);
     }
 
+    public void switchToCreateFriendView() {
+        Intent i = new Intent(MainActivity.this, FindFriendActivity.class);
+        //   i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+        this.startActivity(i);
+    }
+
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
@@ -134,12 +145,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         if(myMenu!=null){
             switch(tab.getPosition()) {
                 case 0:
+                    currentPage = Pages.FEED;
                     switchMenuToAddEvent();
                     break;
                 case 1:
+                    currentPage = Pages.FRIENDS;
                     switchMenuToAddFriend();
                     break;
                 case 2:
+                    currentPage = Pages.MY_LIST;
                     switchMenuToAddEvent();
                     break;
             }
