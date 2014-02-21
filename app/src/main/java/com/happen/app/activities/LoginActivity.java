@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -85,6 +86,8 @@ public class LoginActivity extends Activity {
         getMenuInflater().inflate(R.menu.login, menu);
         return true;
     }
+
+
 
     /**
      * Attempts to sign in or register the account specified by the login form.
