@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -46,6 +47,7 @@ public class SignupActivity extends Activity {
     private String mPhone;
     private String mFirstName;
     private String mLastName;
+    private Image mImage;
 
     // UI references.
     private EditText mEmailView;
@@ -86,6 +88,8 @@ public class SignupActivity extends Activity {
 
         mConfirmPasswordView = (EditText) findViewById(R.id.password2);
         mConfirmPasswordView.setText(mConfirmPassword);
+
+        mImageView = (ImageView) findViewById(R.id.user_pic);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -128,8 +132,6 @@ public class SignupActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        mImageView = (ImageView) findViewById(R.id.profile_pic);
-
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
