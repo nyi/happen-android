@@ -5,31 +5,39 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
 import com.happen.app.R;
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
 public class FindFriendActivity extends Activity {
+    // Parse column names
+    static final String TABLE_USER = "User";
+    static final String COL_USERNAME = "username";
 
-    // Values for email and password at the time of the signup attempt.
-    private String mText;
-    private String mDate;
+    // Values for username at the time of the find attempt.
+    private String mUsername;
 
     // UI references.
-    private EditText mTextView;
-    private EditText mDateView;
+    private EditText mUsernameView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +48,85 @@ public class FindFriendActivity extends Activity {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        mTextView = (EditText) findViewById(R.id.text);
-        mTextView.setText(mText);
+        mUsernameView = (EditText) findViewById(R.id.text);
+        mUsernameView.setText(mUsername);
 
         findViewById(R.id.search_for_friends_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // findFriends();
+               findFriends();
+            }
+        });
+    }
+
+    private void findFriends() {
+        // Reset errors
+        mUsernameView.setError(null);
+
+        // Store values at the time of the login attempt.
+        mUsername = mUsernameView.getText().toString();
+
+
+        Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereEqualTo(COL_USERNAME, mUsername);
+        try {
+            ParseUser requestedFriend = query.getFirst();
+            sendFriendRequest(ParseUser.getCurrentUser(), requestedFriend);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            mUsernameView.setError("The username does not exist");
+            mUsernameView.requestFocus();
+        }
+
+        /*query.findInBackground(new FindCallback<ParseUser>() {
+            public void done(List<ParseUser> object, ParseException e) {
+                if (e == null) {
+                    Log.d("score", "Retrieved " + object.size() + " scores");
+                    if(object.size() == 1) { // A user is found
+                        ParseUser requestedFriend = object.get(0);
+                        sendFriendRequest(ParseUser.getCurrentUser(), requestedFriend);
+                    }
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                    mUsernameView.setError("This username does not exist");
+                    mUsernameView.requestFocus();
+                }
+            }
+        });*/
+
+
+    }
+
+    void sendFriendRequest(ParseUser source, ParseUser target) {
+        ParseObject friendReq = new ParseObject("FriendRequest");
+        friendReq.put("source", source);
+        friendReq.put("target", target);
+        friendReq.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e==null){
+                    onPostExecute(true);
+                }
+                else {
+                    onPostExecute(false);
+                }
+            }
+        });
+
+        ParseObject news = new ParseObject("News");
+        news.put("source", source);
+        news.put("target", target);
+        news.put("message", "This person requested to be your friend!");
+        news.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e==null){
+                    onPostExecute(true);
+                }
+                else {
+                    onPostExecute(false);
+                }
             }
         });
     }
@@ -77,7 +157,7 @@ public class FindFriendActivity extends Activity {
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
             this.startActivity(i);
         } else {
-            mTextView.setError("Error: could not find friends.");
+            mUsernameView.setError("Error: could not find friends.");
         }
     }
 }
