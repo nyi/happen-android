@@ -6,11 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.happen.app.components.EventFeedAdapter;
-import com.happen.app.components.MyListAdapter;
+import com.happen.app.components.FriendsAdapter;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -22,33 +20,31 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by Kevin on 2/10/14.
+ * Created by Nelson on 2/20/14.
  */
-public class MyListFragment extends ListFragment{
+public class FriendsFragment extends ListFragment{
     // XML node keys
-    static final String KEY_EVENT = "event"; // parent node
     static final String KEY_EMPTY = "empty";
-    static final String KEY_EVENT_DETAILS = "eventDetails";
+    static final String KEY_FRIENDS = "friends";
+    static final String KEY_FULL_NAME = "fullName";
+    static final String KEY_USERNAME = "username";
     // Parse column names
     static final String TABLE_USER = "User";
-    static final String TABLE_EVENT = "Event";
-    static final String COL_CREATOR = "creator";
-    static final String COL_DETAILS = "details";
-    static final String COL_CREATED_AT = "createdAt";
+    static final String COL_FRIENDS = "friends";
+    static final String COL_FIRST_NAME = "firstName";
+    static final String COL_LAST_NAME = "lastName";
+    static final String COL_USERNAME = "username";
+    static final String TABLE_FRIEND_REQUEST = "FriendRequest";
 
-    MyListAdapter adapter;
+    FriendsAdapter adapter;
 
-    public static MyListFragment newInstance(int sectionNumber) {
-        MyListFragment fragment = new MyListFragment();
+    public static FriendsFragment newInstance(int sectionNumber) {
+        FriendsFragment fragment = new FriendsFragment();
         Bundle args = new Bundle();
-        //for(int i = 0;)
-            /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);*/
         return fragment;
     }
 
-    public MyListFragment() {
-
+    public FriendsFragment() {
     }
 
     @Override
@@ -60,34 +56,31 @@ public class MyListFragment extends ListFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
-        adapter = new MyListAdapter(eventsList, inflater);
+        adapter = new FriendsAdapter(eventsList, inflater);
         setListAdapter(adapter);
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
-        query.include(COL_CREATOR);
-        query.whereEqualTo(COL_CREATOR, ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId()));
-        query.orderByDescending(COL_CREATED_AT);
+        ParseQuery<ParseObject> query = ParseUser.getCurrentUser().getRelation(COL_FRIENDS).getQuery();
 
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
-                    if(object.size() == 0) { // User has not created any events yet
+                    ArrayList<HashMap<String, String>> friendsList = new ArrayList<HashMap<String, String>>();
+                    if(object.size() == 0) { // User has no friends
                         HashMap<String, String> event = new HashMap<String, String>();
-                        event.put(KEY_EMPTY, "You have no events. You should create one!");
-                        eventsList.add(event);
+                        event.put(KEY_EMPTY, "You have no friends. You should add one!");
+                        friendsList.add(event);
                     } else {
                         for (int i = 0; i < object.size(); i++) {
                             HashMap<String, String> event = new HashMap<String, String>();
-                            if(object.get(i).has(COL_DETAILS)) {
-                                event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
+                            if(object.get(i).has(COL_FRIENDS)) {
+                                event.put(KEY_USERNAME, object.get(i).getString(COL_USERNAME));
                             }
-                            eventsList.add(event);
+                            friendsList.add(event);
                         }
                     }
 
-                    adapter.replace(eventsList);
+                    adapter.replace(friendsList);
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
                 }

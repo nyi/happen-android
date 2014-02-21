@@ -12,17 +12,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by Nelson on 2/14/14.
+ * Created by Nelson on 2/20/14.
  */
-public class MyListAdapter extends BaseAdapter {
+public class FriendsAdapter extends BaseAdapter{
     // XML node keys
-    static final String KEY_EVENT_DETAILS = "eventDetails";
+    static final String KEY_FRIENDS = "friends";
     static final String KEY_EMPTY = "empty";
+    static final String KEY_FULL_NAME = "fullName";
+    static final String KEY_USERNAME = "username";
 
     private ArrayList<HashMap<String,String>> data;
     private static LayoutInflater inflater = null;
 
-    public MyListAdapter(ArrayList<HashMap<String, String>> d, LayoutInflater i) {
+    public FriendsAdapter(ArrayList<HashMap<String, String>> d, LayoutInflater i) {
         data = d;
         inflater = i;
     }
@@ -46,20 +48,19 @@ public class MyListAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         View vi = view;
         if(view == null) {
-            vi = inflater.inflate(R.layout.row_my_list, null);
+            vi = inflater.inflate(R.layout.row_friends, null);
         }
 
-        TextView eventDetails = (TextView)vi.findViewById(R.id.event_details);
+        TextView eventDetails = (TextView)vi.findViewById(R.id.friend);
 
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);
-
 
         if(event.containsKey(KEY_EMPTY)) {
             eventDetails.setText(event.get(KEY_EMPTY));
         } else {
             // Setting the values
-            eventDetails.setText(event.get(KEY_EVENT_DETAILS));
+            eventDetails.setText(event.get(KEY_FRIENDS));
         }
 
         return vi;
