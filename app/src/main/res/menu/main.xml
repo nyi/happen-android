@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.happen.app.activities.MainActivity" >
     
-    <item android:id="@+id/action_create_event"
+    <item android:id="@+id/action_create"
         android:title="@string/action_create_event"
         android:orderInCategory="100"
         android:showAsAction="ifRoom" />

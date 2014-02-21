@@ -3,7 +3,7 @@
     <!-- Strings related to event creation -->
     <string name="prompt_event">Write event details here</string>
     <string name="prompt_date">When?</string>
-    <string name="button_create">Create event</string>
+    <string name="button_create">Add event</string>
     <string name="error_create_event_failed">Event failed to create</string>
 
 

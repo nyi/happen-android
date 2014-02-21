@@ -41,6 +41,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     protected SimpleFeedFragment simpleFeedFragment;
     protected FeedFragment feedFragment;
     protected MyListFragment mylistFragment;
+    protected Menu myMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +87,23 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
+    private void setOptionTitle(int id, String title)
+    {
+        MenuItem item = myMenu.findItem(id);
+        item.setTitle(title);
+    }
+
+    private void setOptionIcon(int id, int iconRes)
+    {
+        MenuItem item = myMenu.findItem(id);
+        item.setIcon(iconRes);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+
+        myMenu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -99,7 +114,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_create_event) {
+        if (id == R.id.action_create) {
             switchToCreateEventView();
             return true;
         }
@@ -116,8 +131,29 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
+        if(myMenu!=null){
+            switch(tab.getPosition()) {
+                case 0:
+                    switchMenuToAddEvent();
+                    break;
+                case 1:
+                    switchMenuToAddFriend();
+                    break;
+                case 2:
+                    switchMenuToAddEvent();
+                    break;
+            }
+        }
         mViewPager.setCurrentItem(tab.getPosition());
-}
+    }
+
+    public void switchMenuToAddFriend() {
+        setOptionTitle(R.id.action_create,"Add Friend");
+    }
+
+    public void switchMenuToAddEvent() {
+        setOptionTitle(R.id.action_create,"Add Event");
+    }
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
