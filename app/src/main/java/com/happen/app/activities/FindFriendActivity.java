@@ -65,37 +65,26 @@ public class FindFriendActivity extends Activity {
 
         // Store values at the time of the login attempt.
         mUsername = mUsernameView.getText().toString();
-
-
-        Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereEqualTo(COL_USERNAME, mUsername);
-        try {
-            ParseUser requestedFriend = query.getFirst();
-            sendFriendRequest(ParseUser.getCurrentUser(), requestedFriend);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            mUsernameView.setError("The username does not exist");
+        if (ParseUser.getCurrentUser().getUsername().equals(mUsername)) {
+            mUsernameView.setError("You cannot befriend yourself");
             mUsernameView.requestFocus();
-        }
+        } else {
+            Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
+            ParseQuery<ParseUser> query = ParseUser.getQuery();
+            query.whereEqualTo(COL_USERNAME, mUsername);
+            try {
+                ParseUser requestedFriend = query.getFirst();
+                if(false) { // Do check for already being friends
 
-        /*query.findInBackground(new FindCallback<ParseUser>() {
-            public void done(List<ParseUser> object, ParseException e) {
-                if (e == null) {
-                    Log.d("score", "Retrieved " + object.size() + " scores");
-                    if(object.size() == 1) { // A user is found
-                        ParseUser requestedFriend = object.get(0);
-                        sendFriendRequest(ParseUser.getCurrentUser(), requestedFriend);
-                    }
                 } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                    mUsernameView.setError("This username does not exist");
-                    mUsernameView.requestFocus();
+                    sendFriendRequest(ParseUser.getCurrentUser(), requestedFriend);
                 }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                mUsernameView.setError("The username does not exist");
+                mUsernameView.requestFocus();
             }
-        });*/
-
-
+        }
     }
 
     void sendFriendRequest(ParseUser source, ParseUser target) {
@@ -117,7 +106,8 @@ public class FindFriendActivity extends Activity {
         ParseObject news = new ParseObject("News");
         news.put("source", source);
         news.put("target", target);
-        news.put("message", "This person requested to be your friend!");
+        news.put("type", "SENT_REQUEST");
+        news.put("isUnread", true);
         news.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
