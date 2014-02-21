@@ -16,4 +16,7 @@
     <string name="error_username_taken">Username is already taken</string>
     <string name="error_failed_signup">Unable to create account</string>
 
+    <string name="exception_message">Error uploading photo</string>
+
+
 </resources>

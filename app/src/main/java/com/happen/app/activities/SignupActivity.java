@@ -4,16 +4,21 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.happen.app.R;
 import com.parse.Parse;
@@ -31,6 +36,7 @@ public class SignupActivity extends Activity {
      * The default email to populate the email field with.
      */
     public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     // Values for email and password at the time of the signup attempt.
     private String mEmail;
@@ -103,12 +109,28 @@ public class SignupActivity extends Activity {
         });
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.signup, menu);
         return true;
+    }
+
+    public void uploadPhoto(View view){
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //mImageView.setImageBitmap(imageBitmap);
+        }
     }
 
     /**
@@ -124,7 +146,6 @@ public class SignupActivity extends Activity {
         mLastNameView.setError(null);
         mEmailView.setError(null);
         mPhoneView.setError(null);
-
         mPasswordView.setError(null);
         mConfirmPasswordView.setError(null);
 
@@ -132,7 +153,6 @@ public class SignupActivity extends Activity {
         mEmail = mEmailView.getText().toString();
         mPassword = mPasswordView.getText().toString();
         mConfirmPassword = mConfirmPasswordView.getText().toString();
-
         mUsername = mUsernameView.getText().toString();
         mFirstName = mFirstNameView.getText().toString();
         mLastName = mLastNameView.getText().toString();
@@ -172,7 +192,6 @@ public class SignupActivity extends Activity {
         }
 
         // Check for completion of other fields
-
         if (TextUtils.isEmpty(mPhone)) {
             mPhoneView.setError(getString(R.string.error_field_required));
             focusView = mPhoneView;
@@ -194,7 +213,6 @@ public class SignupActivity extends Activity {
             cancel = true;
         }
 
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -211,7 +229,6 @@ public class SignupActivity extends Activity {
         user.setUsername(username);
         user.setPassword(password);
         user.setEmail(email);
-
         // other fields can be set just like with ParseObject
         user.put("firstName", firstname);
         user.put("lastName", lastname);
@@ -222,12 +239,10 @@ public class SignupActivity extends Activity {
                 if (e == null) {
                     // Hooray! Let them use the app now.
                     System.out.println("succeeded!");
-
                     // Show a progress spinner, and kick off a background task to
                     // perform the user login attempt.
                     mSignupStatusMessageView.setText(R.string.signup_progress_signing_up);
                     showProgress(true);
-
                     Intent i = new Intent(SignupActivity.this, LoginActivity.class);
                     startActivity(i);
                 } else {
@@ -242,9 +257,7 @@ public class SignupActivity extends Activity {
     }
 
     protected void onPostExecute(final Boolean success) {
-
         showProgress(false);
-
         if (success) {
             Intent i = new Intent(SignupActivity.this, MainActivity.class);
             startActivity(i);
@@ -293,4 +306,5 @@ public class SignupActivity extends Activity {
             mSignupFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
+
 }
