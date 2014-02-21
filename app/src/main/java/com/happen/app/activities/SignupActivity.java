@@ -55,6 +55,8 @@ public class SignupActivity extends Activity {
     private EditText mPhoneView;
     private EditText mFirstNameView;
     private EditText mLastNameView;
+    private ImageView mImageView;
+
     private View mSignupFormView;
     private View mSignupStatusView;
     private TextView mSignupStatusMessageView;
@@ -126,10 +128,12 @@ public class SignupActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        mImageView = (ImageView) findViewById(R.id.profile_pic);
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
-            //mImageView.setImageBitmap(imageBitmap);
+            mImageView.setImageBitmap(imageBitmap);
         }
     }
 
