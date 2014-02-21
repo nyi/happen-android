@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -43,6 +44,8 @@ public class LoginActivity extends Activity {
     private View mLoginFormView;
     private View mLoginStatusView;
     private TextView mLoginStatusMessageView;
+
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +84,22 @@ public class LoginActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.login, menu);
         return true;
+    }
+
+    private void setOptionTitle(int id, String title)
+    {
+        MenuItem item = menu.findItem(id);
+        item.setTitle(title);
+    }
+
+    private void setOptionIcon(int id, int iconRes)
+    {
+        MenuItem item = menu.findItem(id);
+        item.setIcon(iconRes);
     }
 
     /**
