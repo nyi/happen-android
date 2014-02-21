@@ -65,22 +65,22 @@ public class FriendsFragment extends ListFragment{
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
-                    if(object.size() == 0) { // User has not created any events yet
+                    ArrayList<HashMap<String, String>> friendsList = new ArrayList<HashMap<String, String>>();
+                    if(object.size() == 0) { // User has no friends
                         HashMap<String, String> event = new HashMap<String, String>();
                         event.put(KEY_EMPTY, "You have no friends. You should add one!");
-                        eventsList.add(event);
+                        friendsList.add(event);
                     } else {
                         for (int i = 0; i < object.size(); i++) {
                             HashMap<String, String> event = new HashMap<String, String>();
                             if(object.get(i).has(COL_FRIENDS)) {
-                                event.put(KEY_FRIENDS, object.get(i).getString(COL_FRIENDS));
+                                event.put(KEY_USERNAME, object.get(i).getString(COL_USERNAME));
                             }
-                            eventsList.add(event);
+                            friendsList.add(event);
                         }
                     }
 
-                    adapter.replace(eventsList);
+                    adapter.replace(friendsList);
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
                 }

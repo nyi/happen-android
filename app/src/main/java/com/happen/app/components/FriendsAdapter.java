@@ -17,6 +17,9 @@ import java.util.HashMap;
 public class FriendsAdapter extends BaseAdapter{
     // XML node keys
     static final String KEY_FRIENDS = "friends";
+    static final String KEY_EMPTY = "empty";
+    static final String KEY_FULL_NAME = "fullName";
+    static final String KEY_USERNAME = "username";
 
     private ArrayList<HashMap<String,String>> data;
     private static LayoutInflater inflater = null;
@@ -53,8 +56,12 @@ public class FriendsAdapter extends BaseAdapter{
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);
 
-        // Setting the values
-        eventDetails.setText(event.get(KEY_FRIENDS));
+        if(event.containsKey(KEY_EMPTY)) {
+            eventDetails.setText(event.get(KEY_EMPTY));
+        } else {
+            // Setting the values
+            eventDetails.setText(event.get(KEY_FRIENDS));
+        }
 
         return vi;
     }

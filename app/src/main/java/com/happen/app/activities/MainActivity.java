@@ -181,7 +181,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 0:
                     return FeedFragment.newInstance(position);
                 case 1:
-                    return SimpleFeedFragment.newInstance(position);
+                    return FriendsFragment.newInstance(position);
                 case 2:
                     return MyListFragment.newInstance(position);
             }
