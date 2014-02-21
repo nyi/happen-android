@@ -46,6 +46,7 @@ public class SignupActivity extends Activity {
     private String mPhone;
     private String mFirstName;
     private String mLastName;
+    private int phone_num;
 
     // UI references.
     private EditText mEmailView;
@@ -160,8 +161,8 @@ public class SignupActivity extends Activity {
         mUsername = mUsernameView.getText().toString();
         mFirstName = mFirstNameView.getText().toString();
         mLastName = mLastNameView.getText().toString();
-        mPhone = mPhoneView.getText().toString();
-
+        mPhone = mPhoneView.getText().toString().replaceAll("[()-]", "");
+        System.out.println("phone: " + mPhone);
         boolean cancel = false;
         View focusView = null;
 
@@ -216,7 +217,7 @@ public class SignupActivity extends Activity {
             focusView = mFirstNameView;
             cancel = true;
         }
-
+        //phone_num = Integer.parseInt(mPhone.trim());
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -236,7 +237,8 @@ public class SignupActivity extends Activity {
         // other fields can be set just like with ParseObject
         user.put("firstName", firstname);
         user.put("lastName", lastname);
-        user.put("phone", phone);
+        Long i = Long.parseLong(phone.trim());
+        user.put("phone", i);
 
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
