@@ -76,7 +76,10 @@ public class FindFriendActivity extends Activity {
                 ParseUser requestedFriend = query.getFirst();
                 if(false) { // Do check for already being friends
 
-                } else {
+                } else if (false) { // Do check for already being requested/requesting
+
+                }
+                else {
                     sendFriendRequest(ParseUser.getCurrentUser(), requestedFriend);
                 }
             } catch (ParseException e) {
