@@ -1,5 +1,9 @@
 package com.happen.app.components;
 
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.activities.MyListFragment;
+import com.happen.app.util.Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +27,8 @@ public class EventFeedAdapter extends BaseAdapter {
     static final String KEY_EVENT_DETAILS = "eventDetails";
     static final String KEY_USERNAME = "username";
     static final String KEY_TIME_FRAME = "timeFrame";
+
+    static final float WIDTH_RATIO = 0.25f; // 25%
 
     private ArrayList<HashMap<String,String>> data;
     private static LayoutInflater inflater = null;

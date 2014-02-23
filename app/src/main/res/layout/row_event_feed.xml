@@ -13,6 +13,7 @@
         android:id="@+id/profile_pic_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/time_frame"
         android:orientation="horizontal"
         android:padding="3dip"
         android:layout_alignParentLeft="true"
@@ -20,8 +21,9 @@
 
         <ImageView
             android:id="@+id/profile_pic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dip"
+            android:layout_height="50dip"
+            android:src="@drawable/defaultprofile"
              />
 
     </LinearLayout>
