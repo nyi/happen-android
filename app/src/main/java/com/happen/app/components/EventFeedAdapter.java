@@ -1,12 +1,19 @@
 package com.happen.app.components;
 
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.Drawable;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.activities.MyListFragment;
+import com.happen.app.util.Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +27,8 @@ public class EventFeedAdapter extends BaseAdapter {
     static final String KEY_EVENT_DETAILS = "eventDetails";
     static final String KEY_USERNAME = "username";
     static final String KEY_TIME_FRAME = "timeFrame";
+
+    static final float WIDTH_RATIO = 0.25f; // 25%
 
     private ArrayList<HashMap<String,String>> data;
     private static LayoutInflater inflater = null;
@@ -55,6 +64,7 @@ public class EventFeedAdapter extends BaseAdapter {
         TextView eventDetails = (TextView)vi.findViewById(R.id.event_details);
         TextView username = (TextView)vi.findViewById(R.id.username);
         TextView timeFrame = (TextView)vi.findViewById(R.id.time_frame);
+        ImageView profilePic = (ImageView)vi.findViewById(R.id.profile_pic);
 
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);

@@ -1,11 +1,13 @@
 package com.happen.app.activities;
 
 import android.app.ListFragment;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.happen.app.components.EventFeedAdapter;
@@ -62,6 +64,7 @@ public class FeedFragment extends ListFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
+        //ImageView profilePic = new ImageView(context);
         adapter = new EventFeedAdapter(eventsList, inflater);
         setListAdapter(adapter);
 
