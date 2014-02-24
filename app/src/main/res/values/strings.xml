@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- General strings -->
+    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_signup">Sign up</string>
     <string name="app_name">Happen</string>
     <string name="title_section1">Feed</string>
     <string name="title_section2">Friends</string>
@@ -11,4 +15,44 @@
     <string name="title_activity_splashscreen">Welcome to Happen</string>
     <string name="splashscreen_login">Log in</string>
     <string name="splashscreen_signup">Sign up</string>
+
+    <!-- Strings related to signup -->
+    <string name="prompt_username">Username</string>
+    <string name="prompt_confirm_password">Confirm password</string>
+    <string name="prompt_phone">Phone number</string>
+    <string name="prompt_fname">First name</string>
+    <string name="prompt_lname">Last name</string>
+    <string name="action_signup">Create account</string>
+    <string name="action_upload_pic">Upload picture</string>
+    <string name="signup_progress_signing_up">Creating account</string>
+    <string name="error_mismatch_password">Passwords do not match</string>
+    <string name="error_username_taken">Username is already taken</string>
+    <string name="error_failed_signup">Unable to create account</string>
+    <string name="exception_message">Error uploading photo</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in_register"><b>Sign in</b> or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_forgot_password">Recover lost password</string>
+    <string name="login_progress_signing_in">Signing in&#8230;</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_login">Incorrect login credentials</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+
+    <!-- Strings related to event creation -->
+    <string name="prompt_event">Write event details here</string>
+    <string name="prompt_date">When?</string>
+    <string name="button_create">Add event</string>
+    <string name="error_create_event_failed">Event failed to create</string>
+
+    <!-- Strings related to friend requesting -->
+    <string name="prompt_find_friends">Search for friends here</string>
+    <string name="button_request">Request friend</string>
+    <string name="friends">Friends</string>
+    <string name="requests">Requests</string>
+
 </resources>

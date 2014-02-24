@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -47,6 +48,7 @@ public class SignupActivity extends Activity {
     private String mFirstName;
     private String mLastName;
     private int phone_num;
+    private Image mImage;
 
     // UI references.
     private EditText mEmailView;
@@ -162,7 +164,7 @@ public class SignupActivity extends Activity {
         mFirstName = mFirstNameView.getText().toString();
         mLastName = mLastNameView.getText().toString();
         mPhone = mPhoneView.getText().toString().replaceAll("[()-]", "");
-        System.out.println("phone: " + mPhone);
+
         boolean cancel = false;
         View focusView = null;
 
@@ -217,7 +219,7 @@ public class SignupActivity extends Activity {
             focusView = mFirstNameView;
             cancel = true;
         }
-        //phone_num = Integer.parseInt(mPhone.trim());
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
