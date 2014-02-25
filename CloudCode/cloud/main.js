@@ -27,38 +27,32 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 			*/
 Parse.Cloud.define("acceptFriendRequest", function(request, response) {
   Parse.Cloud.useMasterKey();
-  var source_id = request.params.source;
-  var target_id = request.params.target;
-  console.log(source_id);
-  console.log(target_id);
-  var source, target;
-
-  var query = new Parse.Query(Parse.User);
-  query.equalTo("objectId", source_id);
+  var friendRequestId = request.params.friendRequest;
+  var source, target, friendRequest;
+  var FriendRequest = Parse.Object.extend("FriendRequest");
+  var query = new Parse.Query(FriendRequest);
+  query.include("source");
+  query.include("target");
+  query.equalTo("objectId", friendRequestId);
   query.find().then(function(sources){
-  	console.log("here1");
-  	source = sources[0];
-  	var query2 = new Parse.Query(Parse.User)
-  	query2.equalTo("objectId", target_id);
-  	return query2.find();
-
-  }).then(function(targets){
-  	console.log("here2");
-  	target = targets[0];
-  	var targetRelation = target.relation("friends");
-  	targetRelation.add(source);
-  	return target.save();
-  	
+  	friendRequest = sources[0];
+  	source = friendRequest.get("source");
+    target = friendRequest.get("target");
+    var targetRelation = target.relation("friends");
+    targetRelation.add(source);
+    return target.save();
   }).then(function(targetSaved){
-  	console.log("here3");
   	var sourceRelation = source.relation("friends");
-  	sourceRelation.add(target);
-  	console.log("here4");
- 	return source.save();	  
+    sourceRelation.add(target);
+    return source.save();   
+  	
   }).then(function(sourceSaved){
+    friendRequest.destroy({});
+  	return; 
+  }).then(function(success){
   	response.success(1);
   }, function(error) {
-  	console.log("error in cloud code");
+  	console.log("error processing friend request");
   	console.log(error);
   	response.error();
   });

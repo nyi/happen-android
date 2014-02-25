@@ -122,8 +122,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                 }
             }
         });
-
-
     }
 
     public void queryFriends()
@@ -151,7 +149,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                             friendsList.add(friendMap);
                         }
                     }
-
                     friendsAdapter.replace(friendsList);
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
@@ -194,8 +191,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         ParseUser source = (ParseUser)request.get(COL_SOURCE);
         ParseUser target = (ParseUser)request.get(COL_TARGET);
         HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("source", request.getParseUser("source").getObjectId());
-        params.put("target", request.getParseUser("target").getObjectId());
+        params.put("friendRequest", request.getObjectId());
         ParseCloud.callFunctionInBackground("acceptFriendRequest", params, new FunctionCallback<Integer>() {
             public void done(Integer UNUSED, ParseException e) {
                 if (e == null) {
