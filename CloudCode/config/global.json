@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Happen": {
+            "applicationId": "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", 
+            "masterKey": "1ep8luuMOtrNhkb1f1I8IFC2K06zuUOvHl529sRR"
+        }, 
+        "_default": {
+            "link": "Happen"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.16"
+    }
+}
