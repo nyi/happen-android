@@ -54,5 +54,8 @@
     <string name="button_request">Request friend</string>
     <string name="friends">Friends</string>
     <string name="requests">Requests</string>
+    <string name="accept">Accept</string>
+    <string name="no_friends">You have no friends. You should add one!</string>
+    <string name="no_requests">You have no requests to display.</string>
 
 </resources>

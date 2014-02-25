@@ -10,7 +10,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="3dip"
-        android:text="Friend"
         android:textColor="#040404"
         android:typeface="sans"
         android:textSize="20dip"

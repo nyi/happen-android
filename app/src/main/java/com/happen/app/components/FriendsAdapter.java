@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.activities.FriendsFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,10 +22,10 @@ public class FriendsAdapter extends BaseAdapter{
     static final String KEY_FULL_NAME = "fullName";
     static final String KEY_USERNAME = "username";
 
-    private ArrayList<HashMap<String,String>> data;
+    private ArrayList<HashMap<String,FriendsFragment.FriendObject>> data;
     private static LayoutInflater inflater = null;
 
-    public FriendsAdapter(ArrayList<HashMap<String, String>> d, LayoutInflater i) {
+    public FriendsAdapter(ArrayList<HashMap<String, FriendsFragment.FriendObject>> d, LayoutInflater i) {
         data = d;
         inflater = i;
     }
@@ -51,22 +52,22 @@ public class FriendsAdapter extends BaseAdapter{
             vi = inflater.inflate(R.layout.row_friends, null);
         }
 
-        TextView eventDetails = (TextView)vi.findViewById(R.id.friend);
+        TextView friendName = (TextView)vi.findViewById(R.id.friend);
 
-        HashMap<String,String> event = new HashMap<String,String>();
-        event = data.get(i);
+        HashMap<String,FriendsFragment.FriendObject> friend;
+        friend = data.get(i);
 
-        if(event.containsKey(KEY_EMPTY)) {
-            eventDetails.setText(event.get(KEY_EMPTY));
+        if(friend.containsKey(KEY_EMPTY)) {
+            friendName.setText(R.string.no_friends);
         } else {
             // Setting the values
-            eventDetails.setText(event.get(KEY_FRIENDS));
+            friendName.setText(friend.get(KEY_FRIENDS).getUsername());
         }
 
         return vi;
     }
 
-    public void replace(ArrayList<HashMap<String,String>> d) {
+    public void replace(ArrayList<HashMap<String,FriendsFragment.FriendObject>> d) {
         this.data = d;
         this.notifyDataSetChanged();
     }

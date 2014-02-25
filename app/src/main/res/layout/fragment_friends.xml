@@ -25,12 +25,14 @@
         <Button
             android:id="@+id/friend_tab"
             android:text="@string/friends"
+            android:textSize="15sp"
             android:layout_width="50dp"
             android:layout_height="fill_parent"
             android:layout_weight="2"
             />
         <Button
             android:id="@+id/request_tab"
+            android:textSize="15sp"
 
             android:text="@string/requests"
             android:layout_width="50dp"

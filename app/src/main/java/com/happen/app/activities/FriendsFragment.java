@@ -1,7 +1,6 @@
 package com.happen.app.activities;
 
 import android.app.Fragment;
-import android.app.ListFragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,8 +11,11 @@ import android.widget.ListView;
 
 import com.happen.app.R;
 import com.happen.app.components.FriendsAdapter;
-import com.happen.app.components.MyListAdapter;
+import com.happen.app.components.RequestsAdapter;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.Parse;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -34,14 +36,22 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     static final String KEY_USERNAME = "username";
     // Parse column names
     static final String TABLE_USER = "User";
+    static final String TABLE_FRIEND_REQUEST = "FriendRequest";
     static final String COL_FRIENDS = "friends";
     static final String COL_FIRST_NAME = "firstName";
     static final String COL_LAST_NAME = "lastName";
     static final String COL_USERNAME = "username";
-    static final String TABLE_FRIEND_REQUEST = "FriendRequest";
+    static final String COL_SOURCE = "source";
+    static final String COL_TARGET = "target";
+    static final String COL_CREATED_AT = "createdAt";
+    static final String KEY_REQUESTS = "requests";
 
-    FriendsAdapter adapter;
-    ArrayList<HashMap<String,String>> friendsList;
+
+
+    FriendsAdapter friendsAdapter;
+    RequestsAdapter requestsAdapter;
+    ArrayList<HashMap<String,FriendObject>> friendsList;
+    ArrayList<HashMap<String,FriendObject>> requestsList;
     ListView listview;
 
     public static FriendsFragment newInstance(int sectionNumber) {
@@ -60,84 +70,106 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         View v = inflater.inflate(R.layout.fragment_friends, container, false);
         // Set up event list
         listview = (ListView)v.findViewById(R.id.friend_list);
-        friendsList = new ArrayList<HashMap<String,String>>();
-        adapter = new FriendsAdapter(friendsList, inflater);
-        listview.setAdapter(adapter);
+        friendsList = new ArrayList<HashMap<String,FriendObject>>();
+        requestsList = new ArrayList<HashMap<String,FriendObject>>();
+        friendsAdapter = new FriendsAdapter(friendsList, inflater);
+        requestsAdapter = new RequestsAdapter(requestsList, inflater, this);
+        listview.setAdapter(friendsAdapter);
 
         Button b = (Button) v.findViewById(R.id.friend_tab);
         b.setOnClickListener(this);
         b = (Button) v.findViewById(R.id.request_tab);
         b.setOnClickListener(this);
 
+        queryFriends();
+        return v;
+    }
 
+    public void queryRequests()
+    {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_FRIEND_REQUEST);
+        query.include(COL_SOURCE);
+        query.include(COL_TARGET);
+        query.orderByDescending(COL_CREATED_AT);
+
+        query.whereEqualTo(COL_TARGET, ParseUser.getCurrentUser());
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> object, ParseException e) {
+                if (e == null) {
+                    Log.d("score", "Retrieved " + object.size() + " scores");
+                    requestsList = new ArrayList<HashMap<String, FriendObject>>();
+                    if(object.size() == 0) { // User has no friends
+                        HashMap<String, FriendObject> request = new HashMap<String, FriendObject>();
+                        request.put(KEY_EMPTY, null);
+                        requestsList.add(request);
+                    } else {
+                        for (int i = 0; i < object.size(); i++) {
+                            HashMap<String, FriendObject> request = new HashMap<String, FriendObject>();
+                            ParseUser requester = object.get(i).getParseUser(COL_SOURCE);
+                            String fullName = requester.getString(COL_FIRST_NAME) + " " + requester.getString(COL_LAST_NAME);
+                            String username = requester.getString(COL_USERNAME);
+                            FriendObject friend = new FriendObject(fullName, username, object.get(i));
+                            request.put(KEY_REQUESTS, friend);
+                            requestsList.add(request);
+                        }
+                    }
+
+                    requestsAdapter.replace(requestsList);
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+
+
+    }
+
+    public void queryFriends()
+    {
         ParseQuery<ParseObject> query = ParseUser.getCurrentUser().getRelation(COL_FRIENDS).getQuery();
 
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> friendsList = new ArrayList<HashMap<String, String>>();
+                    ArrayList<HashMap<String, FriendObject>> friendsList = new ArrayList<HashMap<String, FriendObject>>();
                     if(object.size() == 0) { // User has no friends
-                        HashMap<String, String> event = new HashMap<String, String>();
-                        event.put(KEY_EMPTY, "You have no friends. You should add one!");
-                        friendsList.add(event);
+                        HashMap<String, FriendObject> friendMap = new HashMap<String, FriendObject>();
+                        friendMap.put(KEY_EMPTY, null);
+                        friendsList.add(friendMap);
                     } else {
                         for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, String> event = new HashMap<String, String>();
+                            HashMap<String, FriendObject> friendMap = new HashMap<String, FriendObject>();
                             if(object.get(i).has(COL_FRIENDS)) {
-                                event.put(KEY_USERNAME, object.get(i).getString(COL_USERNAME));
+                                String fullName = object.get(i).getString(COL_FIRST_NAME) + " " + object.get(i).getString(COL_LAST_NAME);
+                                String username = object.get(i).getString(COL_USERNAME);
+                                FriendObject friend = new FriendObject(fullName, username);
+                                friendMap.put(KEY_FRIENDS, friend);
                             }
-                            friendsList.add(event);
+                            friendsList.add(friendMap);
                         }
                     }
 
-                    adapter.replace(friendsList);
+                    friendsAdapter.replace(friendsList);
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
                 }
             }
         });
-        return v;
     }
 
     public void switchListToFriends(View v)
     {
-        ParseQuery<ParseObject> query = ParseUser.getCurrentUser().getRelation(COL_FRIENDS).getQuery();
-
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> object, ParseException e) {
-                if (e == null) {
-                    Log.d("score", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> friendsList = new ArrayList<HashMap<String, String>>();
-                    if(object.size() == 0) { // User has no friends
-                        HashMap<String, String> event = new HashMap<String, String>();
-                        event.put(KEY_EMPTY, "You have no friends. You should add one!");
-                        friendsList.add(event);
-                    } else {
-                        for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, String> event = new HashMap<String, String>();
-                            if(object.get(i).has(COL_FRIENDS)) {
-                                event.put(KEY_USERNAME, object.get(i).getString(COL_USERNAME));
-                            }
-                            friendsList.add(event);
-                        }
-                    }
-
-                    adapter.replace(friendsList);
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                }
-            }
-        });
+        listview.setAdapter(friendsAdapter);
+        queryFriends();
     }
 
     public void switchListToRequests(View v)
     {
-        ArrayList<HashMap<String, String>> friendsList = new ArrayList<HashMap<String, String>>();
-        HashMap<String, String> event = new HashMap<String, String>();
-        event.put(KEY_EMPTY, "You have no pending requests!");
-        friendsList.add(event);
-        adapter.replace(friendsList);
+        listview.setAdapter(requestsAdapter);
+        queryRequests();
     }
 
     @Override
@@ -150,7 +182,69 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             case R.id.request_tab:
                 switchListToRequests(v);
                 break;
+
+            case R.id.accept_friend_button:
+                acceptFriend((ParseObject)v.getTag());
+                break;
         }
+    }
+
+    public void acceptFriend(ParseObject request)
+    {
+        ParseUser source = (ParseUser)request.get(COL_SOURCE);
+        ParseUser target = (ParseUser)request.get(COL_TARGET);
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("source", request.getParseUser("source").getObjectId());
+        params.put("target", request.getParseUser("target").getObjectId());
+        ParseCloud.callFunctionInBackground("acceptFriendRequest", params, new FunctionCallback<Integer>() {
+            public void done(Integer UNUSED, ParseException e) {
+                if (e == null) {
+                    System.out.println("success!");
+                    //Success
+                }
+                else
+                {
+                    System.out.print(e.getMessage());
+                    //Error adding friend
+                }
+            }
+        });
+
+    }
+
+    public class FriendObject {
+        private String username;
+        private String fullName;
+        private ParseObject request;
+
+        public FriendObject(String u, String f)
+        {
+            this.username = u;
+            this.fullName = f;
+        }
+
+        public FriendObject(String u, String f, ParseObject req)
+        {
+            this.username = u;
+            this.fullName = f;
+            this.request = req;
+        }
+
+        public String getUsername()
+        {
+            return this.username;
+        }
+
+        public String getFullName()
+        {
+            return this.fullName;
+        }
+
+        public ParseObject getRequest()
+        {
+            return this.request;
+        }
+
     }
 
 
