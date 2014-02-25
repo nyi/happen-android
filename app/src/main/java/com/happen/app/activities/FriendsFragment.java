@@ -102,7 +102,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                     requestsList = new ArrayList<HashMap<String, FriendObject>>();
                     if(object.size() == 0) { // User has no friends
                         HashMap<String, FriendObject> request = new HashMap<String, FriendObject>();
-                        request.put(KEY_EMPTY, null);
+                        request.put(KEY_EMPTY, new FriendObject("",""));
                         requestsList.add(request);
                     } else {
                         for (int i = 0; i < object.size(); i++) {

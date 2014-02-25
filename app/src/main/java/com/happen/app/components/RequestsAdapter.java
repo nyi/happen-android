@@ -68,11 +68,13 @@ public class RequestsAdapter extends BaseAdapter{
 
         if(request.containsKey(KEY_EMPTY)) {
             requesterFullName.setText(R.string.no_requests);
+            requesterUsername.setText("");
+            requester.setVisibility(View.GONE);
         } else {
             // Setting the values
             requesterFullName.setText(request.get(KEY_REQUESTS).getFullName());
             requesterUsername.setText(request.get(KEY_REQUESTS).getUsername());
-
+            requester.setVisibility(View.VISIBLE);
             //adds the request object to the button
             requester.setTag(request.get(KEY_REQUESTS).getRequest());
 
