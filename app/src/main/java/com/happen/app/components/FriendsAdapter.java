@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.happen.app.R;
@@ -53,6 +54,8 @@ public class FriendsAdapter extends BaseAdapter{
         }
 
         TextView friendName = (TextView)vi.findViewById(R.id.friend);
+        TextView friendUsername = (TextView)vi.findViewById(R.id.friend_username);
+        ImageView profPic = (ImageView)vi.findViewById(R.id.profile_pic);
 
         HashMap<String,FriendsFragment.FriendObject> friend;
         friend = data.get(i);
@@ -61,7 +64,9 @@ public class FriendsAdapter extends BaseAdapter{
             friendName.setText(R.string.no_friends);
         } else {
             // Setting the values
-            friendName.setText(friend.get(KEY_FRIENDS).getUsername());
+            friendName.setText(friend.get(KEY_FRIENDS).getFullName());
+            friendUsername.setText("@"+friend.get(KEY_FRIENDS).getUsername());
+            profPic.setImageBitmap(friend.get(KEY_FRIENDS).getProfPic());
         }
 
         return vi;

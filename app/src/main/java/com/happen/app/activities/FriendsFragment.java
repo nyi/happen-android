@@ -1,8 +1,12 @@
 package com.happen.app.activities;
 
 import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +16,13 @@ import android.widget.ListView;
 import com.happen.app.R;
 import com.happen.app.components.FriendsAdapter;
 import com.happen.app.components.RequestsAdapter;
+import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -34,6 +40,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     static final String KEY_FRIENDS = "friends";
     static final String KEY_FULL_NAME = "fullName";
     static final String KEY_USERNAME = "username";
+    static final String KEY_REQUESTS = "requests";
     // Parse column names
     static final String TABLE_USER = "User";
     static final String TABLE_FRIEND_REQUEST = "FriendRequest";
@@ -44,9 +51,10 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     static final String COL_SOURCE = "source";
     static final String COL_TARGET = "target";
     static final String COL_CREATED_AT = "createdAt";
-    static final String KEY_REQUESTS = "requests";
+    static final String COL_PROFILE_PIC = "profilePic";
 
-
+    // Percentage of profile picture width relative to screen size
+    static final float WIDTH_RATIO = 0.25f; // 25%
 
     FriendsAdapter friendsAdapter;
     RequestsAdapter requestsAdapter;
@@ -143,7 +151,24 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                             if(object.get(i).has(COL_FRIENDS)) {
                                 String fullName = object.get(i).getString(COL_FIRST_NAME) + " " + object.get(i).getString(COL_LAST_NAME);
                                 String username = object.get(i).getString(COL_USERNAME);
-                                FriendObject friend = new FriendObject(fullName, username);
+
+                                byte[] file = new byte[0];
+                                Bitmap image;
+                                try {
+                                    file = object.get(i).getParseFile(COL_PROFILE_PIC).getData();
+                                    image = BitmapFactory.decodeByteArray(file, 0, file.length);
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                    image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+                                }
+                                // Get screen dimensions and calculate desired profile picture size
+                                Display display = getActivity().getWindowManager().getDefaultDisplay();
+                                Point size = new Point();
+                                display.getSize(size);
+                                int width = size.x;
+                                image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
+
+                                FriendObject friend = new FriendObject(username, fullName, image);
                                 friendMap.put(KEY_FRIENDS, friend);
                             }
                             friendsList.add(friendMap);
@@ -212,6 +237,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         private String username;
         private String fullName;
         private ParseObject request;
+        private Bitmap profPic;
 
         public FriendObject(String u, String f)
         {
@@ -224,6 +250,13 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             this.username = u;
             this.fullName = f;
             this.request = req;
+        }
+
+        public FriendObject(String u, String f, Bitmap p)
+        {
+            this.username = u;
+            this.fullName = f;
+            this.profPic = p;
         }
 
         public String getUsername()
@@ -240,6 +273,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         {
             return this.request;
         }
+
+        public Bitmap getProfPic() { return this.profPic; }
 
     }
 

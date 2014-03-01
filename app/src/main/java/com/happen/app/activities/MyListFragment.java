@@ -89,6 +89,17 @@ public class MyListFragment extends Fragment {
         ParseFile parsePic = (ParseFile)user.get(KEY_PROFILE_PIC);
         if (parsePic == null) {
             Log.e("MyListFragment", "Failed to create ParseFile object");
+
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+
+            // Get screen dimensions and calculate desired profile picture size
+            Display display = getActivity().getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+
+            bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
+            imageView.setImageBitmap(bitmap);
         }
         else {
             parsePic.getDataInBackground(new GetDataCallback() {
@@ -114,6 +125,17 @@ public class MyListFragment extends Fragment {
                     else {
                         Log.e("MyListFragment", "Failed to retrieve profile picture for user " + user.getUsername());
                         Log.e("MyListFragment", "Error: " + e.getMessage());
+
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+
+                        // Get screen dimensions and calculate desired profile picture size
+                        Display display = getActivity().getWindowManager().getDefaultDisplay();
+                        Point size = new Point();
+                        display.getSize(size);
+                        int width = size.x;
+
+                        bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
+                        imageView.setImageBitmap(bitmap);
                     }
                 }
             });
