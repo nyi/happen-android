@@ -31,10 +31,12 @@ public class EventFeedAdapter extends BaseAdapter {
     static final float WIDTH_RATIO = 0.25f; // 25%
 
     private ArrayList<HashMap<String,String>> data;
+    private ArrayList<Bitmap> pictures;
     private static LayoutInflater inflater = null;
 
-    public EventFeedAdapter (ArrayList<HashMap<String,String>> d, LayoutInflater i) {
+    public EventFeedAdapter (ArrayList<HashMap<String,String>> d, ArrayList<Bitmap> p, LayoutInflater i) {
         data = d;
+        pictures = p;
         inflater = i;
     }
 
@@ -74,12 +76,14 @@ public class EventFeedAdapter extends BaseAdapter {
         eventDetails.setText(event.get(KEY_EVENT_DETAILS));
         username.setText(event.get(KEY_USERNAME));
         timeFrame.setText(event.get(KEY_TIME_FRAME));
+        profilePic.setImageBitmap(pictures.get(i));
 
         return vi;
     }
 
-    public void replace(ArrayList<HashMap<String,String>> d) {
+    public void replace(ArrayList<HashMap<String,String>> d, ArrayList<Bitmap> p) {
         this.data = d;
+        this.pictures = p;
         this.notifyDataSetChanged();
     }
 }

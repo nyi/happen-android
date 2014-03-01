@@ -1,16 +1,22 @@
 package com.happen.app.activities;
 
 import android.app.ListFragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.happen.app.R;
 import com.happen.app.components.EventFeedAdapter;
+import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -39,15 +45,16 @@ public class FeedFragment extends ListFragment{
     static final String COL_DETAILS = "details";
     static final String COL_TIME_FRAME = "timeFrame";
     static final String COL_CREATED_AT = "createdAt";
+    static final String COL_PROFILE_PIC = "profilePic";
+
+    // Percentage of profile picture width relative to screen size
+    static final float WIDTH_RATIO = 0.25f; // 25%
 
     EventFeedAdapter adapter;
 
     public static FeedFragment newInstance(int sectionNumber) {
         FeedFragment fragment = new FeedFragment();
         Bundle args = new Bundle();
-        //for(int i = 0;)
-            /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);*/
         return fragment;
     }
 
@@ -64,8 +71,8 @@ public class FeedFragment extends ListFragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
-        //ImageView profilePic = new ImageView(context);
-        adapter = new EventFeedAdapter(eventsList, inflater);
+        ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
+        adapter = new EventFeedAdapter(eventsList, profPictures, inflater);
         setListAdapter(adapter);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
@@ -77,6 +84,7 @@ public class FeedFragment extends ListFragment{
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
                     ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
+                    ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
                     for (int i = 0; i < object.size(); i++) {
                         HashMap<String, String> event = new HashMap<String, String>();
                         if(object.get(i).has(COL_CREATOR)) {
@@ -93,9 +101,36 @@ public class FeedFragment extends ListFragment{
                             event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
                         }
                         eventsList.add(event);
+
+
+                        byte[] file = new byte[0];
+                        try {
+                            file = object.get(i).getParseObject(COL_CREATOR).getParseFile(COL_PROFILE_PIC).getData();
+                            Bitmap image = BitmapFactory.decodeByteArray(file, 0, file.length);
+                            // Get screen dimensions and calculate desired profile picture size
+                            Display display = getActivity().getWindowManager().getDefaultDisplay();
+                            Point size = new Point();
+                            display.getSize(size);
+                            int width = size.x;
+
+                            image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
+                            profPictures.add(image);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                            Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+
+                            // Get screen dimensions and calculate desired profile picture size
+                            Display display = getActivity().getWindowManager().getDefaultDisplay();
+                            Point size = new Point();
+                            display.getSize(size);
+                            int width = size.x;
+
+                            image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
+                            profPictures.add(image);
+                        }
                     }
 
-                    adapter.replace(eventsList);
+                    adapter.replace(eventsList, profPictures);
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
                 }
