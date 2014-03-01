@@ -54,6 +54,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
+        actionBar.setLogo(R.drawable.logo);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         //actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 

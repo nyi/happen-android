@@ -39,6 +39,7 @@ public class CreateEventActivity extends Activity {
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setLogo(R.drawable.logo);
 
         mTextView = (EditText) findViewById(R.id.text);
         mTextView.setText(mText);
