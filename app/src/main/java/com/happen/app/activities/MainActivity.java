@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -164,10 +165,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     public void switchMenuToAddFriend() {
         setOptionTitle(R.id.action_create,"Add Friend");
+        setOptionIcon(R.id.action_create,R.drawable.tab_icons_add_friend);
     }
 
     public void switchMenuToAddEvent() {
         setOptionTitle(R.id.action_create,"Add Event");
+        setOptionIcon(R.id.action_create,R.drawable.tab_icons_add_event);
     }
 
     @Override
