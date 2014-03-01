@@ -9,11 +9,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.happen.app.R;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.Parse;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -38,6 +41,7 @@ public class FindFriendActivity extends Activity {
 
     // UI references.
     private EditText mUsernameView;
+    private Button mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +54,11 @@ public class FindFriendActivity extends Activity {
 
         mUsernameView = (EditText) findViewById(R.id.text);
         mUsernameView.setText(mUsername);
-
-        findViewById(R.id.search_for_friends_button).setOnClickListener(new View.OnClickListener() {
+        mButton = (Button) findViewById(R.id.search_for_friends_button);
+        mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               findFriends();
+                findFriends();
             }
         });
     }
@@ -65,60 +69,21 @@ public class FindFriendActivity extends Activity {
 
         // Store values at the time of the login attempt.
         mUsername = mUsernameView.getText().toString();
-        if (ParseUser.getCurrentUser().getUsername().equals(mUsername)) {
-            mUsernameView.setError("You cannot befriend yourself");
-            mUsernameView.requestFocus();
-        } else {
-            Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
-            ParseQuery<ParseUser> query = ParseUser.getQuery();
-            query.whereEqualTo(COL_USERNAME, mUsername);
-            try {
-                ParseUser requestedFriend = query.getFirst();
-                if(false) { // Do check for already being friends
-
-                } else if (false) { // Do check for already being requested/requesting
-
-                }
-                else {
-                    sendFriendRequest(ParseUser.getCurrentUser(), requestedFriend);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-                mUsernameView.setError("The username does not exist");
-                mUsernameView.requestFocus();
-            }
-        }
+        mButton.setClickable(false);
+        sendFriendRequest(ParseUser.getCurrentUser(), null, mUsername);
     }
 
-    void sendFriendRequest(ParseUser source, ParseUser target) {
-        ParseObject friendReq = new ParseObject("FriendRequest");
-        friendReq.put("source", source);
-        friendReq.put("target", target);
-        friendReq.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e==null){
+    void sendFriendRequest(ParseUser source, ParseUser target, String targetUsername) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("source", ParseUser.getCurrentUser().getObjectId());
+        params.put("target", targetUsername);
+        ParseCloud.callFunctionInBackground("sendFriendRequest", params, new FunctionCallback<String>() {
+            public void done(String result, ParseException e) {
+                if (e == null) {
                     onPostExecute(true);
-                }
-                else {
-                    onPostExecute(false);
-                }
-            }
-        });
-
-        ParseObject news = new ParseObject("News");
-        news.put("source", source);
-        news.put("target", target);
-        news.put("type", "SENT_REQUEST");
-        news.put("isUnread", true);
-        news.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if(e==null){
-                    onPostExecute(true);
-                }
-                else {
-                    onPostExecute(false);
+                } else {
+                    mButton.setClickable(true);
+                    mUsernameView.setError(e.getMessage());
                 }
             }
         });
