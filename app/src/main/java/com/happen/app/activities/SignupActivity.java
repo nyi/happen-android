@@ -3,6 +3,7 @@ package com.happen.app.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -11,9 +12,11 @@ import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -70,6 +73,10 @@ public class SignupActivity extends Activity {
 
         setContentView(R.layout.activity_signup);
 
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setLogo(R.drawable.logo);
+
         // Set up the signup form.
         mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
         mEmailView = (EditText) findViewById(R.id.email);
@@ -112,6 +119,17 @@ public class SignupActivity extends Activity {
                 attemptSignup();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

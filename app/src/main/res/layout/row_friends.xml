@@ -18,9 +18,10 @@
 
         <ImageView
             android:id="@+id/profile_pic"
-            android:layout_width="75dip"
-            android:layout_height="75dip"
-            android:src="@drawable/defaultprofile"
+            android:maxWidth="75dip"
+            android:maxHeight="75dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             />
 
     </LinearLayout>
@@ -47,5 +48,5 @@
         android:layout_below="@+id/friend"
         android:layout_toRightOf="@+id/profile_pic_layout"
         android:layout_marginRight="5dip"
-        android:text="Username"/>
+        android:text=""/>
 </RelativeLayout>

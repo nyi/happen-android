@@ -51,6 +51,7 @@ public class FindFriendActivity extends Activity {
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setLogo(R.drawable.logo);
 
         mUsernameView = (EditText) findViewById(R.id.text);
         mUsernameView.setText(mUsername);

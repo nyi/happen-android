@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    !-- Add more states if you like; like the state_pressed etc -->
+    <item android:state_selected="true" android:color="#3a3b49"/>
+    <item android:color="#929292"/>
+</selector>
