@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.happen.app.R;
 import com.parse.Parse;
+import com.parse.ParseUser;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 
@@ -123,6 +124,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 switchToCreateFriendView();
             return true;
         }
+        else if (id == R.id.action_news) {
+
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -197,7 +201,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return FriendsFragment.newInstance(position);
                 case 2:
-                    return MyListFragment.newInstance(position);
+                    return UserListFragment.newInstance(ParseUser.getCurrentUser());
             }
             return null;
         }

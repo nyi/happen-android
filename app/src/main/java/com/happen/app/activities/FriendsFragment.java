@@ -1,6 +1,7 @@
 package com.happen.app.activities;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -80,7 +81,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         listview = (ListView)v.findViewById(R.id.friend_list);
         friendsList = new ArrayList<HashMap<String,FriendObject>>();
         requestsList = new ArrayList<HashMap<String,FriendObject>>();
-        friendsAdapter = new FriendsAdapter(friendsList, inflater);
+        friendsAdapter = new FriendsAdapter(friendsList, inflater, this);
         requestsAdapter = new RequestsAdapter(requestsList, inflater, this);
         listview.setAdapter(friendsAdapter);
 
@@ -208,6 +209,9 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             case R.id.accept_friend_button:
                 acceptFriend((ParseObject)v.getTag());
                 break;
+
+            case R.id.friend_item:
+                switchToFriendList((String)v.getTag());
         }
     }
 
@@ -222,15 +226,21 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                 if (e == null) {
                     System.out.println("success!");
                     //Success
-                }
-                else
-                {
+                } else {
                     System.out.print(e.getMessage());
                     //Error adding friend
                 }
             }
         });
 
+    }
+
+    public void switchToFriendList(String username)
+    {
+        Intent i = new Intent(this.getActivity(), FriendListActivity.class);
+        i.putExtra("friend", username);
+        //   i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+        this.startActivity(i);
     }
 
     public class FriendObject {

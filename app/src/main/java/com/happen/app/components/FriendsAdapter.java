@@ -1,5 +1,6 @@
 package com.happen.app.components;
 
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +26,17 @@ public class FriendsAdapter extends BaseAdapter{
 
     private ArrayList<HashMap<String,FriendsFragment.FriendObject>> data;
     private static LayoutInflater inflater = null;
+    private FriendsFragment parent;
 
     public FriendsAdapter(ArrayList<HashMap<String, FriendsFragment.FriendObject>> d, LayoutInflater i) {
         data = d;
         inflater = i;
+    }
+
+    public FriendsAdapter(ArrayList<HashMap<String, FriendsFragment.FriendObject>> d, LayoutInflater i, FriendsFragment parent) {
+        data = d;
+        inflater = i;
+        this.parent = parent;
     }
 
     @Override
@@ -67,6 +75,9 @@ public class FriendsAdapter extends BaseAdapter{
             friendName.setText(friend.get(KEY_FRIENDS).getFullName());
             friendUsername.setText("@"+friend.get(KEY_FRIENDS).getUsername());
             profPic.setImageBitmap(friend.get(KEY_FRIENDS).getProfPic());
+            vi.setTag(friend.get(KEY_FRIENDS).getUsername());
+            if(parent!=null)
+                vi.setOnClickListener(parent);
         }
 
         return vi;

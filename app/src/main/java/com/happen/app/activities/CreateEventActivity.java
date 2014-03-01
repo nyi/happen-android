@@ -8,6 +8,7 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.happen.app.R;
@@ -30,6 +31,7 @@ public class CreateEventActivity extends Activity {
     // UI references.
     private EditText mTextView;
     private EditText mDateView;
+    private Button mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,7 @@ public class CreateEventActivity extends Activity {
 
         mDateView = (EditText) findViewById(R.id.date);
         mDateView.setText(mDate);
-
+        mButton = (Button) findViewById(R.id.create_event_button);
 
 
         findViewById(R.id.create_event_button).setOnClickListener(new View.OnClickListener() {
@@ -80,7 +82,7 @@ public class CreateEventActivity extends Activity {
         // Reset errors.
         mDateView.setError(null);
         mTextView.setError(null);
-
+        mButton.setClickable(false);
 
         // Store values at the time of the login attempt.
         mText = mTextView.getText().toString();
@@ -128,6 +130,7 @@ public class CreateEventActivity extends Activity {
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
             this.startActivity(i);
         } else {
+            mButton.setClickable(true);
             mTextView.setError("Error: could not create event.");
         }
     }

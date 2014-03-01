@@ -101,8 +101,8 @@ Parse.Cloud.define("sendFriendRequest", function(request, response) {
         var newNews = new News();
         newNews.set("source", sourceObj);
         newNews.set("target", targetObj);
-        newNews.set("type", SENT_REQUEST);
-        newnews.set("isUnread", true);
+        newNews.set("type", "SENT_REQUEST");
+        newNews.set("isUnread", true);
         return newNews.save();
       }
   }).then(function(newsSaved) {
