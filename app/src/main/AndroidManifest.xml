@@ -34,6 +34,9 @@
             android:name=".activities.SignupActivity"
             android:label="@string/title_activity_signup"
             android:windowSoftInputMode="adjustResize|stateVisible" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SplashscreenActivity" />
         </activity>
 
         <activity
