@@ -3,6 +3,7 @@ package com.happen.app.activities;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -62,6 +63,9 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     ArrayList<HashMap<String,FriendObject>> requestsList;
     ListView listview;
 
+    Button friendsButton;
+    Button requestsButton;
+
     public static FriendsFragment newInstance(int sectionNumber) {
         FriendsFragment fragment = new FriendsFragment();
         Bundle args = new Bundle();
@@ -84,10 +88,10 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         requestsAdapter = new RequestsAdapter(requestsList, inflater, this);
         listview.setAdapter(friendsAdapter);
 
-        Button b = (Button) v.findViewById(R.id.friend_tab);
-        b.setOnClickListener(this);
-        b = (Button) v.findViewById(R.id.request_tab);
-        b.setOnClickListener(this);
+        friendsButton = (Button) v.findViewById(R.id.friend_tab);
+        friendsButton.setOnClickListener(this);
+        requestsButton = (Button) v.findViewById(R.id.request_tab);
+        requestsButton.setOnClickListener(this);
 
         queryFriends();
         return v;
@@ -184,12 +188,20 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
     public void switchListToFriends(View v)
     {
+        friendsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
+        friendsButton.setTextColor(Color.parseColor("#FFFFFF"));
+        requestsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right));
+        requestsButton.setTextColor(Color.parseColor("#3a3b49"));
         listview.setAdapter(friendsAdapter);
         queryFriends();
     }
 
     public void switchListToRequests(View v)
     {
+        friendsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left));
+        friendsButton.setTextColor(Color.parseColor("#3a3b49"));
+        requestsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right_active));
+        requestsButton.setTextColor(Color.parseColor("#FFFFFF"));
         listview.setAdapter(requestsAdapter);
         queryRequests();
     }
