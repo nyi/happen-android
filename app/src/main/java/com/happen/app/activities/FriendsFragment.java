@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -67,8 +68,11 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     MainActivity.SectionsPagerAdapter pager;
     ViewPager viewPager;
 
-    public static FriendsFragment newInstance(MainActivity.SectionsPagerAdapter s, ViewPager vp) {
-        FriendsFragment fragment = new FriendsFragment(s, vp);
+    Button friendsButton;
+    Button requestsButton;
+
+    public static FriendsFragment newInstance(int sectionNumber) {
+        FriendsFragment fragment = new FriendsFragment();
         Bundle args = new Bundle();
         return fragment;
     }
@@ -88,6 +92,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         this.main = parent;
     }
 
+    public FriendsFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,10 +108,10 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         requestsAdapter = new RequestsAdapter(requestsList, inflater, this);
         listview.setAdapter(friendsAdapter);
 
-        Button b = (Button) v.findViewById(R.id.friend_tab);
-        b.setOnClickListener(this);
-        b = (Button) v.findViewById(R.id.request_tab);
-        b.setOnClickListener(this);
+        friendsButton = (Button) v.findViewById(R.id.friend_tab);
+        friendsButton.setOnClickListener(this);
+        requestsButton = (Button) v.findViewById(R.id.request_tab);
+        requestsButton.setOnClickListener(this);
 
         queryFriends();
         return v;
@@ -189,6 +195,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                     e1.printStackTrace();
                                     image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
                                 }
+                                // Get screen dimensions and calculate desired profile picture size
                                 Display display = getActivity().getWindowManager().getDefaultDisplay();
                                 Point size = new Point();
                                 display.getSize(size);
@@ -211,12 +218,20 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
     public void switchListToFriends(View v)
     {
+        friendsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
+        friendsButton.setTextColor(Color.parseColor("#FFFFFF"));
+        requestsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right));
+        requestsButton.setTextColor(Color.parseColor("#3a3b49"));
         listview.setAdapter(friendsAdapter);
         queryFriends();
     }
 
     public void switchListToRequests(View v)
     {
+        friendsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left));
+        friendsButton.setTextColor(Color.parseColor("#3a3b49"));
+        requestsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right_active));
+        requestsButton.setTextColor(Color.parseColor("#FFFFFF"));
         listview.setAdapter(requestsAdapter);
         queryRequests();
     }

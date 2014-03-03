@@ -302,7 +302,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public int getItemPosition(Object object) {
             for(int i = 0; i < pagesList.size(); i++) {
                 if(pagesList.get(i)==object)
-                    return POSITION_UNCHANGED;
+                    return i;
             }
             return POSITION_NONE;
         }
