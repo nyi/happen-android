@@ -122,7 +122,7 @@ public class FeedFragment extends ListFragment{
                                     profPictures.add(image);
                                 }
                             }
-                            else if (imgNotFound){
+                            if (imgNotFound){
 
                                 Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
 
@@ -137,6 +137,7 @@ public class FeedFragment extends ListFragment{
                             }
                         } catch (Exception e1) {
                             e1.printStackTrace();
+                            /*
                             Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
 
                             // Get screen dimensions and calculate desired profile picture size
@@ -147,6 +148,7 @@ public class FeedFragment extends ListFragment{
 
                             image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
                             profPictures.add(image);
+                            */
                         }
                     }
 
