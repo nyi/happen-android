@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -62,15 +63,31 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     ArrayList<HashMap<String,FriendObject>> friendsList;
     ArrayList<HashMap<String,FriendObject>> requestsList;
     ListView listview;
+    MainActivity main;
+    MainActivity.SectionsPagerAdapter pager;
+    ViewPager viewPager;
 
-    public static FriendsFragment newInstance(int sectionNumber) {
-        FriendsFragment fragment = new FriendsFragment();
+    public static FriendsFragment newInstance(MainActivity.SectionsPagerAdapter s, ViewPager vp) {
+        FriendsFragment fragment = new FriendsFragment(s, vp);
+        Bundle args = new Bundle();
+        return fragment;
+    }
+    public static FriendsFragment newInstance(MainActivity s) {
+        FriendsFragment fragment = new FriendsFragment(s);
         Bundle args = new Bundle();
         return fragment;
     }
 
-    public FriendsFragment() {
+
+    public FriendsFragment(MainActivity.SectionsPagerAdapter page, ViewPager vp) {
+        this.pager = page;
+        this.viewPager = vp;
     }
+
+    public FriendsFragment(MainActivity parent) {
+        this.main = parent;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -155,14 +172,23 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
                                 byte[] file = new byte[0];
                                 Bitmap image;
+                                ParseFile pfile;
                                 try {
-                                    file = object.get(i).getParseFile(COL_PROFILE_PIC).getData();
-                                    image = BitmapFactory.decodeByteArray(file, 0, file.length);
+                                    pfile = object.get(i).getParseFile(COL_PROFILE_PIC);
+                                    if(pfile!=null) {
+                                        file = pfile.getData();
+                                        image = BitmapFactory.decodeByteArray(file, 0, file.length);
+                                        // Get screen dimensions and calculate desired profile picture size
+
+                                    }
+                                    else
+                                    {
+                                        image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+                                    }
                                 } catch (Exception e1) {
                                     e1.printStackTrace();
                                     image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
                                 }
-                                // Get screen dimensions and calculate desired profile picture size
                                 Display display = getActivity().getWindowManager().getDefaultDisplay();
                                 Point size = new Point();
                                 display.getSize(size);
@@ -212,6 +238,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
             case R.id.friend_item:
                 switchToFriendList((String)v.getTag());
+                break;
         }
     }
 
@@ -237,10 +264,19 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
     public void switchToFriendList(String username)
     {
-        Intent i = new Intent(this.getActivity(), FriendListActivity.class);
-        i.putExtra("friend", username);
-        //   i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
-        this.startActivity(i);
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereEqualTo("username", username);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            public void done(List<ParseUser> object, ParseException e) {
+                if (e == null) {
+                    ParseUser user = object.get(0);
+                    //pager.setUser(user);
+                    main.switchToFriendList(user);
+                } else {
+                    Log.e("FriendListActivity", "could not find user");
+                }
+            }
+        });
     }
 
     public class FriendObject {

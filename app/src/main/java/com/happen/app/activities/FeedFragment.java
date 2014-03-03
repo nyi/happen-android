@@ -19,6 +19,7 @@ import com.happen.app.components.EventFeedAdapter;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -105,16 +106,35 @@ public class FeedFragment extends ListFragment{
 
                         byte[] file = new byte[0];
                         try {
-                            file = object.get(i).getParseObject(COL_CREATOR).getParseFile(COL_PROFILE_PIC).getData();
-                            Bitmap image = BitmapFactory.decodeByteArray(file, 0, file.length);
-                            // Get screen dimensions and calculate desired profile picture size
-                            Display display = getActivity().getWindowManager().getDefaultDisplay();
-                            Point size = new Point();
-                            display.getSize(size);
-                            int width = size.x;
+                            boolean imgNotFound = true;
+                            ParseFile pfile = object.get(i).getParseObject(COL_CREATOR).getParseFile(COL_PROFILE_PIC);
+                            if(pfile!=null) {
+                                file = pfile.getData();
+                                Bitmap image = BitmapFactory.decodeByteArray(file, 0, file.length);
+                                // Get screen dimensions and calculate desired profile picture size
+                                Display display = getActivity().getWindowManager().getDefaultDisplay();
+                                Point size = new Point();
+                                display.getSize(size);
+                                int width = size.x;
+                                if(image!=null) {
+                                    imgNotFound=false;
+                                    image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
+                                    profPictures.add(image);
+                                }
+                            }
+                            else if (imgNotFound){
 
-                            image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
-                            profPictures.add(image);
+                                Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+
+                                // Get screen dimensions and calculate desired profile picture size
+                                Display display = getActivity().getWindowManager().getDefaultDisplay();
+                                Point size = new Point();
+                                display.getSize(size);
+                                int width = size.x;
+
+                                image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
+                                profPictures.add(image);
+                            }
                         } catch (Exception e1) {
                             e1.printStackTrace();
                             Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);

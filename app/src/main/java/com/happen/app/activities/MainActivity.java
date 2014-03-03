@@ -1,5 +1,6 @@
 package com.happen.app.activities;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -8,10 +9,11 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.util.NonSwipeableViewPager;
 import com.parse.Parse;
 import com.parse.ParseUser;
 
@@ -38,14 +41,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    NonSwipeableViewPager mViewPager;
 
     protected SimpleFeedFragment simpleFeedFragment;
     protected FeedFragment feedFragment;
     protected MyListFragment mylistFragment;
     protected Menu myMenu;
-    protected enum Pages {FEED, FRIENDS, MY_LIST};
-    protected Pages currentPage;
+    public enum Pages {FEED, FRIENDS, MY_LIST, USER_LIST};
+    public Pages currentPage;
+    boolean removeFriendListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,21 +64,31 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         //actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 
+        mViewPager = (NonSwipeableViewPager) findViewById(R.id.pager);
+        mViewPager.setOffscreenPageLimit(10);
         // Create the friendsAdapter that will return a fragment for each of the four
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager(), this);
 
         // Set up the ViewPager with the sections friendsAdapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
+        removeFriendListFragment = false;
         // When swiping between different sections, select the corresponding
         // tab. We can also use ActionBar.Tab#select() to do this if we have
         // a reference to the Tab.
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
+                //actionBar.setSelectedNavigationItem(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if(state == ViewPager.SCROLL_STATE_IDLE && currentPage!=Pages.USER_LIST && removeFriendListFragment){
+                    mSectionsPagerAdapter.removeFriendPage();
+                    removeFriendListFragment=false;
+                }
+
             }
         });
 
@@ -144,6 +158,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         this.startActivity(i);
     }
 
+    public void switchToFriendList(ParseUser user) {
+        mSectionsPagerAdapter.addFriendPage(user);
+        currentPage = Pages.USER_LIST;
+        this.removeFriendListFragment=true;
+        mViewPager.setCurrentItem(mSectionsPagerAdapter.getFriendPage());
+    }
+
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
@@ -164,17 +185,29 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     break;
             }
         }
-        mViewPager.setCurrentItem(tab.getPosition());
+        int newPage;
+        if(currentPage==Pages.MY_LIST)
+        {
+            newPage = mSectionsPagerAdapter.getMyListIndex();
+        }
+        else
+        {
+            newPage = tab.getPosition();
+        }
+        //mSectionsPagerAdapter.removeFriendPage();
+        mViewPager.setCurrentItem(newPage);
+        //mSectionsPagerAdapter.removeFriendPage();
+
     }
 
     public void switchMenuToAddFriend() {
         setOptionTitle(R.id.action_create,"Add Friend");
-        setOptionIcon(R.id.action_create,R.drawable.tab_icons_add_friend);
+        setOptionIcon(R.id.action_create, R.drawable.tab_icons_add_friend);
     }
 
     public void switchMenuToAddEvent() {
         setOptionTitle(R.id.action_create,"Add Event");
-        setOptionIcon(R.id.action_create,R.drawable.tab_icons_add_event);
+        setOptionIcon(R.id.action_create, R.drawable.tab_icons_add_event);
     }
 
     @Override
@@ -183,37 +216,120 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        if(currentPage==Pages.USER_LIST) {
+            currentPage=Pages.FRIENDS;
+            mViewPager.setCurrentItem(tab.getPosition());
+        }
     }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+
+        //
+        ArrayList<Pages> pagesList;
+        ParseUser user;
+        Fragment feed, friends, mylist;
+        //used to ss t
+        MainActivity parent;
+        boolean userlist;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            init();
+        }
+
+        public SectionsPagerAdapter(FragmentManager fm, MainActivity main) {
+            super(fm);
+            init();
+            this.parent = main;
+        }
+
+        public void init() {
+            pagesList = new ArrayList<Pages>();
+            feed = new FeedFragment();
+            friends = new FriendsFragment(this.parent);
+            mylist = new UserListFragment(ParseUser.getCurrentUser());
+            userlist=false;
+            pagesList.add(Pages.FEED);
+            pagesList.add(Pages.FRIENDS);
+            pagesList.add(Pages.MY_LIST);
+
+        }
+
+        public void insertPage(Pages p, int index) {
+            pagesList.add(index, p);
+        }
+
+        public void removePage(int index) {
+            if(index>=0)
+                pagesList.remove(index);
+        }
+
+        public void addFriendPage(ParseUser user) {
+            this.setUser(user);
+            insertPage(Pages.USER_LIST, 2);
+            notifyDataSetChanged();
+        }
+
+        public int getFriendPage() {
+            return pagesList.indexOf(Pages.USER_LIST);
+        }
+
+        public void removeFriendPage() {
+            if(pagesList.indexOf(Pages.USER_LIST)>-1) {
+                removePage(pagesList.indexOf(Pages.USER_LIST));
+                notifyDataSetChanged();
+            }
+            else
+                Log.e("MainActivity", "Could not remove page");
+        }
+
+        public void setUser(ParseUser user) {
+            this.user = user;
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position) {
-                case 0:
-                    return FeedFragment.newInstance(position);
-                case 1:
-                    return FriendsFragment.newInstance(position);
-                case 2:
-                    return UserListFragment.newInstance(ParseUser.getCurrentUser());
+            return translatePageEnum(pagesList.get(position));
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            for(int i = 0; i < pagesList.size(); i++) {
+                if(pagesList.get(i)==object)
+                    return POSITION_UNCHANGED;
             }
-            return null;
+            return POSITION_NONE;
+        }
+
+        public Fragment translatePageEnum(Pages p) {
+            switch(p) {
+                case FEED:
+                    return FeedFragment.newInstance(0);
+                case FRIENDS:
+                    return FriendsFragment.newInstance(this.parent);
+                case MY_LIST:
+                    return UserListFragment.newInstance(ParseUser.getCurrentUser());
+                case USER_LIST:
+                    return UserListFragment.newInstance(this.user);
+
+            }
+            return PlaceholderFragment.newInstance(0);
+        }
+
+        public int getMyListIndex() {
+            return pagesList.indexOf(Pages.MY_LIST);
         }
 
         @Override
         public int getCount() {
             // Show 4 total pages.
-            return 3;
+            return pagesList.size();
         }
 
         @Override
@@ -228,7 +344,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 2:
                     return getString(R.string.title_section4).toUpperCase(l);
             }
-            return null;
+            return "Default Title";
         }
     }
 

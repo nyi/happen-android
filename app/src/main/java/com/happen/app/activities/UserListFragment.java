@@ -76,16 +76,6 @@ public class UserListFragment extends Fragment {
         return fragment;
     }
 
-    public static UserListFragment newInstance(ParseUser userObj, MainActivity parent) {
-        UserListFragment fragment = new UserListFragment(userObj, parent);
-        Bundle args = new Bundle();
-
-        //for(int i = 0;)
-            /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);*/
-        return fragment;
-    }
-
     public UserListFragment() {
 
     }
@@ -94,10 +84,6 @@ public class UserListFragment extends Fragment {
         this.user = userObj;
     }
 
-    public UserListFragment(ParseUser userObj, MainActivity parent) {
-        this.user = userObj;
-        this.main = parent;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
