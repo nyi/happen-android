@@ -15,7 +15,7 @@ import java.util.HashMap;
 /**
  * Created by Nelson on 2/14/14.
  */
-public class MyListAdapter extends BaseAdapter {
+public class UserListAdapter extends BaseAdapter {
     // XML node keys
     static final String KEY_EVENT_DETAILS = "eventDetails";
     static final String KEY_EMPTY = "empty";
@@ -23,7 +23,7 @@ public class MyListAdapter extends BaseAdapter {
     private ArrayList<HashMap<String,String>> data;
     private static LayoutInflater inflater = null;
 
-    public MyListAdapter(ArrayList<HashMap<String, String>> d, LayoutInflater i) {
+    public UserListAdapter(ArrayList<HashMap<String, String>> d, LayoutInflater i) {
         data = d;
         inflater = i;
     }

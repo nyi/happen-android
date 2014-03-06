@@ -51,6 +51,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public Pages currentPage;
     boolean removeFriendListFragment;
 
+    private Fragment friendPage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +106,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             .setTabListener(this));
         }
         currentPage = Pages.FEED;
+
+        friendPage = null;
     }
 
     private void setOptionTitle(int id, String title)
@@ -222,36 +226,67 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
+    public void replaceFriendPage(ParseUser targetUser) {
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.remove(friendPage);
+        ft.commit();
+        if (friendPage instanceof FriendsFragment) {
+            friendPage = UserListFragment.newInstance(targetUser);
+        }
+        else {
+            friendPage = FriendsFragment.newInstance(0);
+        }
+        mSectionsPagerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (currentPage == Pages.FRIENDS && friendPage instanceof UserListFragment) {
+            Log.d("MainActivity", "Going back to FriendsActivity");
+            replaceFriendPage(null);
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
-        //
+
         ArrayList<Pages> pagesList;
         ParseUser user;
-        Fragment feed, friends, mylist;
+        //Fragment feed, friends, mylist;
         //used to ss t
         MainActivity parent;
         boolean userlist;
 
+        FragmentManager mFragmentManager;
+
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            mFragmentManager = fm;
             init();
         }
 
         public SectionsPagerAdapter(FragmentManager fm, MainActivity main) {
             super(fm);
+            mFragmentManager = fm;
             init();
             this.parent = main;
         }
 
         public void init() {
             pagesList = new ArrayList<Pages>();
-            feed = new FeedFragment();
+            /*feed = new FeedFragment();
             friends = new FriendsFragment(this.parent);
-            mylist = new UserListFragment(ParseUser.getCurrentUser());
+            mylist = new UserListFragment(ParseUser.getCurrentUser());*/
             userlist=false;
             pagesList.add(Pages.FEED);
             pagesList.add(Pages.FRIENDS);
@@ -293,18 +328,48 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public Fragment getItem(int position) {
+            /*
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             return translatePageEnum(pagesList.get(position));
+            */
+
+            switch (position) {
+                // Feed Fragment
+                case 0:
+                    return FeedFragment.newInstance(0);
+
+                // Handle special case (friend page)
+                case 1:
+                    if (friendPage == null) {
+                        friendPage = FriendsFragment.newInstance(0);
+                    }
+                    return friendPage;
+
+                // MyListFragment
+                case 2:
+                    return MyListFragment.newInstance(0);
+
+                default:
+                    // Should never reach here
+                    return null;
+            }
         }
 
         @Override
         public int getItemPosition(Object object) {
+            /*
             for(int i = 0; i < pagesList.size(); i++) {
                 if(pagesList.get(i)==object)
                     return i;
             }
             return POSITION_NONE;
+            */
+            if (object instanceof FriendsFragment && friendPage instanceof UserListFragment)
+                return POSITION_NONE;
+            if (object instanceof UserListFragment && friendPage instanceof FriendsFragment)
+                return POSITION_NONE;
+            return POSITION_UNCHANGED;
         }
 
         public Fragment translatePageEnum(Pages p) {
@@ -329,7 +394,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         @Override
         public int getCount() {
             // Show 4 total pages.
-            return pagesList.size();
+            //return pagesList.size();
+            return 3; //TODO: DONT HARDCODE THIS
         }
 
         @Override

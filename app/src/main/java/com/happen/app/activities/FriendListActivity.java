@@ -1,6 +1,5 @@
 package com.happen.app.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,25 +13,20 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.happen.app.R;
-import com.happen.app.components.MyListAdapter;
+import com.happen.app.components.UserListAdapter;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,7 +59,7 @@ public class FriendListActivity extends Activity {
     LayoutInflater inflater;
 
     // UI references.
-    MyListAdapter adapter;
+    UserListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
 
@@ -160,7 +154,7 @@ public class FriendListActivity extends Activity {
         // Set up event list
         ListView listview = (ListView)findViewById(R.id.mylist_eventlist);
         ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
-        adapter = new MyListAdapter(eventsList, inflater);
+        adapter = new UserListAdapter(eventsList, inflater);
         listview.setAdapter(adapter);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);

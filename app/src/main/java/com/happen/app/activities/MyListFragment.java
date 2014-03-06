@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.happen.app.R;
-import com.happen.app.components.MyListAdapter;
+import com.happen.app.components.UserListAdapter;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -50,7 +50,7 @@ public class MyListFragment extends Fragment {
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
 
-    MyListAdapter adapter;
+    UserListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
 
@@ -144,7 +144,7 @@ public class MyListFragment extends Fragment {
         // Set up event list
         ListView listview = (ListView)v.findViewById(R.id.mylist_eventlist);
         ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
-        adapter = new MyListAdapter(eventsList, inflater);
+        adapter = new UserListAdapter(eventsList, inflater);
         listview.setAdapter(adapter);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);

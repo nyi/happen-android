@@ -1,7 +1,6 @@
 package com.happen.app.activities;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -22,7 +21,6 @@ import com.happen.app.components.RequestsAdapter;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -286,7 +284,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                 if (e == null) {
                     ParseUser user = object.get(0);
                     //pager.setUser(user);
-                    main.switchToFriendList(user);
+                    //main.switchToFriendList(user);
+                    ((MainActivity)getActivity()).replaceFriendPage(user);
                 } else {
                     Log.e("FriendListActivity", "could not find user");
                 }

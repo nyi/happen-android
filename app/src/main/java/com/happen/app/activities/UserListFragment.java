@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.happen.app.R;
-import com.happen.app.components.MyListAdapter;
+import com.happen.app.components.UserListAdapter;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by Kevin on 2/10/14.
- */
 public class UserListFragment extends Fragment {
 
     // XML node keys
@@ -51,11 +48,10 @@ public class UserListFragment extends Fragment {
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
 
-    MyListAdapter adapter;
+    UserListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
     ParseUser user;
-    MainActivity main;
 
     public static UserListFragment newInstance(int sectionNumber) {
         UserListFragment fragment = new UserListFragment();
@@ -92,8 +88,6 @@ public class UserListFragment extends Fragment {
         // Inflate the MyList fragment layout
         View v = inflater.inflate(R.layout.fragment_mylist, container, false);
 
-
-
         // Set up profile picture, full name and user handle
         imageView = (ImageView)v.findViewById(R.id.mylist_picture);
         nameView = (TextView)v.findViewById(R.id.mylist_fullname);
@@ -105,7 +99,7 @@ public class UserListFragment extends Fragment {
 
         ParseFile parsePic = (ParseFile)user.get(KEY_PROFILE_PIC);
         if (parsePic == null) {
-            Log.e("MyListFragment", "Failed to create ParseFile object");
+            Log.e("UserListFragment", "Failed to create ParseFile object");
 
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
 
@@ -124,7 +118,7 @@ public class UserListFragment extends Fragment {
                 public void done(byte[] bytes, ParseException e) {
                     if (e == null) {
                         if (bytes == null || bytes.length == 0)
-                            Log.e("MyListFragment", "Received invalid byte array for profile picture.");
+                            Log.e("UserListFragment", "Received invalid byte array for profile picture.");
                         else {
                             Bitmap bitmap;
                             bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -140,8 +134,8 @@ public class UserListFragment extends Fragment {
                         }
                     }
                     else {
-                        Log.e("MyListFragment", "Failed to retrieve profile picture for user " + user.getUsername());
-                        Log.e("MyListFragment", "Error: " + e.getMessage());
+                        Log.e("UserListFragment", "Failed to retrieve profile picture for user " + user.getUsername());
+                        Log.e("UserListFragment", "Error: " + e.getMessage());
 
                         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
 
@@ -161,7 +155,7 @@ public class UserListFragment extends Fragment {
         // Set up event list
         ListView listview = (ListView)v.findViewById(R.id.mylist_eventlist);
         ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
-        adapter = new MyListAdapter(eventsList, inflater);
+        adapter = new UserListAdapter(eventsList, inflater);
         listview.setAdapter(adapter);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
@@ -172,7 +166,7 @@ public class UserListFragment extends Fragment {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
-                    Log.d("MyListFragment", "Retrieved " + object.size() + " scores");
+                    Log.d("UserListFragment", "Retrieved " + object.size() + " scores");
                     ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
                     if(object.size() == 0) { // User has not created any events yet
                         HashMap<String, String> event = new HashMap<String, String>();
@@ -190,12 +184,11 @@ public class UserListFragment extends Fragment {
 
                     adapter.replace(eventsList);
                 } else {
-                    Log.d("MyListFragment", "Error: " + e.getMessage());
+                    Log.d("UserListFragment", "Error: " + e.getMessage());
                 }
             }
         });
 
         return v;
-        //return super.onCreateView(inflater, container, savedInstanceState);
     }
 }
