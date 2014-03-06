@@ -269,7 +269,7 @@ public class SignupActivity extends Activity {
                     // perform the user login attempt.
                     mSignupStatusMessageView.setText(R.string.signup_progress_signing_up);
                     showProgress(true);
-                    Intent i = new Intent(SignupActivity.this, LoginActivity.class);
+                    Intent i = new Intent(SignupActivity.this, SplashscreenActivity.class);
                     startActivity(i);
                 } else {
                     // Sign up didn't succeed. Look at the ParseException
