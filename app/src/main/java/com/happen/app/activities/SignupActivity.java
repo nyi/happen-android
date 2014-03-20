@@ -5,10 +5,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,13 +21,19 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.happen.app.R;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
+import com.happen.app.R;
+import com.happen.app.util.Util;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
@@ -39,8 +44,8 @@ public class SignupActivity extends Activity {
     /**
      * The default email to populate the email field with.
      */
-    public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int SELECT_PICTURE = 0;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     // Values for email and password at the time of the signup attempt.
     private String mEmail;
@@ -50,8 +55,7 @@ public class SignupActivity extends Activity {
     private String mPhone;
     private String mFirstName;
     private String mLastName;
-    private int phone_num;
-    private Image mImage;
+    private Bitmap mImage;
 
     // UI references.
     private EditText mEmailView;
@@ -78,7 +82,6 @@ public class SignupActivity extends Activity {
         actionBar.setLogo(R.drawable.logo);
 
         // Set up the signup form.
-        mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
         mEmailView = (EditText) findViewById(R.id.email);
         mEmailView.setText(mEmail);
 
@@ -96,6 +99,8 @@ public class SignupActivity extends Activity {
 
         mConfirmPasswordView = (EditText) findViewById(R.id.password2);
         mConfirmPasswordView.setText(mConfirmPassword);
+
+        mImageView = (ImageView) findViewById(R.id.profile_pic);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -139,22 +144,42 @@ public class SignupActivity extends Activity {
         return true;
     }
 
-    public void uploadPhoto(View view){
+    public void takePhoto(View view){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
+    public void uploadPhoto(View view){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,
+                "Select Picture"), SELECT_PICTURE);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        mImageView = (ImageView) findViewById(R.id.profile_pic);
-
+        super.onActivityResult(requestCode, resultCode, data);
+        // if image capture was successful save to bitmap
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             mImageView.setImageBitmap(imageBitmap);
+            mImage = imageBitmap;
+        }
+        // if gallery selection was successful save to bitmap
+        else if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
+            try {
+                Uri imageUri = data.getData();
+                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                mImageView.setImageBitmap(imageBitmap);
+                mImage = imageBitmap;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -199,7 +224,7 @@ public class SignupActivity extends Activity {
             mConfirmPasswordView.setError(getString(R.string.error_field_required));
             focusView = mConfirmPasswordView;
             cancel = true;
-        } else if (!mPassword.toString().equals(mConfirmPassword.toString())) {
+        } else if (!mPassword.equals(mConfirmPassword)) {
             mConfirmPasswordView.setError(getString(R.string.error_mismatch_password));
             focusView = mConfirmPasswordView;
             cancel = true;
@@ -222,11 +247,6 @@ public class SignupActivity extends Activity {
             focusView = mPhoneView;
             cancel = true;
         }
-        if (TextUtils.isEmpty(mUsername)) {
-            mUsernameView.setError(getString(R.string.error_field_required));
-            focusView = mUsernameView;
-            cancel = true;
-        }
         if (TextUtils.isEmpty(mLastName)) {
             mLastNameView.setError(getString(R.string.error_field_required));
             focusView = mLastNameView;
@@ -235,6 +255,11 @@ public class SignupActivity extends Activity {
         if (TextUtils.isEmpty(mFirstName)) {
             mFirstNameView.setError(getString(R.string.error_field_required));
             focusView = mFirstNameView;
+            cancel = true;
+        }
+        if (TextUtils.isEmpty(mUsername)) {
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
             cancel = true;
         }
 
@@ -260,6 +285,28 @@ public class SignupActivity extends Activity {
         Long i = Long.parseLong(phone.trim());
         user.put("phone", i);
 
+        // add profile picture if it exists
+        if(mImage != null){
+            // create Parse file to store image
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            mImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] array = stream.toByteArray();
+            ParseFile file = new ParseFile("profile.png", array);
+            try {
+                file.save();
+                // store image in profile attribute of Parse user
+                user.put("profilePic", file);
+            } catch (ParseException e) {
+                System.out.println(e);
+                mUsernameView.setError(getString(R.string.error_upload_photo));
+                mUsernameView.requestFocus();
+            }
+        }
+        // create user on Parse
+        createParseUser(user);
+    }
+
+    public void createParseUser(ParseUser user){
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
                 if (e == null) {
