@@ -1,17 +1,24 @@
 package com.happen.app.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.happen.app.R;
@@ -25,6 +32,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +41,7 @@ import java.util.List;
 /**
  * Created by Kevin on 2/10/14.
  */
-public class MyListFragment extends Fragment {
+public class MyListFragment extends Fragment implements View.OnClickListener, PopupMenu.OnMenuItemClickListener{
     // XML node keys
     static final String KEY_EMPTY = "empty";
     static final String KEY_EVENT_DETAILS = "eventDetails";
@@ -79,6 +88,7 @@ public class MyListFragment extends Fragment {
 
         // Set up profile picture, full name and user handle
         imageView = (ImageView)v.findViewById(R.id.mylist_picture);
+        imageView.setOnClickListener(this);
         nameView = (TextView)v.findViewById(R.id.mylist_fullname);
         handleView = (TextView)v.findViewById(R.id.mylist_username);
 
@@ -181,4 +191,95 @@ public class MyListFragment extends Fragment {
         return v;
         //return super.onCreateView(inflater, container, savedInstanceState);
     }
+
+    // KEVIN: added function to bring up popup when selecting profile picture
+    @Override
+    public void onClick(View v){
+        switch (v.getId()) {
+            case R.id.mylist_picture:
+                changePhoto(v);
+                break;
+        }
+    }
+
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int SELECT_PICTURE = 0;
+
+    public void changePhoto(View view){
+        PopupMenu popup = new PopupMenu(getActivity(), view);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.mylist);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mylist_take_photo:
+                takePhoto();
+                return true;
+            case R.id.mylist_upload_photo:
+                uploadPhoto();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public void takePhoto(){
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(this.getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    public void uploadPhoto(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent,
+                "Select Picture"), SELECT_PICTURE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bitmap image = null;
+        // if image capture was successful save to bitmap
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            image = imageBitmap;
+        }
+        // if gallery selection was successful save to bitmap
+        else if (requestCode == SELECT_PICTURE && resultCode == Activity.RESULT_OK) {
+            try {
+                Uri imageUri = data.getData();
+                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getActivity().getContentResolver(), imageUri);
+                image = imageBitmap;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(image != null){
+            ParseUser user = ParseUser.getCurrentUser();
+            // create Parse file to store image
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] array = stream.toByteArray();
+            ParseFile file = new ParseFile("profile.png", array);
+            try {
+                file.save();
+                // store image in profile attribute of Parse user
+                user.put("profilePic", file);
+                user.saveInBackground();
+            } catch (ParseException e) {
+                System.out.println(e);
+            }
+
+        }
+    }
+
+
 }

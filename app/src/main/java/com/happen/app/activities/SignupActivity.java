@@ -42,7 +42,7 @@ import java.nio.ByteBuffer;
 public class SignupActivity extends Activity {
 
     /**
-     * The default email to populate the email field with.
+     * Static values for fetching images
      */
     private static final int SELECT_PICTURE = 0;
     private static final int REQUEST_IMAGE_CAPTURE = 1;

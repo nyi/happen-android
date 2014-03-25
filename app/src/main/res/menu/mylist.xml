@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="${packageName}.${activityClass}">
+    <item
+        android:id="@+id/mylist_take_photo"
+        android:title="Take photo"/>
+    <item
+        android:id="@+id/mylist_upload_photo"
+        android:title="Upload photo"/>
+</menu>
