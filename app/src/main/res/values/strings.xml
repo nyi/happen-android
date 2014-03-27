@@ -59,5 +59,8 @@
     <string name="accept">Accept</string>
     <string name="no_friends">You have no friends. You should add one!</string>
     <string name="no_requests">You have no requests to display.</string>
+    <string name="add_username">By Username</string>
+    <string name="add_contacts">From Contacts</string>
+    <string name="add_friend">Add</string>
 
 </resources>

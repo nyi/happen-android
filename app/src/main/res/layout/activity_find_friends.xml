@@ -1,33 +1,83 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.happen.app.activities.FindFriendActivity">
-
-    <ScrollView
-        android:id="@+id/find_friends_page"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout style="@style/EventFormContainer"
-            android:orientation="vertical">
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10">
 
-            <EditText
-                android:id="@+id/text"
-                android:singleLine="false"
-                android:maxLines="3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/prompt_find_friends" />
 
-            <Button android:id="@+id/search_for_friends_button"
+            <LinearLayout style="@style/EventFormContainer"
+                android:orientation="vertical"
+                android:visibility="visible"
+                android:id="@+id/add_friends_username_view">
+
+                <EditText
+                    android:id="@+id/add_friends_username_textbox"
+                    android:singleLine="false"
+                    android:maxLines="3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_find_friends" />
+
+                <Button android:id="@+id/add_friends_username_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/button_request"
+                    android:paddingLeft="32dp"
+                    android:paddingRight="32dp"
+                    android:layout_gravity="right" />
+
+            </LinearLayout>
+
+            <ListView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/button_request"
-                android:paddingLeft="32dp"
-                android:paddingRight="32dp"
-                android:layout_gravity="right" />
+                android:id="@+id/add_friends_contacts_view"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_marginBottom="10dp">
+
+                <Button
+                    android:id="@+id/add_friends_username_tab_button"
+                    android:text="@string/add_username"
+                    android:textColor="#ffffff"
+                    android:textSize="15sp"
+                    android:layout_width="50dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="20dp"
+                    android:background="@drawable/rounded_stroked_box_left_active"
+                    android:clickable="false" />
+
+            <Button
+                    android:id="@+id/add_friends_contacts_tab_button"
+                    android:textSize="15sp"
+                    android:textColor="#3a3b49"
+                    android:text="@string/add_contacts"
+                    android:layout_width="50dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/rounded_stroked_box_right"
+                android:clickable="false" />
 
         </LinearLayout>
 
-    </ScrollView>
+    </LinearLayout>
+
 </merge>

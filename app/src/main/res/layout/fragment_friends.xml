@@ -30,7 +30,7 @@
             android:textSize="15sp"
             android:layout_width="50dp"
             android:layout_height="fill_parent"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:layout_marginLeft="20dp"
             android:background="@drawable/rounded_stroked_box_left_active"
             />
@@ -41,7 +41,7 @@
             android:text="@string/requests"
             android:layout_width="50dp"
             android:layout_height="fill_parent"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:layout_marginRight="20dp"
             android:background="@drawable/rounded_stroked_box_right"
              />
