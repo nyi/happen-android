@@ -101,10 +101,11 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
         sendFriendRequest(mUsername);
     }
 
-    void sendFriendRequest(String targetUserID) {
+    void sendFriendRequest(String targetUsername) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("source", ParseUser.getCurrentUser().getObjectId());
-        params.put("target", targetUserID);
+        params.put("target", targetUsername);
+        Log.d("FindFriendActivity", "Sending friend request from " + params.get("source") + " to " + params.get("target"));
         ParseCloud.callFunctionInBackground("sendFriendRequest", params, new FunctionCallback<String>() {
             public void done(String result, ParseException e) {
                 if (e == null) {
@@ -197,6 +198,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                     while (pCur.moveToNext())
                     {
                         String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        contactNumber = contactNumber.replaceAll("[^\\d.]", "");
                         contactsList.add(contactNumber);
                         break;
                     }
@@ -222,7 +224,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                 break;
 
             case R.id.add_friends_contacts_entry_add_button:
-                sendFriendRequest(((HappenUser)v.getTag()).getParseUser().getObjectId());
+                sendFriendRequest(((HappenUser)v.getTag()).getUsername());
                 break;
 
             default:
