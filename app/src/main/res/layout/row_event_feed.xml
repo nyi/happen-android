@@ -17,11 +17,23 @@
         android:background="#68d2a4">
         <TextView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:id="@+id/me_too_text"
             android:text="me too"
             android:textSize="30dip"
             android:textStyle="bold"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="right|center_vertical"
+            android:id="@+id/remove_me_too_text"
+            android:text="remove"
+            android:textSize="30dip"
+            android:textStyle="bold"
+            android:visibility="gone"
             android:textColor="#ffffff" />
     </LinearLayout>
 
@@ -98,7 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:text="Hide"/>
 
     </LinearLayout>

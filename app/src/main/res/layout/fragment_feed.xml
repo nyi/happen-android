@@ -15,7 +15,7 @@
 
     <com.happen.app.util.SwipeListView
         xmlns:swipe="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/feed_list"
+        android:id="@+id/feed_swipe_list"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="10"
@@ -25,9 +25,9 @@
         swipe:swipeActionLeft="reveal"
         swipe:swipeActionRight="reveal"
         swipe:swipeMode="right"
-        swipe:swipeCloseAllItemsWhenMoveList="true"
-        swipe:swipeOpenOnLongPress="true"
-        swipe:swipeAnimationTime="200" />
+        swipe:swipeCloseAllItemsWhenMoveList="false"
+        swipe:swipeOpenOnLongPress="false"
+        swipe:swipeAnimationTime="400" />
 
     <LinearLayout
         android:orientation="horizontal"

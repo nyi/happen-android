@@ -777,6 +777,8 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                         swap = false;
                     } else if (opened.get(downPosition) && !openedRight.get(downPosition) && !swapRight) {
                         swap = false;
+                    } else if (swapRight != swipingRight) {
+                        swap = false;
                     } else {
                         swap = true;
                     }
@@ -837,6 +839,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                         }
                     }
                 }
+
                 if (deltaMode > slop && swipeCurrentAction == SwipeListView.SWIPE_ACTION_NONE && velocityY < velocityX) {
                     swiping = true;
                     swipingRight = (deltaX > 0);
@@ -904,7 +907,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
         if (opened.get(downPosition)) {
             posX += openedRight.get(downPosition) ? -viewWidth + rightOffset : viewWidth - leftOffset;
         }
-        if (posX > 0 && !swipingRight) {
+        /*if (posX > 0 && !swipingRight) {
             Log.d("SwipeListView", "change to right");
             swipingRight = !swipingRight;
             swipeCurrentAction = swipeActionRight;
@@ -923,7 +926,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
             } else {
                 backView.setVisibility(View.VISIBLE);
             }
-        }
+        }*/
         if (swipeCurrentAction == SwipeListView.SWIPE_ACTION_DISMISS) {
             setTranslationX(parentView, deltaX);
             setAlpha(parentView, Math.max(0f, Math.min(1f,
