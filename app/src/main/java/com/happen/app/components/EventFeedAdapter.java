@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.activities.FeedFragment;
 import com.happen.app.activities.MyListFragment;
 import com.happen.app.util.Util;
 
@@ -27,17 +29,26 @@ public class EventFeedAdapter extends BaseAdapter {
     static final String KEY_EVENT_DETAILS = "eventDetails";
     static final String KEY_USERNAME = "username";
     static final String KEY_TIME_FRAME = "timeFrame";
+    static final String KEY_OBJECT_ID = "objectId";
 
     static final float WIDTH_RATIO = 0.25f; // 25%
 
     private ArrayList<HashMap<String,String>> data;
     private ArrayList<Bitmap> pictures;
     private static LayoutInflater inflater = null;
+    private FeedFragment parent;
 
     public EventFeedAdapter (ArrayList<HashMap<String,String>> d, ArrayList<Bitmap> p, LayoutInflater i) {
         data = d;
         pictures = p;
         inflater = i;
+    }
+
+    public EventFeedAdapter (ArrayList<HashMap<String,String>> d, ArrayList<Bitmap> p, LayoutInflater i, FeedFragment pa) {
+        data = d;
+        pictures = p;
+        inflater = i;
+        parent = pa;
     }
 
     @Override
@@ -67,6 +78,7 @@ public class EventFeedAdapter extends BaseAdapter {
         TextView username = (TextView)vi.findViewById(R.id.username);
         TextView timeFrame = (TextView)vi.findViewById(R.id.time_frame);
         ImageView profilePic = (ImageView)vi.findViewById(R.id.profile_pic);
+        Button meTooButton = (Button)vi.findViewById(R.id.me_too_button);
 
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);
@@ -77,6 +89,10 @@ public class EventFeedAdapter extends BaseAdapter {
         username.setText(event.get(KEY_USERNAME));
         timeFrame.setText(event.get(KEY_TIME_FRAME));
         profilePic.setImageBitmap(pictures.get(i));
+        meTooButton.setTag(event.get(KEY_OBJECT_ID));
+
+        if(parent!=null)
+            meTooButton.setOnClickListener(parent);
 
         return vi;
     }

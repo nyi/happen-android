@@ -25,6 +25,7 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener{
     static final String KEY_EVENT_DETAILS = "eventDetails";
     static final String KEY_USERNAME = "username";
     static final String KEY_TIME_FRAME = "timeFrame";
+    static final String KEY_OBJECT_ID = "objectId";
     // Parse column names
     static final String TABLE_EVENT = "Event";
     static final String COL_CREATOR = "creator";
@@ -50,6 +52,8 @@ public class FeedFragment extends Fragment implements View.OnClickListener{
     static final String COL_DETAILS = "details";
     static final String COL_TIME_FRAME = "timeFrame";
     static final String COL_CREATED_AT = "createdAt";
+    static final String COL_ME_TOOS = "meToos";
+    static final String TABLE_USER = "User";
     static final String COL_PROFILE_PIC = "profilePic";
     static final String COL_FRIENDS = "friends";
 
@@ -82,8 +86,8 @@ public class FeedFragment extends Fragment implements View.OnClickListener{
 
         ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
         ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
-        feedAdapter = new EventFeedAdapter(eventsList, profPictures, inflater);
-        meTooAdapter = new EventFeedAdapter(eventsList, profPictures, inflater);
+        feedAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
+        meTooAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
         listview.setAdapter(feedAdapter);
 
         feedButton = (Button) v.findViewById(R.id.feed_tab);
@@ -124,6 +128,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener{
                             if(object.get(i).has(COL_DETAILS)) {
                                 event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
                             }
+                            event.put(KEY_OBJECT_ID, object.get(i).getObjectId());
                             eventsList.add(event);
 
 
@@ -179,6 +184,8 @@ public class FeedFragment extends Fragment implements View.OnClickListener{
         query.include(COL_CREATOR);
         query.orderByDescending(COL_CREATED_AT);
 
+        query.whereEqualTo(COL_ME_TOOS, ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId()));
+
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
@@ -200,6 +207,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener{
                         if(object.get(i).has(COL_DETAILS)) {
                             event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
                         }
+                        event.put(KEY_OBJECT_ID, object.get(i).getObjectId());
                         eventsList.add(event);
 
 
@@ -267,6 +275,23 @@ public class FeedFragment extends Fragment implements View.OnClickListener{
         queryMeToos();
     }
 
+    public void meTooEvent(String objectID) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
+        query.include(COL_CREATOR);
+
+        query.whereEqualTo(KEY_OBJECT_ID, objectID);
+
+        try {
+            ParseObject event = query.getFirst();
+
+            ParseRelation meToos = event.getRelation(COL_ME_TOOS);
+            meToos.add(ParseUser.getCurrentUser());
+            event.save();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -276,6 +301,10 @@ public class FeedFragment extends Fragment implements View.OnClickListener{
 
             case R.id.me_too_tab:
                 switchListToMeToos(v);
+                break;
+
+            case R.id.me_too_button:
+                meTooEvent((String)v.getTag());
                 break;
         }
     }
