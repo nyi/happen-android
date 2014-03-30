@@ -1,6 +1,6 @@
 package com.happen.app.util;
 
-public class BaseSwipeListViewListener implements SwipeListViewListener {
+public class SwipeListViewListenerBase implements SwipeListViewListener {
     @Override
     public void onOpened(int position, boolean toRight) {
     }
