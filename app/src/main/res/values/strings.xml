@@ -15,6 +15,7 @@
     <string name="title_activity_splashscreen">Welcome to Happen</string>
     <string name="splashscreen_login">Log in</string>
     <string name="splashscreen_signup">SIGN UP</string>
+    <string name="me_toos">Me too</string>
 
     <!-- Strings related to signup -->
     <string name="prompt_username">Username</string>

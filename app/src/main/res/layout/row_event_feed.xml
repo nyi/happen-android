@@ -52,6 +52,28 @@
         android:layout_toRightOf="@+id/profile_pic_layout"
         android:text="Event Details" />
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/event_details"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@+id/profile_pic_layout">
+
+        <Button
+            android:id="@+id/me_too_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Me Too"/>
+
+        <Button
+            android:id="@+id/hide_event_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="Hide"/>
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
