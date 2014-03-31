@@ -280,6 +280,4 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
 
         }
     }
-
-
 }
