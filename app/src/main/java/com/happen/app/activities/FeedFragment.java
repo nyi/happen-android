@@ -102,10 +102,10 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onOpened(int position, boolean toRight) {
                 Log.d("swipe", "onOpened " + position);
+                View curRow = listview.getChildAt(position - listview.getFirstVisiblePosition());
+                String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
                 ((EventFeedAdapter)listview.getAdapter()).removeRow(position);
                 listview.closeAnimate(position);
-                View curRow = listview.getChildAt(position);
-                String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
                 meTooEvent(objectID);
             }
 
@@ -124,7 +124,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onStartOpen(int position, int action, boolean right) {
                 Log.d("swipe", String.format("onStartOpen %d - action %d", position, action));
-                View curRow = listview.getChildAt(position);
+                View curRow = listview.getChildAt(position- listview.getFirstVisiblePosition());
                 TextView meTooText = (TextView)curRow.findViewById(R.id.me_too_text);
                 TextView removeMeTooText = (TextView)curRow.findViewById(R.id.remove_me_too_text);
                 LinearLayout backLayout = (LinearLayout)curRow.findViewById(R.id.back);
