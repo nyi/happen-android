@@ -253,8 +253,8 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
             cropIntent.putExtra("aspectX", 1);
             cropIntent.putExtra("aspectY", 1);
             //indicate output X and Y
-            cropIntent.putExtra("outputX", 256);
-            cropIntent.putExtra("outputY", 256);
+            cropIntent.putExtra("outputX", 200);
+            cropIntent.putExtra("outputY", 200);
             //retrieve data on return
             cropIntent.putExtra("return-data", true);
             //start the activity - we handle returning in onActivityResult
@@ -273,23 +273,15 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         Bitmap image = null;
         // if image capture was successful save to bitmap
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-//            Uri imageUri = data.getData();
-//            cropCapturedImage(imageUri);
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = Util.resizeToScale(imageBitmap);
             image = imageBitmap;
         }
         // if gallery selection was successful save to bitmap
         else if (requestCode == SELECT_PICTURE && resultCode == Activity.RESULT_OK) {
             Uri imageUri = data.getData();
             cropCapturedImage(imageUri);
-//            try {
-//                Uri imageUri = data.getData();
-//                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getActivity().getContentResolver(), imageUri);
-//                image = imageBitmap;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         }
         else if (requestCode == CROP_PICTURE && resultCode == Activity.RESULT_OK) {
             Bundle extras = data.getExtras();
@@ -297,6 +289,15 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
             image = imageBitmap;
         }
         if(image != null){
+            // update view to display new profile picture
+            Display display = this.getActivity().getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+            Bitmap circularImage = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
+            imageView.setImageBitmap(circularImage);
+
+            // update Parse and replace old picture with new upload
             ParseUser user = ParseUser.getCurrentUser();
             // create Parse file to store image
             ByteArrayOutputStream stream = new ByteArrayOutputStream();

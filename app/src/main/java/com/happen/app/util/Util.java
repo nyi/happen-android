@@ -61,4 +61,30 @@ public class Util {
         canvas.drawBitmap(image, srcRect, destRect, paint);
         return output;
     }
+
+    public static Bitmap resizeToScale(Bitmap image) {
+        Bitmap newImage;
+        // if image is wider than tall
+        if (image.getWidth() >= image.getHeight()){
+            newImage = Bitmap.createBitmap(
+                    image,
+                    image.getWidth()/2 - image.getHeight()/2,
+                    0,
+                    image.getHeight(),
+                    image.getHeight()
+            );
+        }
+        // if image is taller than wide
+        else{
+            newImage = Bitmap.createBitmap(
+                    image,
+                    0,
+                    image.getHeight()/2 - image.getWidth()/2,
+                    image.getWidth(),
+                    image.getWidth()
+            );
+        }
+        Bitmap scaledImage = Bitmap.createScaledBitmap(newImage, 200, 200, false);
+        return scaledImage;
+    }
 }
