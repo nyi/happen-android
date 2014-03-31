@@ -2,6 +2,7 @@ package com.happen.app.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.happen.app.R;
 import com.happen.app.components.UserListAdapter;
@@ -55,6 +57,10 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     static final String COL_CREATOR = "creator";
     static final String COL_DETAILS = "details";
     static final String COL_CREATED_AT = "createdAt";
+
+    static final int SELECT_PICTURE = 0;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int CROP_PICTURE = 2;
 
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
@@ -202,8 +208,8 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         }
     }
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int SELECT_PICTURE = 0;
+
+
 
     public void changePhoto(View view){
         PopupMenu popup = new PopupMenu(getActivity(), view);
@@ -241,6 +247,30 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                 "Select Picture"), SELECT_PICTURE);
     }
 
+    public void cropCapturedImage(Uri imageUri){
+        try {
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            //indicate image type and Uri of image
+            cropIntent.setDataAndType(imageUri, "image/*");
+            //set crop properties
+            cropIntent.putExtra("crop", "true");
+            //indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 1);
+            cropIntent.putExtra("aspectY", 1);
+            //indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            //retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            //start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, CROP_PICTURE);
+        } catch (ActivityNotFoundException e) {
+            String errorMessage = "Your device doesn't support the crop action!";
+            Toast toast = Toast.makeText(this.getActivity(), errorMessage, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -248,19 +278,28 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         Bitmap image = null;
         // if image capture was successful save to bitmap
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+//            Uri imageUri = data.getData();
+//            cropCapturedImage(imageUri);
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             image = imageBitmap;
         }
         // if gallery selection was successful save to bitmap
         else if (requestCode == SELECT_PICTURE && resultCode == Activity.RESULT_OK) {
-            try {
-                Uri imageUri = data.getData();
-                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getActivity().getContentResolver(), imageUri);
-                image = imageBitmap;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Uri imageUri = data.getData();
+            cropCapturedImage(imageUri);
+//            try {
+//                Uri imageUri = data.getData();
+//                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getActivity().getContentResolver(), imageUri);
+//                image = imageBitmap;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+        }
+        else if (requestCode == CROP_PICTURE && resultCode == Activity.RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            image = imageBitmap;
         }
         if(image != null){
             ParseUser user = ParseUser.getCurrentUser();
