@@ -27,7 +27,7 @@
         swipe:swipeMode="right"
         swipe:swipeCloseAllItemsWhenMoveList="false"
         swipe:swipeOpenOnLongPress="false"
-        swipe:swipeAnimationTime="400" />
+        swipe:swipeAnimationTime="200" />
 
     <LinearLayout
         android:orientation="horizontal"

@@ -102,11 +102,11 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onOpened(int position, boolean toRight) {
                 Log.d("swipe", "onOpened " + position);
+                ((EventFeedAdapter)listview.getAdapter()).removeRow(position);
                 listview.closeAnimate(position);
                 View curRow = listview.getChildAt(position);
                 String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
                 meTooEvent(objectID);
-                ((EventFeedAdapter)listview.getAdapter()).removeRow(position);
             }
 
             @Override
