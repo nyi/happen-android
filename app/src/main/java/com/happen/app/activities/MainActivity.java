@@ -19,6 +19,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListPopupWindow;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.happen.app.R;
@@ -121,6 +123,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             else if(currentPage == Pages.FRIENDS)
                 switchToCreateFriendView();
             return true;
+        }
+        if(id == R.id.action_news)
+        {
+            ListPopupWindow popup = new ListPopupWindow(this);
+
+            popup.show();
+            System.out.println("news has been clicked.");
         }
 
         return super.onOptionsItemSelected(item);
@@ -304,4 +313,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
+
+    public class NewsObject
+    {
+
+    }
 }

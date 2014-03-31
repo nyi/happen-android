@@ -80,6 +80,7 @@ public class FeedFragment extends ListFragment{
         query.include(COL_CREATOR);
         query.orderByDescending(COL_CREATED_AT);
 
+
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
