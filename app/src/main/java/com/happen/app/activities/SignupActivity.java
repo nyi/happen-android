@@ -55,7 +55,6 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
     static final float WIDTH_RATIO = 0.25f; // 25%
 
     // Values for email and password at the time of the signup attempt.
-    private String mEmail;
     private String mPassword;
     private String mConfirmPassword;
     private String mUsername;
@@ -65,7 +64,6 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
     private Bitmap mImage;
 
     // UI references.
-    private EditText mEmailView;
     private EditText mPasswordView;
     private EditText mConfirmPasswordView;
     private EditText mUsernameView;
@@ -89,9 +87,6 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
         actionBar.setLogo(R.drawable.logo);
 
         // Set up the signup form.
-        mEmailView = (EditText) findViewById(R.id.email);
-        mEmailView.setText(mEmail);
-
         mUsernameView = (EditText) findViewById(R.id.username);
         mUsernameView.setText(mUsername);
 
@@ -278,13 +273,11 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
         mUsernameView.setError(null);
         mFirstNameView.setError(null);
         mLastNameView.setError(null);
-        mEmailView.setError(null);
         mPhoneView.setError(null);
         mPasswordView.setError(null);
         mConfirmPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        mEmail = mEmailView.getText().toString();
         mPassword = mPasswordView.getText().toString();
         mConfirmPassword = mConfirmPasswordView.getText().toString();
         mUsername = mUsernameView.getText().toString();
@@ -311,17 +304,6 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
         } else if (!mPassword.equals(mConfirmPassword)) {
             mConfirmPasswordView.setError(getString(R.string.error_mismatch_password));
             focusView = mConfirmPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(mEmail)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!mEmail.contains("@")) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
             cancel = true;
         }
 
@@ -367,16 +349,15 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
             focusView.requestFocus();
         } else {
             Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
-            createUser(mFirstName, mLastName, mUsername, mPassword, mEmail, mPhone);
+            createUser(mFirstName, mLastName, mUsername, mPassword, mPhone);
         }
     }
 
-    public void createUser(String firstname, String lastname, String username, String password, String email, String phone) {
+    public void createUser(String firstname, String lastname, String username, String password, String phone) {
 
         ParseUser user = new ParseUser();
         user.setUsername(username);
         user.setPassword(password);
-        user.setEmail(email);
         // other fields can be set just like with ParseObject
         user.put("firstName", firstname);
         user.put("lastName", lastname);
