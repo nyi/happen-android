@@ -68,10 +68,9 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
     static final float WIDTH_RATIO = 0.25f; // 25%
 
     View v;
-    ListView listview;
+    SwipeListView listview;
     EventFeedAdapter feedAdapter;
     EventFeedAdapter meTooAdapter;
-    SwipeListView swipeListView;
 
     Button feedButton;
     Button meToosButton;
@@ -91,7 +90,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_feed, container, false);
 
-        listview = (ListView)v.findViewById(R.id.feed_swipe_list);
+        listview = (SwipeListView)v.findViewById(R.id.feed_swipe_list);
 
         ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
         ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
@@ -99,10 +98,13 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
         meTooAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
         listview.setAdapter(feedAdapter);
 
-        swipeListView = (SwipeListView)v.findViewById(R.id.feed_swipe_list);
-        swipeListView.setSwipeListViewListener(new SwipeListViewListenerBase() {
+        listview.setSwipeListViewListener(new SwipeListViewListenerBase() {
             @Override
             public void onOpened(int position, boolean toRight) {
+                Log.d("swipe", "onOpened " + position);
+                View curRow = listview.getChildAt(position);
+                String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
+                meTooEvent(objectID);
             }
 
             @Override
@@ -120,7 +122,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onStartOpen(int position, int action, boolean right) {
                 Log.d("swipe", String.format("onStartOpen %d - action %d", position, action));
-                View curRow = swipeListView.getChildAt(position);
+                View curRow = listview.getChildAt(position);
                 TextView meTooText = (TextView)curRow.findViewById(R.id.me_too_text);
                 TextView removeMeTooText = (TextView)curRow.findViewById(R.id.remove_me_too_text);
                 LinearLayout backLayout = (LinearLayout)curRow.findViewById(R.id.back);
@@ -329,24 +331,26 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
 
     public void switchListToFeed(View v)
     {
-        swipeListView.setSwipeMode(2);
+        listview.setSwipeMode(2);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
         feedButton.setTextColor(Color.parseColor("#FFFFFF"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right));
         meToosButton.setTextColor(Color.parseColor("#3a3b49"));
         queryFeed();
         listview.setAdapter(feedAdapter);
+        listview.invalidate();
     }
 
     public void switchListToMeToos(View v)
     {
-        swipeListView.setSwipeMode(3);
+        listview.setSwipeMode(3);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left));
         feedButton.setTextColor(Color.parseColor("#3a3b49"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right_active));
         meToosButton.setTextColor(Color.parseColor("#FFFFFF"));
         queryMeToos();
         listview.setAdapter(meTooAdapter);
+        listview.invalidate();
     }
 
     public void meTooEvent(String objectID) {
@@ -366,7 +370,6 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                 meToos.remove(ParseUser.getCurrentUser());
             }
 
-            event.save();
         } catch (Exception e) {
             e.printStackTrace();
         }

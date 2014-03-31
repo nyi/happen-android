@@ -88,7 +88,9 @@ public class EventFeedAdapter extends BaseAdapter {
         eventDetails.setText(event.get(KEY_EVENT_DETAILS));
         username.setText(event.get(KEY_USERNAME));
         timeFrame.setText(event.get(KEY_TIME_FRAME));
-        profilePic.setImageBitmap(pictures.get(i));
+        if(pictures.size() > i) {
+            profilePic.setImageBitmap(pictures.get(i));
+        }
         meTooButton.setTag(event.get(KEY_OBJECT_ID));
 
         if(parent!=null)
