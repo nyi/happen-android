@@ -241,12 +241,26 @@ public class SignupActivity extends Activity {
             cancel = true;
         }
 
-        // Check for completion of other fields
+        // Check for a valid phone number
         if (TextUtils.isEmpty(mPhone)) {
             mPhoneView.setError(getString(R.string.error_field_required));
             focusView = mPhoneView;
             cancel = true;
+        } else if (mPhone.length() < 10) {
+            mPhoneView.setError(getString(R.string.error_invalid_number));
+            focusView = mPhoneView;
+            cancel = true;
+        } else {
+            try {
+                double number = Double.parseDouble(mPhone);
+            } catch (NumberFormatException nfe) {
+                mPhoneView.setError(getString(R.string.error_invalid_number));
+                focusView = mPhoneView;
+                cancel = true;
+            }
         }
+
+        // Check for completion of other fields
         if (TextUtils.isEmpty(mLastName)) {
             mLastNameView.setError(getString(R.string.error_field_required));
             focusView = mLastNameView;
@@ -282,8 +296,7 @@ public class SignupActivity extends Activity {
         // other fields can be set just like with ParseObject
         user.put("firstName", firstname);
         user.put("lastName", lastname);
-        Long i = Long.parseLong(phone.trim());
-        user.put("phone", i);
+        user.put("phoneNumber", phone);
 
         // add profile picture if it exists
         if(mImage != null){
