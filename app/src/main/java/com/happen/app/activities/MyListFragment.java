@@ -13,7 +13,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -208,23 +206,20 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         }
     }
 
-
-
-
     public void changePhoto(View view){
         PopupMenu popup = new PopupMenu(getActivity(), view);
         popup.setOnMenuItemClickListener(this);
-        popup.inflate(R.menu.mylist);
+        popup.inflate(R.menu.photo);
         popup.show();
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.mylist_take_photo:
+            case R.id.take_photo:
                 takePhoto();
                 return true;
-            case R.id.mylist_upload_photo:
+            case R.id.upload_photo:
                 uploadPhoto();
                 return true;
             default:

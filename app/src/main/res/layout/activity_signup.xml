@@ -33,30 +33,23 @@
         <LinearLayout style="@style/LoginFormContainer"
             android:orientation="vertical">
 
-            <LinearLayout style="@style/LoginFormContainer"
-                android:orientation="horizontal">
-                <Button android:id="@+id/take_pic_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/action_take_pic"
-                    android:paddingLeft="32dp"
-                    android:paddingRight="16dp"
-                    android:onClick="takePhoto" />
-                <Button android:id="@+id/upload_pic_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="@string/action_upload_pic"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="32dp"
-                    android:onClick="uploadPhoto" />
-            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/profile_background"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp">
 
-            <ImageView android:id="@+id/profile_pic"
-                android:scaleType="centerInside"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/profile_picture"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="5dp"
+                    android:onClick="changePhoto"/>
+
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/fname"

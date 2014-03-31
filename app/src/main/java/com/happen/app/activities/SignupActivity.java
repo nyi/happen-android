@@ -8,12 +8,15 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +24,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,20 +32,17 @@ import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 import com.happen.app.R;
 import com.happen.app.util.Util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
-public class SignupActivity extends Activity {
+public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
 
     /**
      * Static values for fetching images
@@ -49,6 +50,9 @@ public class SignupActivity extends Activity {
     private static final int SELECT_PICTURE = 0;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int CROP_PICTURE = 2;
+
+    // Percentage of profile picture width relative to screen size
+    static final float WIDTH_RATIO = 0.25f; // 25%
 
     // Values for email and password at the time of the signup attempt.
     private String mEmail;
@@ -103,7 +107,17 @@ public class SignupActivity extends Activity {
         mConfirmPasswordView = (EditText) findViewById(R.id.password2);
         mConfirmPasswordView.setText(mConfirmPassword);
 
-        mImageView = (ImageView) findViewById(R.id.profile_pic);
+        mImageView = (ImageView) findViewById(R.id.profile_picture);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+
+        // Get screen dimensions and calculate desired profile picture size
+        Display display = this.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+
+        bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
+        mImageView.setImageBitmap(bitmap);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -147,14 +161,36 @@ public class SignupActivity extends Activity {
         return true;
     }
 
-    public void takePhoto(View view){
+    // KEVIN: added function to bring up popup when selecting profile picture
+    public void changePhoto(View v){
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.photo);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.take_photo:
+                takePhoto();
+                return true;
+            case R.id.upload_photo:
+                uploadPhoto();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public void takePhoto(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
-    public void uploadPhoto(View view){
+    public void uploadPhoto(){
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -170,8 +206,14 @@ public class SignupActivity extends Activity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 //            Uri imageUri = data.getData();
 //            cropCapturedImage(imageUri);
+            Display display = this.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = Util.circularCrop(imageBitmap, (int) (width * WIDTH_RATIO / 2));
             mImageView.setImageBitmap(imageBitmap);
             mImage = imageBitmap;
         }
@@ -188,8 +230,14 @@ public class SignupActivity extends Activity {
 //            }
         }
         else if (requestCode == CROP_PICTURE && resultCode == RESULT_OK) {
+            Display display = this.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = Util.circularCrop(imageBitmap, (int) (width * WIDTH_RATIO / 2));
             mImageView.setImageBitmap(imageBitmap);
             mImage = imageBitmap;
         }
