@@ -104,4 +104,10 @@ public class EventFeedAdapter extends BaseAdapter {
         this.pictures = p;
         this.notifyDataSetChanged();
     }
+
+    public void removeRow(int position) {
+        this.data.remove(position);
+        this.pictures.remove(position);
+        this.notifyDataSetChanged();
+    }
 }

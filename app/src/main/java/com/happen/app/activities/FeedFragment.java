@@ -102,9 +102,11 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onOpened(int position, boolean toRight) {
                 Log.d("swipe", "onOpened " + position);
+                listview.closeAnimate(position);
                 View curRow = listview.getChildAt(position);
                 String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
                 meTooEvent(objectID);
+                ((EventFeedAdapter)listview.getAdapter()).removeRow(position);
             }
 
             @Override
@@ -329,7 +331,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    public void switchListToFeed(View v)
+    public void switchListToFeed()
     {
         listview.setSwipeMode(2);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
@@ -341,7 +343,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
         listview.invalidate();
     }
 
-    public void switchListToMeToos(View v)
+    public void switchListToMeToos()
     {
         listview.setSwipeMode(3);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left));
@@ -380,11 +382,11 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.feed_tab:
-                switchListToFeed(v);
+                switchListToFeed();
                 break;
 
             case R.id.me_too_tab:
-                switchListToMeToos(v);
+                switchListToMeToos();
                 break;
 
             case R.id.me_too_button:
