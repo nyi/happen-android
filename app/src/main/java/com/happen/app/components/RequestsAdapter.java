@@ -90,4 +90,12 @@ public class RequestsAdapter extends BaseAdapter{
         this.data = d;
         this.notifyDataSetChanged();
     }
+
+    public void removeRow(int position) {
+        this.data.remove(position);
+        if(data.isEmpty()) {
+            // Do something to show that it is empty
+        }
+        this.notifyDataSetChanged();
+    }
 }

@@ -247,6 +247,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
             case R.id.accept_friend_button:
                 acceptFriend((ParseObject)v.getTag());
+                requestsAdapter.removeRow(listview.getPositionForView(v));
                 break;
 
             case R.id.friend_item:
