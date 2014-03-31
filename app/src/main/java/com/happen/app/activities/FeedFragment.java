@@ -370,6 +370,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                 meToos.remove(ParseUser.getCurrentUser());
             }
 
+            event.save();
         } catch (Exception e) {
             e.printStackTrace();
         }
