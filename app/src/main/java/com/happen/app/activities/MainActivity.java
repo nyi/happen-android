@@ -1,6 +1,8 @@
 package com.happen.app.activities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -24,9 +26,17 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.components.FriendsAdapter;
+import com.happen.app.components.NewsAdapter;
 import com.happen.app.util.NonSwipeableViewPager;
+import com.happen.app.util.Util;
+import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 
@@ -52,13 +62,42 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public enum Pages {FEED, FRIENDS, MY_LIST};
     public Pages currentPage;
     private Fragment friendPage;
+    private NewsAdapter newsAdapter;
+    private ArrayList< NewsObject> newsList;
+    protected ListPopupWindow popup;
+    private LayoutInflater inflater;
+
+    public class NewsObject
+    {
+        public String type;
+        public String nameTarget;
+        public String nameSource;
+        public String event;
+
+        public NewsObject(String type, String nameTarget, String nameSource)
+        {
+            this.type = type;
+            this.nameSource = nameSource;
+            this.nameTarget = nameTarget;
+        }
+
+        public NewsObject(String type, String nameTarget, String nameSource, String event)
+        {
+            this(type, nameTarget, nameSource);
+            this.event = event;
+        }
+
+        public String toString()
+        {
+            return "NewsObj: " + type + "- " + nameSource;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
         setContentView(R.layout.activity_main);
-
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setLogo(R.drawable.logo);
@@ -88,6 +127,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         currentPage = Pages.FEED;
 
         friendPage = null;
+        this.initNews();
+
     }
 
     private void setOptionTitle(int id, String title)
@@ -126,13 +167,65 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
         if(id == R.id.action_news)
         {
-            ListPopupWindow popup = new ListPopupWindow(this);
-
+           // initNews();
+            popup.setAnchorView(this.findViewById(R.id.action_news));
+            queryNews();
+           // NewsObject tmp = new NewsObject("empty", "Spencer McClure", "Kevin Sui");
+            //newsList.add(tmp);
+            newsAdapter.notifyDataSetChanged();
             popup.show();
-            System.out.println("news has been clicked.");
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void initNews()
+    {
+        popup = new ListPopupWindow(MainActivity.this);
+        popup.setHeight(500);
+        popup.setWidth(400);
+        popup.setModal(true);
+        newsList = new ArrayList<NewsObject>();
+        newsAdapter = new NewsAdapter(newsList, this.getLayoutInflater());
+        popup.setAdapter(newsAdapter);
+    }
+
+    public void openNews()
+    {
+
+    }
+
+    public void queryNews()
+    {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Util.TABLE_NEWS);
+        query.orderByDescending(Util.COL_CREATED_AT);
+        query.include(Util.COL_TARGET);
+        query.include(Util.COL_SOURCE);
+        query.whereEqualTo(Util.COL_TARGET, ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> object, ParseException e) {
+                if (e == null) {
+                    Log.d("score", "Retrieved " + object.size() + " scores");
+                    newsList = new ArrayList<NewsObject>();
+                    for (int i = 0; i < object.size(); i++) {
+                        ParseUser requester = object.get(i).getParseUser(Util.COL_SOURCE);
+                        ParseUser target = object.get(i).getParseUser(Util.COL_TARGET);
+                        String eventType = (String)object.get(i).get(Util.COL_TYPE);
+                        String sourceName = requester.getString(Util.COL_FIRST_NAME) + " " + requester.getString(Util.COL_LAST_NAME);
+                        String targetName = target.getString(Util.COL_FIRST_NAME) + " " + target.getString(Util.COL_LAST_NAME);
+                        NewsObject newsObj = new NewsObject(eventType, targetName, sourceName);
+                        System.out.println(newsObj);
+                        newsList.add(newsObj);
+                    }
+                    newsAdapter.replace(newsList);
+                    newsAdapter.notifyDataSetChanged();
+
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+
     }
 
     public void switchToCreateEventView() {
@@ -314,8 +407,5 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     }
 
 
-    public class NewsObject
-    {
 
-    }
 }

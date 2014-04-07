@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <!--<ListView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:id="@+id/feed_list"
+        android:focusableInTouchMode="false"/>-->
+
+    <com.happen.app.util.SwipeListView
+        xmlns:swipe="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/feed_swipe_list"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:focusableInTouchMode="false"
+        swipe:swipeFrontView="@+id/front"
+        swipe:swipeBackView="@+id/back"
+        swipe:swipeActionLeft="reveal"
+        swipe:swipeActionRight="reveal"
+        swipe:swipeMode="right"
+        swipe:swipeCloseAllItemsWhenMoveList="false"
+        swipe:swipeOpenOnLongPress="false"
+        swipe:swipeAnimationTime="200" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_marginBottom="10dp">
+
+        <Button
+            android:id="@+id/feed_tab"
+            android:text="@string/friends"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:layout_width="50dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/rounded_stroked_box_left_active"
+            />
+        <Button
+            android:id="@+id/me_too_tab"
+            android:textSize="15sp"
+            android:textColor="#3a3b49"
+            android:text="@string/me_toos"
+            android:layout_width="50dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/rounded_stroked_box_right"
+            />
+    </LinearLayout>
+
+</LinearLayout>

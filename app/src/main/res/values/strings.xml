@@ -15,6 +15,7 @@
     <string name="title_activity_splashscreen">Welcome to Happen</string>
     <string name="splashscreen_login">Log in</string>
     <string name="splashscreen_signup">SIGN UP</string>
+    <string name="me_toos">Me too</string>
 
     <!-- Strings related to signup -->
     <string name="prompt_username">Username</string>
@@ -33,14 +34,13 @@
     <string name="exception_message">Error uploading photo</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in_register"><b>Sign in</b> or register</string>
     <string name="action_sign_in_short">LOGIN</string>
     <string name="action_forgot_password">Recover lost password</string>
     <string name="login_progress_signing_in">Signing in&#8230;</string>
-    <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
+    <string name="error_invalid_number">This phone number is invalid</string>
     <string name="error_incorrect_login">Incorrect login credentials</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>

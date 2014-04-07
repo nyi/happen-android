@@ -5,14 +5,18 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,35 +24,37 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 import com.happen.app.R;
 import com.happen.app.util.Util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * Activity which displays a login screen to the user, offering registration as
  * well.
  */
-public class SignupActivity extends Activity {
+public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
 
     /**
      * Static values for fetching images
      */
     private static final int SELECT_PICTURE = 0;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int CROP_PICTURE = 2;
+
+    // Percentage of profile picture width relative to screen size
+    static final float WIDTH_RATIO = 0.25f; // 25%
 
     // Values for email and password at the time of the signup attempt.
-    private String mEmail;
     private String mPassword;
     private String mConfirmPassword;
     private String mUsername;
@@ -58,7 +64,6 @@ public class SignupActivity extends Activity {
     private Bitmap mImage;
 
     // UI references.
-    private EditText mEmailView;
     private EditText mPasswordView;
     private EditText mConfirmPasswordView;
     private EditText mUsernameView;
@@ -82,9 +87,6 @@ public class SignupActivity extends Activity {
         actionBar.setLogo(R.drawable.logo);
 
         // Set up the signup form.
-        mEmailView = (EditText) findViewById(R.id.email);
-        mEmailView.setText(mEmail);
-
         mUsernameView = (EditText) findViewById(R.id.username);
         mUsernameView.setText(mUsername);
 
@@ -100,7 +102,17 @@ public class SignupActivity extends Activity {
         mConfirmPasswordView = (EditText) findViewById(R.id.password2);
         mConfirmPasswordView.setText(mConfirmPassword);
 
-        mImageView = (ImageView) findViewById(R.id.profile_pic);
+        mImageView = (ImageView) findViewById(R.id.profile_picture);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+
+        // Get screen dimensions and calculate desired profile picture size
+        Display display = this.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+
+        bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
+        mImageView.setImageBitmap(bitmap);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -144,14 +156,36 @@ public class SignupActivity extends Activity {
         return true;
     }
 
-    public void takePhoto(View view){
+    // KEVIN: added function to bring up popup when selecting profile picture
+    public void changePhoto(View v){
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.photo);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.take_photo:
+                takePhoto();
+                return true;
+            case R.id.upload_photo:
+                uploadPhoto();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public void takePhoto(){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
-    public void uploadPhoto(View view){
+    public void uploadPhoto(){
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -165,21 +199,66 @@ public class SignupActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         // if image capture was successful save to bitmap
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+//            Uri imageUri = data.getData();
+//            cropCapturedImage(imageUri);
+            Display display = this.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = Util.circularCrop(imageBitmap, (int) (width * WIDTH_RATIO / 2));
             mImageView.setImageBitmap(imageBitmap);
             mImage = imageBitmap;
         }
         // if gallery selection was successful save to bitmap
         else if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
-            try {
-                Uri imageUri = data.getData();
-                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                mImageView.setImageBitmap(imageBitmap);
-                mImage = imageBitmap;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Uri imageUri = data.getData();
+            cropCapturedImage(imageUri);
+//            try {
+//                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+//                mImageView.setImageBitmap(imageBitmap);
+//                mImage = imageBitmap;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+        }
+        else if (requestCode == CROP_PICTURE && resultCode == RESULT_OK) {
+            Display display = this.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int width = size.x;
+
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = Util.circularCrop(imageBitmap, (int) (width * WIDTH_RATIO / 2));
+            mImageView.setImageBitmap(imageBitmap);
+            mImage = imageBitmap;
+        }
+    }
+
+    public void cropCapturedImage(Uri imageUri){
+        try {
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            //indicate image type and Uri of image
+            cropIntent.setDataAndType(imageUri, "image/*");
+            //set crop properties
+            cropIntent.putExtra("crop", "true");
+            //indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 1);
+            cropIntent.putExtra("aspectY", 1);
+            //indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            //retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            //start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, CROP_PICTURE);
+        } catch (ActivityNotFoundException e) {
+            String errorMessage = "Your device doesn't support the crop action!";
+            Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 
@@ -194,13 +273,11 @@ public class SignupActivity extends Activity {
         mUsernameView.setError(null);
         mFirstNameView.setError(null);
         mLastNameView.setError(null);
-        mEmailView.setError(null);
         mPhoneView.setError(null);
         mPasswordView.setError(null);
         mConfirmPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        mEmail = mEmailView.getText().toString();
         mPassword = mPasswordView.getText().toString();
         mConfirmPassword = mConfirmPasswordView.getText().toString();
         mUsername = mUsernameView.getText().toString();
@@ -230,23 +307,26 @@ public class SignupActivity extends Activity {
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(mEmail)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!mEmail.contains("@")) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
-
-        // Check for completion of other fields
+        // Check for a valid phone number
         if (TextUtils.isEmpty(mPhone)) {
             mPhoneView.setError(getString(R.string.error_field_required));
             focusView = mPhoneView;
             cancel = true;
+        } else if (mPhone.length() < 10) {
+            mPhoneView.setError(getString(R.string.error_invalid_number));
+            focusView = mPhoneView;
+            cancel = true;
+        } else {
+            try {
+                double number = Double.parseDouble(mPhone);
+            } catch (NumberFormatException nfe) {
+                mPhoneView.setError(getString(R.string.error_invalid_number));
+                focusView = mPhoneView;
+                cancel = true;
+            }
         }
+
+        // Check for completion of other fields
         if (TextUtils.isEmpty(mLastName)) {
             mLastNameView.setError(getString(R.string.error_field_required));
             focusView = mLastNameView;
@@ -269,21 +349,19 @@ public class SignupActivity extends Activity {
             focusView.requestFocus();
         } else {
             Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
-            createUser(mFirstName, mLastName, mUsername, mPassword, mEmail, mPhone);
+            createUser(mFirstName, mLastName, mUsername, mPassword, mPhone);
         }
     }
 
-    public void createUser(String firstname, String lastname, String username, String password, String email, String phone) {
+    public void createUser(String firstname, String lastname, String username, String password, String phone) {
 
         ParseUser user = new ParseUser();
         user.setUsername(username);
         user.setPassword(password);
-        user.setEmail(email);
         // other fields can be set just like with ParseObject
         user.put("firstName", firstname);
         user.put("lastName", lastname);
-        Long i = Long.parseLong(phone.trim());
-        user.put("phone", i);
+        user.put("phoneNumber", phone);
 
         // add profile picture if it exists
         if(mImage != null){
