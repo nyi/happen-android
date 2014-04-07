@@ -249,6 +249,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
         private ArrayList<HappenUser> data;
         private LayoutInflater inflater = null;
         private View.OnClickListener listener;
+        private boolean isDataEmpty = false;
 
         public ContactsSearchAdapter(ArrayList<HappenUser> d, LayoutInflater i) {
             if (d == null)
@@ -278,21 +279,25 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                 vi = inflater.inflate(R.layout.row_add_friends_contacts, null);
             }
 
-            TextView textFullName = (TextView)vi.findViewById(R.id.add_friends_contacts_entry_fullnameAndUsername);
-            TextView textUsername = (TextView)vi.findViewById(R.id.add_friends_contacts_entry_phoneNumber);
+            TextView textFullName = (TextView)vi.findViewById(R.id.add_friends_contacts_entry_fullname);
+            TextView textUsername = (TextView)vi.findViewById(R.id.add_friends_contacts_entry_username);
+            TextView textPhoneNumber = (TextView)vi.findViewById(R.id.add_friends_contacts_entry_phoneNumber);
             Button addButton = (Button) vi.findViewById(R.id.add_friends_contacts_entry_add_button);
             ImageView imgProfilePic = (ImageView)vi.findViewById(R.id.profile_pic);
 
             HappenUser entry = data.get(i);
 
-            if(data.size() == 0) {
+            if(isDataEmpty) {
                 textFullName.setText("Could not find any matching user.");
                 textUsername.setText("");
+                textPhoneNumber.setText("");
                 addButton.setVisibility(View.GONE);
+                imgProfilePic.setVisibility(View.GONE);
             } else {
                 // Setting the values
-                textFullName.setText(entry.getFullname() + " (@" + entry.getUsername() + ")");
-                textUsername.setText(entry.getPhoneNumber());
+                textFullName.setText(entry.getFullname());
+                textUsername.setText("@" + entry.getUsername());
+                textPhoneNumber.setText(entry.getPhoneNumber());
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
@@ -307,6 +312,25 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
 
         public void replace(ArrayList<HappenUser> d) {
             this.data = d;
+
+            // Remove the current user him/herself
+            ParseUser pUser = ParseUser.getCurrentUser();
+            int index = -1;
+            for (int i = 0; i < data.size(); i++) {
+                if (pUser.hasSameId(d.get(i).getParseUser()))
+                    index = i;
+            }
+            if (index != -1)
+                data.remove(index);
+
+            // Check if the data set is empty
+            if (data.size() == 0) {
+                data.add(new HappenUser());
+                isDataEmpty = true;
+            }
+            else {
+                isDataEmpty = false;
+            }
             this.notifyDataSetChanged();
         }
 

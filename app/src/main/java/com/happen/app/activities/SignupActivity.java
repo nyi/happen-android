@@ -199,8 +199,6 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
         super.onActivityResult(requestCode, resultCode, data);
         // if image capture was successful save to bitmap
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-//            Uri imageUri = data.getData();
-//            cropCapturedImage(imageUri);
             Display display = this.getWindowManager().getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
@@ -208,6 +206,7 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
 
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+            imageBitmap = Util.resizeToScale(imageBitmap);
             imageBitmap = Util.circularCrop(imageBitmap, (int) (width * WIDTH_RATIO / 2));
             mImageView.setImageBitmap(imageBitmap);
             mImage = imageBitmap;
@@ -216,13 +215,6 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
         else if (requestCode == SELECT_PICTURE && resultCode == RESULT_OK) {
             Uri imageUri = data.getData();
             cropCapturedImage(imageUri);
-//            try {
-//                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-//                mImageView.setImageBitmap(imageBitmap);
-//                mImage = imageBitmap;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         }
         else if (requestCode == CROP_PICTURE && resultCode == RESULT_OK) {
             Display display = this.getWindowManager().getDefaultDisplay();
@@ -249,8 +241,8 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
             cropIntent.putExtra("aspectX", 1);
             cropIntent.putExtra("aspectY", 1);
             //indicate output X and Y
-            cropIntent.putExtra("outputX", 256);
-            cropIntent.putExtra("outputY", 256);
+            cropIntent.putExtra("outputX", 200);
+            cropIntent.putExtra("outputY", 200);
             //retrieve data on return
             cropIntent.putExtra("return-data", true);
             //start the activity - we handle returning in onActivityResult
