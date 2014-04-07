@@ -182,8 +182,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void initNews()
     {
         popup = new ListPopupWindow(MainActivity.this);
-        popup.setHeight(500);
-        popup.setWidth(400);
+        popup.setHeight(800);
+        popup.setWidth(600);
         popup.setModal(true);
         newsList = new ArrayList<NewsObject>();
         newsAdapter = new NewsAdapter(newsList, this.getLayoutInflater());
@@ -214,7 +214,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                         String sourceName = requester.getString(Util.COL_FIRST_NAME) + " " + requester.getString(Util.COL_LAST_NAME);
                         String targetName = target.getString(Util.COL_FIRST_NAME) + " " + target.getString(Util.COL_LAST_NAME);
                         NewsObject newsObj = new NewsObject(eventType, targetName, sourceName);
-                        System.out.println(newsObj);
                         newsList.add(newsObj);
                     }
                     newsAdapter.replace(newsList);

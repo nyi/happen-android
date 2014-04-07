@@ -70,7 +70,6 @@ public class NewsAdapter extends BaseAdapter{
             String requestText = " has sent you a friend request.";
 
             news = data.get(i);
-            System.out.println("i: " + i + "news_type: " + news.type);
             if(news.type.equals(Util.NEWS_TYPE_ME_TOO)) {
                 vi = inflater.inflate(R.layout.row_news_me_too, null);
                 TextView txt = (TextView) vi.findViewById(R.id.news_item_txt);
