@@ -20,13 +20,10 @@
                 android:hint="@string/prompt_event" />
 
 
-            <EditText
+            <Spinner
                 android:id="@+id/date"
-                android:singleLine="true"
-                android:maxLines="1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/prompt_date" />
+                android:layout_height="wrap_content" />
 
 
             <Button android:id="@+id/create_event_button"
