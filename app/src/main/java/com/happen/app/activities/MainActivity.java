@@ -11,11 +11,15 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +37,7 @@ import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -66,6 +71,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     private ArrayList< NewsObject> newsList;
     protected ListPopupWindow popup;
     private LayoutInflater inflater;
+    public  ArrayList<Bitmap> profPictures;
+
+    //@spencer used to self-identify in callback response...
+    private Activity self;
 
     public class NewsObject
     {
@@ -100,10 +109,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         setContentView(R.layout.activity_main);
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
+        self = this;
         actionBar.setLogo(R.drawable.logo);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         //actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-
         mViewPager = (NonSwipeableViewPager) findViewById(R.id.pager);
         mViewPager.setOffscreenPageLimit(10);
         // Create the friendsAdapter that will return a fragment for each of the four
@@ -184,7 +193,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         popup.setWidth(600);
         popup.setModal(true);
         newsList = new ArrayList<NewsObject>();
-        newsAdapter = new NewsAdapter(newsList, this.getLayoutInflater());
+        newsAdapter = new NewsAdapter(newsList, profPictures, this.getLayoutInflater());
         popup.setAdapter(newsAdapter);
     }
 
@@ -196,6 +205,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void queryNews()
     {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Util.TABLE_NEWS);
+        profPictures = new ArrayList<Bitmap>();
+
         query.orderByDescending(Util.COL_CREATED_AT);
         query.include(Util.COL_TARGET);
         query.include(Util.COL_SOURCE);
@@ -213,8 +224,44 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                         String targetName = target.getString(Util.COL_FIRST_NAME) + " " + target.getString(Util.COL_LAST_NAME);
                         NewsObject newsObj = new NewsObject(eventType, targetName, sourceName);
                         newsList.add(newsObj);
+                        byte[] file = new byte[0];
+                        try {
+                            boolean imgNotFound = true;
+                            ParseFile pfile = requester.getParseFile(Util.COL_PROFILE_PIC);
+                            if(pfile!=null) {
+                                file = pfile.getData();
+                                Bitmap image = BitmapFactory.decodeByteArray(file, 0, file.length);
+                                // Get screen dimensions and calculate desired profile picture size
+                                Display display = self.getWindowManager().getDefaultDisplay();
+                                Point size = new Point();
+                                display.getSize(size);
+                                int width = size.x;
+                                if(image!=null) {
+                                    imgNotFound=false;
+                                    image = Util.circularCrop(image, (int) (width * Util.WIDTH_RATIO / 2));
+                                    profPictures.add(image);
+                                }
+                            }
+                            if (imgNotFound){
+
+                                Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+
+                                // Get screen dimensions and calculate desired profile picture size
+                                Display display = self.getWindowManager().getDefaultDisplay();
+                                Point size = new Point();
+                                display.getSize(size);
+                                int width = size.x;
+
+                                image = Util.circularCrop(image, (int) (width * Util.WIDTH_RATIO / 2));
+                                profPictures.add(image);
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
                     }
-                    newsAdapter.replace(newsList);
+                    newsAdapter.replace(newsList, profPictures);
                     newsAdapter.notifyDataSetChanged();
 
                 } else {
@@ -335,7 +382,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             pagesList.add(Pages.FEED);
             pagesList.add(Pages.FRIENDS);
             pagesList.add(Pages.MY_LIST);
-
         }
 
         public void setUser(ParseUser user) {

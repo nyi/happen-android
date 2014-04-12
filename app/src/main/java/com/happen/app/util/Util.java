@@ -25,6 +25,7 @@ public class Util {
     // Parse column names
     public static final String TABLE_EVENT             = "Event";
     public static final String TABLE_NEWS              = "News";
+    public static final String TABLE_USER = "User";
 
     public static final String COL_CREATOR             = "creator";
     public static final String COL_FIRST_NAME          = "firstName";
@@ -38,6 +39,8 @@ public class Util {
     public static final String COL_CREATED_AT          = "createdAt";
     public static final String COL_PROFILE_PIC         = "profilePic";
     public static final String COL_PHONE_NUM           = "phoneNumber";
+    public static final String COL_ME_TOOS             = "meToos";
+    public static final String COL_FRIENDS             = "friends";
 
     public static final String NEWS_TYPE_REQ_RECEIVED  = "SENT_REQUEST";
     public static final String NEWS_TYPE_REQ_ACCEPT    = "ACCEPT_REQUEST";

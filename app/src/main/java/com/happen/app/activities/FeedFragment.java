@@ -44,6 +44,7 @@ import java.util.List;
  */
 public class FeedFragment extends Fragment implements View.OnClickListener {
     // XML node keys
+    static final String KEY_EMPTY = "empty";
     static final String KEY_EVENT = "event"; // parent node
     static final String KEY_FULL_NAME = "fullName";
     static final String KEY_EVENT_DETAILS = "eventDetails";
@@ -181,6 +182,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
         query.whereNotEqualTo(COL_ME_TOOS, ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId()));
 
         try {
+
             query.whereContainedIn(COL_CREATOR, ParseUser.getCurrentUser().getRelation(COL_FRIENDS).getQuery().find());
 
             query.findInBackground(new FindCallback<ParseObject>() {
@@ -270,17 +272,17 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                     ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
                     for (int i = 0; i < object.size(); i++) {
                         HashMap<String, String> event = new HashMap<String, String>();
-                        if(object.get(i).has(COL_CREATOR)) {
+                        if (object.get(i).has(COL_CREATOR)) {
                             event.put(KEY_FULL_NAME, object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME));
                             event.put(KEY_USERNAME, "@" + object.get(i).getParseObject(COL_CREATOR).getString(COL_USERNAME));
                         } else { // Event doesn't have a creator associated with it
                             event.put(KEY_FULL_NAME, "");
                             event.put(KEY_USERNAME, "");
                         }
-                        if(object.get(i).has(COL_TIME_FRAME)) {
+                        if (object.get(i).has(COL_TIME_FRAME)) {
                             event.put(KEY_TIME_FRAME, object.get(i).getString(COL_TIME_FRAME));
                         }
-                        if(object.get(i).has(COL_DETAILS)) {
+                        if (object.get(i).has(COL_DETAILS)) {
                             event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
                         }
                         event.put(KEY_OBJECT_ID, object.get(i).getObjectId());
@@ -291,7 +293,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                         try {
                             boolean imgNotFound = true;
                             ParseFile pfile = object.get(i).getParseObject(COL_CREATOR).getParseFile(COL_PROFILE_PIC);
-                            if(pfile!=null) {
+                            if (pfile != null) {
                                 file = pfile.getData();
                                 Bitmap image = BitmapFactory.decodeByteArray(file, 0, file.length);
                                 // Get screen dimensions and calculate desired profile picture size
@@ -299,13 +301,13 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                                 Point size = new Point();
                                 display.getSize(size);
                                 int width = size.x;
-                                if(image!=null) {
-                                    imgNotFound=false;
+                                if (image != null) {
+                                    imgNotFound = false;
                                     image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
                                     profPictures.add(image);
                                 }
                             }
-                            if (imgNotFound){
+                            if (imgNotFound) {
 
                                 Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
 

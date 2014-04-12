@@ -902,8 +902,14 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
      * @param deltaX delta
      */
     public void move(float deltaX) {
-        swipeListView.onMove(downPosition, deltaX);
+        float changeX = deltaX;
         float posX = ViewHelper.getX(frontView);
+
+        if((swipingRight && posX <= 0 && deltaX < 0) || (!swipingRight && posX >=0 && deltaX > 0)) {
+            changeX = 0; // Creates a wall so that the swipe can't go more left or more right
+        }
+
+        swipeListView.onMove(downPosition, changeX);
         if (opened.get(downPosition)) {
             posX += openedRight.get(downPosition) ? -viewWidth + rightOffset : viewWidth - leftOffset;
         }
@@ -928,18 +934,18 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
             }
         }*/
         if (swipeCurrentAction == SwipeListView.SWIPE_ACTION_DISMISS) {
-            setTranslationX(parentView, deltaX);
+            setTranslationX(parentView, changeX);
             setAlpha(parentView, Math.max(0f, Math.min(1f,
-                    1f - 2f * Math.abs(deltaX) / viewWidth)));
+                    1f - 2f * Math.abs(changeX) / viewWidth)));
         } else if (swipeCurrentAction == SwipeListView.SWIPE_ACTION_CHOICE) {
-            if ((swipingRight && deltaX > 0 && posX < DISPLACE_CHOICE)
-                    || (!swipingRight && deltaX < 0 && posX > -DISPLACE_CHOICE)
-                    || (swipingRight && deltaX < DISPLACE_CHOICE)
-                    || (!swipingRight && deltaX > -DISPLACE_CHOICE)) {
-                setTranslationX(frontView, deltaX);
+            if ((swipingRight && changeX > 0 && posX < DISPLACE_CHOICE)
+                    || (!swipingRight && changeX < 0 && posX > -DISPLACE_CHOICE)
+                    || (swipingRight && changeX < DISPLACE_CHOICE)
+                    || (!swipingRight && changeX > -DISPLACE_CHOICE)) {
+                setTranslationX(frontView, changeX);
             }
         } else {
-            setTranslationX(frontView, deltaX);
+            setTranslationX(frontView, changeX);
         }
     }
 
