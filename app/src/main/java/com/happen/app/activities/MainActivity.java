@@ -167,11 +167,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
         if(id == R.id.action_news)
         {
-           // initNews();
             popup.setAnchorView(this.findViewById(R.id.action_news));
             queryNews();
-           // NewsObject tmp = new NewsObject("empty", "Spencer McClure", "Kevin Sui");
-            //newsList.add(tmp);
+
             newsAdapter.notifyDataSetChanged();
             popup.show();
         }
