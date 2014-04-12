@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.util.HappenUser;
+import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -162,16 +163,29 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
 
     public void displayMatchingContacts() {
         ArrayList<String> numbers = getContactList();
+        final List<ParseObject> friendList;
+        try {
+             friendList = ParseUser.getCurrentUser().getRelation(Util.COL_FRIENDS).getQuery().find();
+        }
+        catch (Exception ex) {
+            Log.e("FindFriendActivity", "Error occurred while fetching friends");
+            return;
+        }
+
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereContainedIn(COL_NUMBER, numbers);
-        //TODO: NEED TO EXCLUDE USERS WHO ARE ALREADY FRIENDS
 
         query.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> users, ParseException ex) {
                 if (ex == null) {
                     ArrayList<HappenUser> map = new ArrayList<HappenUser>();
                     for (ParseUser u : users) {
-                        map.add(new HappenUser(u));
+                        boolean flag = true;
+                        for (ParseObject friend : friendList)
+                            if (friend.getObjectId() == u.getObjectId())
+                                flag = false;
+                        if (flag)
+                            map.add(new HappenUser(u));
                     }
                     mContactsAdapter.replace(map);
                 } else {
