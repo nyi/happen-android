@@ -178,7 +178,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         {
             popup.setAnchorView(this.findViewById(R.id.action_news));
             queryNews();
-
             newsAdapter.notifyDataSetChanged();
             popup.show();
         }
@@ -189,17 +188,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void initNews()
     {
         popup = new ListPopupWindow(MainActivity.this);
-        popup.setHeight(800);
-        popup.setWidth(600);
+        int height = (int) Util.dipToPixels(this.getApplicationContext(), 450);
+        int width = (int) Util.dipToPixels(this.getApplicationContext(), 300);
+        popup.setHeight(height);
+        popup.setWidth(width);
         popup.setModal(true);
         newsList = new ArrayList<NewsObject>();
         newsAdapter = new NewsAdapter(newsList, profPictures, this.getLayoutInflater());
         popup.setAdapter(newsAdapter);
-    }
-
-    public void openNews()
-    {
-
     }
 
     public void queryNews()

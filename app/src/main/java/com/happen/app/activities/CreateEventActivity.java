@@ -8,8 +8,10 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.happen.app.R;
 import com.parse.Parse;
@@ -24,13 +26,13 @@ import com.parse.SaveCallback;
  */
 public class CreateEventActivity extends Activity {
 
-    // Values for email and password at the time of the signup attempt.
+    // Values for the event text and date.
     private String mText;
     private String mDate;
 
     // UI references.
     private EditText mTextView;
-    private EditText mDateView;
+    private Spinner mDateView;
     private Button mButton;
 
     @Override
@@ -46,10 +48,12 @@ public class CreateEventActivity extends Activity {
         mTextView = (EditText) findViewById(R.id.text);
         mTextView.setText(mText);
 
-        mDateView = (EditText) findViewById(R.id.date);
-        mDateView.setText(mDate);
+        mDateView = (Spinner) findViewById(R.id.date);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.date_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mDateView.setAdapter(adapter);
         mButton = (Button) findViewById(R.id.create_event_button);
-
 
         findViewById(R.id.create_event_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,25 +85,28 @@ public class CreateEventActivity extends Activity {
     public void createEvent() {
 
         // Reset errors.
-        mDateView.setError(null);
         mTextView.setError(null);
         mButton.setClickable(false);
 
-        // Store values at the time of the login attempt.
+        // Store values at the time of the creation attempt.
         mText = mTextView.getText().toString();
-
-        mDate = mDateView.getText().toString();
+        mDate = mDateView.getSelectedItem().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-
-
+        // Error check to see if there is sufficient info
+        if (mText.isEmpty()) {
+            mTextView.setError(getString(R.string.error_field_required));
+            focusView = mTextView;
+            cancel = true;
+        }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
+            // There was an error; don't create new event and focus the first
             // form field with an error.
             focusView.requestFocus();
+            mButton.setClickable(true);
         } else {
             Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
             createEvent(mText, ParseUser.getCurrentUser(), mDate);

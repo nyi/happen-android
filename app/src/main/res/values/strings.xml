@@ -46,7 +46,7 @@
     <string name="error_field_required">This field is required</string>
 
     <!-- Strings related to event creation -->
-    <string name="prompt_event">Write event details here</string>
+    <string name="prompt_event">Event description</string>
     <string name="prompt_date">When?</string>
     <string name="button_create">Add event</string>
     <string name="error_create_event_failed">Event failed to create</string>
@@ -62,5 +62,14 @@
     <string name="add_username">By Username</string>
     <string name="add_contacts">From Contacts</string>
     <string name="add_friend">Add</string>
+
+    <string-array name="date_array">
+        <item>today</item>
+        <item>tomorrow</item>
+        <item>this week</item>
+        <item>next week</item>
+        <item>this month</item>
+        <item>next month</item>
+    </string-array>
 
 </resources>
