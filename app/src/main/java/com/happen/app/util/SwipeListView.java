@@ -343,6 +343,10 @@ public class SwipeListView extends ListView {
         touchListener.closeAnimate(position);
     }
 
+    public void resetCell() {
+        touchListener.resetCell();
+    }
+
     /**
      * Notifies onDismiss
      *

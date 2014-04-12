@@ -107,7 +107,10 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                 String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
                 ((EventFeedAdapter)listview.getAdapter()).removeRow(position);
                 listview.closeAnimate(position);
+                /*listview.resetScrolling();
+                listview.resetCell();*/
                 meTooEvent(objectID);
+                //listview.invalidate();
             }
 
             @Override
