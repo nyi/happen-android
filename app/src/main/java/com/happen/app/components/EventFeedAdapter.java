@@ -30,6 +30,7 @@ public class EventFeedAdapter extends BaseAdapter {
     static final String KEY_USERNAME = "username";
     static final String KEY_TIME_FRAME = "timeFrame";
     static final String KEY_OBJECT_ID = "objectId";
+    static final String KEY_EMPTY = "empty";
 
     static final float WIDTH_RATIO = 0.25f; // 25%
 
@@ -83,18 +84,28 @@ public class EventFeedAdapter extends BaseAdapter {
         HashMap<String,String> event = new HashMap<String,String>();
         event = data.get(i);
 
-        // Setting the values
-        fullName.setText(event.get(KEY_FULL_NAME));
-        eventDetails.setText(event.get(KEY_EVENT_DETAILS));
-        username.setText(event.get(KEY_USERNAME));
-        timeFrame.setText(event.get(KEY_TIME_FRAME));
-        if(pictures.size() > i) {
-            profilePic.setImageBitmap(pictures.get(i));
-        }
-        meTooButton.setTag(event.get(KEY_OBJECT_ID));
+        if(event.containsKey(KEY_EMPTY)) {
+            profilePic.setVisibility(View.GONE);
+            eventDetails.setVisibility(View.GONE);
+            username.setVisibility(View.GONE);
+            meTooButton.setVisibility(View.GONE);
+            timeFrame.setVisibility(View.GONE);
+            fullName.setText("You have no events to display.");
 
-        if(parent!=null)
-            meTooButton.setOnClickListener(parent);
+        } else {
+            // Setting the values
+            fullName.setText(event.get(KEY_FULL_NAME));
+            eventDetails.setText(event.get(KEY_EVENT_DETAILS));
+            username.setText(event.get(KEY_USERNAME));
+            timeFrame.setText(event.get(KEY_TIME_FRAME));
+            if(pictures.size() > i) {
+                profilePic.setImageBitmap(pictures.get(i));
+            }
+            meTooButton.setTag(event.get(KEY_OBJECT_ID));
+
+            if(parent!=null)
+                meTooButton.setOnClickListener(parent);
+        }
 
         return vi;
     }
