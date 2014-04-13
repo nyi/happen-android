@@ -65,6 +65,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
     static final String COL_TIME_FRAME = "timeFrame";
     static final String COL_CREATED_AT = "createdAt";
     static final String COL_ME_TOOS = "meToos";
+    static final String COL_HIDES = "hides";
     static final String TABLE_USER = "User";
     static final String COL_PROFILE_PIC = "profilePic";
     static final String COL_FRIENDS = "friends";
@@ -125,7 +126,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                 listview.closeAnimate(position);
                 /*listview.resetScrolling();
                 listview.resetCell();*/
-                meTooEvent(objectID);
+                meTooEvent(objectID, toRight);
                 //listview.invalidate();
             }
 
@@ -152,6 +153,11 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                     meTooText.setVisibility(View.GONE);
                     removeMeTooText.setVisibility(View.VISIBLE);
                     backLayout.setBackgroundColor(Color.parseColor("#e86060"));
+                    if(listview.getAdapter().equals(feedAdapter)) {
+                        removeMeTooText.setText("hide");
+                    } else {
+                        removeMeTooText.setText("undo");
+                    }
                 } else {
                     removeMeTooText.setVisibility(View.GONE);
                     meTooText.setVisibility(View.VISIBLE);
@@ -225,7 +231,9 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
         query.orderByDescending(COL_CREATED_AT);
-        query.whereNotEqualTo(COL_ME_TOOS, ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId()));
+        ParseObject curUser = ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId());
+        query.whereNotEqualTo(COL_ME_TOOS, curUser);
+        query.whereNotEqualTo(COL_HIDES, curUser);
 
         try {
 
@@ -385,7 +393,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
     public void switchListToFeed()
     {
-        listview.setSwipeMode(2);
+        listview.setSwipeMode(1);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
         feedButton.setTextColor(Color.parseColor("#FFFFFF"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right));
@@ -407,7 +415,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
         listview.invalidate();
     }
 
-    public void meTooEvent(String objectID) {
+    public void meTooEvent(String objectID, Boolean toRight) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
 
@@ -417,9 +425,15 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
             ParseObject event = query.getFirst();
 
             ParseRelation meToos = event.getRelation(COL_ME_TOOS);
+            ParseRelation hides = event.getRelation(COL_HIDES);
 
             if(listview.getAdapter().equals(feedAdapter)) {
-                meToos.add(ParseUser.getCurrentUser());
+                if(toRight) {
+                    meToos.add(ParseUser.getCurrentUser());
+                } else {
+                    hides.add(ParseUser.getCurrentUser());
+                }
+
             } else if(listview.getAdapter().equals(meTooAdapter)){
                 meToos.remove(ParseUser.getCurrentUser());
             }
@@ -441,9 +455,9 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                 switchListToMeToos();
                 break;
 
-            case R.id.me_too_button:
+            /*case R.id.me_too_button:
                 meTooEvent((String)v.getTag());
-                break;
+                break;*/
         }
     }
 }

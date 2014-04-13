@@ -30,7 +30,7 @@
             swipe:swipeBackView="@+id/back"
             swipe:swipeActionLeft="reveal"
             swipe:swipeActionRight="reveal"
-            swipe:swipeMode="right"
+            swipe:swipeMode="both"
             swipe:swipeCloseAllItemsWhenMoveList="false"
             swipe:swipeOpenOnLongPress="false"
             swipe:swipeAnimationTime="200" />
