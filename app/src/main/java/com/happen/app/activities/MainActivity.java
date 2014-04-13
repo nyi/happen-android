@@ -30,8 +30,10 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.components.EventObject;
 import com.happen.app.components.FriendsAdapter;
 import com.happen.app.components.NewsAdapter;
+import com.happen.app.components.NewsObject;
 import com.happen.app.util.NonSwipeableViewPager;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
@@ -67,40 +69,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public enum Pages {FEED, FRIENDS, MY_LIST};
     public Pages currentPage;
     private Fragment friendPage;
+    private Fragment myListPage;
     private NewsAdapter newsAdapter;
-    private ArrayList< NewsObject> newsList;
+    private ArrayList<NewsObject> newsList;
     protected ListPopupWindow popup;
     private LayoutInflater inflater;
     public  ArrayList<Bitmap> profPictures;
 
+
     //@spencer used to self-identify in callback response...
     private Activity self;
-
-    public class NewsObject
-    {
-        public String type;
-        public String nameTarget;
-        public String nameSource;
-        public String event;
-
-        public NewsObject(String type, String nameTarget, String nameSource)
-        {
-            this.type = type;
-            this.nameSource = nameSource;
-            this.nameTarget = nameTarget;
-        }
-
-        public NewsObject(String type, String nameTarget, String nameSource, String event)
-        {
-            this(type, nameTarget, nameSource);
-            this.event = event;
-        }
-
-        public String toString()
-        {
-            return "NewsObj: " + type + "- " + nameSource;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +114,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         currentPage = Pages.FEED;
 
         friendPage = null;
+        myListPage = null;
         this.initNews();
+        this.queryNews();
 
     }
 
@@ -155,7 +135,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-
         myMenu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -206,19 +185,35 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         query.orderByDescending(Util.COL_CREATED_AT);
         query.include(Util.COL_TARGET);
         query.include(Util.COL_SOURCE);
+        query.include(Util.COL_EVENT);
         query.whereEqualTo(Util.COL_TARGET, ParseUser.getCurrentUser());
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
                     newsList = new ArrayList<NewsObject>();
+                    if(object.size()==0)
+                    {
+                        NewsObject newsObj = new NewsObject(Util.NEWS_EMPTY, null, null);
+                        newsList.add(newsObj);
+                    }
                     for (int i = 0; i < object.size(); i++) {
                         ParseUser requester = object.get(i).getParseUser(Util.COL_SOURCE);
                         ParseUser target = object.get(i).getParseUser(Util.COL_TARGET);
                         String eventType = (String)object.get(i).get(Util.COL_TYPE);
+
+                        NewsObject newsObj;
                         String sourceName = requester.getString(Util.COL_FIRST_NAME) + " " + requester.getString(Util.COL_LAST_NAME);
                         String targetName = target.getString(Util.COL_FIRST_NAME) + " " + target.getString(Util.COL_LAST_NAME);
-                        NewsObject newsObj = new NewsObject(eventType, targetName, sourceName);
+                        if(eventType.equals("ME_TOO"))
+                        {
+                            String event = (String)((ParseObject)object.get(i).get(Util.COL_EVENT)).get(Util.COL_DETAILS);
+                            newsObj = new NewsObject(eventType, targetName, sourceName, event);
+                        }
+                        else
+                        {
+                            newsObj = new NewsObject(eventType, targetName, sourceName);
+                        }
                         newsList.add(newsObj);
                         byte[] file = new byte[0];
                         try {
@@ -337,15 +332,35 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mSectionsPagerAdapter.notifyDataSetChanged();
     }
 
+
     @Override
     public void onBackPressed() {
         if (currentPage == Pages.FRIENDS && friendPage instanceof UserListFragment) {
             Log.d("MainActivity", "Going back to FriendsActivity");
             replaceFriendPage(null);
         }
+        if (currentPage == Pages.MY_LIST && myListPage instanceof EventDetailsFragment) {
+            Log.d("MainActivity", "Going back to MyList");
+            replaceMyListPage(null);
+        }
         else {
             super.onBackPressed();
         }
+    }
+
+    public void replaceMyListPage(EventObject event)
+    {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.remove(myListPage);
+        ft.commit();
+        if (myListPage instanceof MyListFragment) {
+            myListPage = EventDetailsFragment.newInstance(event);
+        }
+        else {
+            myListPage = MyListFragment.newInstance(0);
+        }
+        mSectionsPagerAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -406,7 +421,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
                 // MyListFragment
                 case 2:
-                    return MyListFragment.newInstance(0);
+                    if (myListPage == null){
+                        myListPage = MyListFragment.newInstance(0);
+                    }
+                    return myListPage;
 
                 default:
                     // Should never reach here
@@ -420,6 +438,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             if (object instanceof FriendsFragment && friendPage instanceof UserListFragment)
                 return POSITION_NONE;
             if (object instanceof UserListFragment && friendPage instanceof FriendsFragment)
+                return POSITION_NONE;
+            if (object instanceof MyListFragment && myListPage instanceof EventDetailsFragment)
+                return POSITION_NONE;
+            if (object instanceof EventDetailsFragment && myListPage instanceof MyListFragment)
                 return POSITION_NONE;
             return POSITION_UNCHANGED;
         }

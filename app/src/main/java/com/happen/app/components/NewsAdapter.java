@@ -24,23 +24,23 @@ public class NewsAdapter extends BaseAdapter{
     static final String KEY_REQUESTS = "requests";
     static final String KEY_EMPTY = "empty";
 
-    private ArrayList<MainActivity.NewsObject> data;
+    private ArrayList<NewsObject> data;
     private ArrayList<Bitmap> pictures;
     private static LayoutInflater inflater = null;
-    private FriendsFragment parent;
+    private MainActivity parent;
 
-    public NewsAdapter(ArrayList<MainActivity.NewsObject> d, LayoutInflater i) {
+    public NewsAdapter(ArrayList<NewsObject> d, LayoutInflater i) {
         data = d;
         inflater = i;
     }
 
-    public NewsAdapter(ArrayList<MainActivity.NewsObject> d, ArrayList<Bitmap> pics, LayoutInflater i) {
+    public NewsAdapter(ArrayList<NewsObject> d, ArrayList<Bitmap> pics, LayoutInflater i) {
         data = d;
         pictures=pics;
         inflater = i;
     }
 
-    public NewsAdapter(ArrayList<MainActivity.NewsObject> d, LayoutInflater i, FriendsFragment parent) {
+    public NewsAdapter(ArrayList<NewsObject> d, LayoutInflater i, MainActivity parent) {
         data = d;
         inflater = i;
         this.parent = parent;
@@ -64,9 +64,7 @@ public class NewsAdapter extends BaseAdapter{
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View vi = view;
-
-
-        MainActivity.NewsObject news;
+        NewsObject news;
         if(data.size()==0)
         {
             vi = inflater.inflate(R.layout.row_news_empty, null);
@@ -74,21 +72,27 @@ public class NewsAdapter extends BaseAdapter{
         }
         else
         {
-            String meTooText = " has Me-Too'ed your event.";
-            String acceptText = " has accepted your friend request.";
-            String requestText = " has sent you a friend request.";
+            String meTooText = " said me too";
+            String acceptText = "accepted your friend request";
+            String requestText = "sent you a friend request";
             vi = inflater.inflate(R.layout.row_news, null);
             TextView txt = (TextView) vi.findViewById(R.id.news_item_txt);
+            TextView name_txt = (TextView) vi.findViewById(R.id.news_name_txt);
+            TextView lower_txt = (TextView) vi.findViewById(R.id.news_item_txt_lower);
             ImageView profilePic = (ImageView)vi.findViewById(R.id.profile_pic);
 
-
             news = data.get(i);
+            name_txt.setText(data.get(i).nameSource);
+
             if(news.type.equals(Util.NEWS_TYPE_ME_TOO)) {
-                txt.setText(news.nameSource + meTooText);
+                txt.setText( meTooText);
+                lower_txt.setText(data.get(i).event);
             } else if(news.type.equals(Util.NEWS_TYPE_REQ_ACCEPT)){
-                txt.setText(news.nameSource + acceptText);
+                lower_txt.setText(acceptText);
             } else if(news.type.equals(Util.NEWS_TYPE_REQ_RECEIVED)){
-                txt.setText(news.nameSource + requestText);
+                lower_txt.setText(requestText);
+            } else if(news.type.equals(Util.NEWS_EMPTY)){
+                vi = inflater.inflate(R.layout.row_news_empty, null);
             }
             if(pictures.size() > i) {
                 profilePic.setImageBitmap(pictures.get(i));
@@ -98,13 +102,13 @@ public class NewsAdapter extends BaseAdapter{
         return vi;
     }
 
-    public void replace(ArrayList<MainActivity.NewsObject> d, ArrayList<Bitmap> p) {
+    public void replace(ArrayList<NewsObject> d, ArrayList<Bitmap> p) {
         this.data = d;
         this.pictures = p;
         this.notifyDataSetChanged();
     }
 
-    public void replace(ArrayList<MainActivity.NewsObject> d) {
+    public void replace(ArrayList<NewsObject> d) {
         this.data = d;
         this.notifyDataSetChanged();
     }

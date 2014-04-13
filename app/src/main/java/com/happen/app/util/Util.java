@@ -44,10 +44,12 @@ public class Util {
     public static final String COL_PHONE_NUM           = "phoneNumber";
     public static final String COL_ME_TOOS             = "meToos";
     public static final String COL_FRIENDS             = "friends";
+    public static final String COL_EVENT               = "event";
 
     public static final String NEWS_TYPE_REQ_RECEIVED  = "SENT_REQUEST";
     public static final String NEWS_TYPE_REQ_ACCEPT    = "ACCEPT_REQUEST";
     public static final String NEWS_TYPE_ME_TOO        = "ME_TOO";
+    public static final String NEWS_EMPTY              = "EMPTY_NEWS";
 
     // Percentage of profile picture width relative to screen size
     public static final float WIDTH_RATIO              = 0.25f; // 25%

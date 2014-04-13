@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.happen.app.R;
+import com.happen.app.components.EventObject;
 import com.happen.app.components.UserListAdapter;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
@@ -66,6 +67,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     UserListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
+
 
     public static MyListFragment newInstance(int sectionNumber) {
         MyListFragment fragment = new MyListFragment();
@@ -157,8 +159,8 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
 
         // Set up event list
         ListView listview = (ListView)v.findViewById(R.id.mylist_eventlist);
-        ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
-        adapter = new UserListAdapter(eventsList, inflater);
+        ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
+        adapter = new UserListAdapter(eventsList, inflater, this);
         listview.setAdapter(adapter);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
@@ -170,17 +172,16 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("MyListFragment", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
+                    ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
                     if(object.size() == 0) { // User has not created any events yet
-                        HashMap<String, String> event = new HashMap<String, String>();
-                        event.put(KEY_EMPTY, "You have no events. You should create one!");
+                        EventObject event = new EventObject();
                         eventsList.add(event);
                     } else {
                         for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, String> event = new HashMap<String, String>();
-                            if(object.get(i).has(COL_DETAILS)) {
-                                event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
-                            }
+                            String details = object.get(i).getString(COL_DETAILS);
+                            String objId = object.get(i).getObjectId();
+                            EventObject event = new EventObject(details, objId);
+
                             eventsList.add(event);
                         }
                     }
@@ -203,7 +204,17 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
             case R.id.mylist_picture:
                 changePhoto(v);
                 break;
+
+            case R.id.event_item:
+                EventObject clickedEvent = (EventObject) v.getTag();
+                switchToEventDetailsPage(clickedEvent);
+                break;
         }
+    }
+
+    public void switchToEventDetailsPage(EventObject event)
+    {
+        ((MainActivity)getActivity()).replaceMyListPage(event);
     }
 
     public void changePhoto(View view){

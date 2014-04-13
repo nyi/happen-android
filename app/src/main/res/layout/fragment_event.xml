@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+
+    <TextView
+        android:id="@+id/event_details"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dot"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="5dp" />
+
+    <TextView
+        android:id="@+id/friends_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="100dp" />
+
+    <com.happen.app.util.FlowLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:id="@+id/me_too_list"
+        android:focusableInTouchMode="false" />
+
+    <Button
+        android:id="@+id/delete_event"
+        android:text="Delete"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="right"
+        android:textAlignment="center"
+        android:padding="6dp" />
+
+
+
+</LinearLayout>
