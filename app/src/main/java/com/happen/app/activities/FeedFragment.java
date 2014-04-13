@@ -28,6 +28,7 @@ import com.happen.app.util.SwipeListViewListener;
 import com.happen.app.util.SwipeListViewListenerBase;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -188,6 +189,14 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
             @Override
             public void onDismiss(int[] reverseSortedPositions) {
 
+            }
+
+            @Override
+            public int onChangeSwipeMode(int position) {
+                /*if(position==0) {
+                    return SwipeListView.SWIPE_MODE_NONE;
+                }*/
+                return SwipeListView.SWIPE_MODE_DEFAULT;
             }
         });
 
@@ -392,7 +401,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
     public void switchListToFeed()
     {
-        listview.setSwipeMode(1);
+        listview.setSwipeMode(SwipeListView.SWIPE_MODE_BOTH);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
         feedButton.setTextColor(Color.parseColor("#FFFFFF"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right));
@@ -404,7 +413,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
     public void switchListToMeToos()
     {
-        listview.setSwipeMode(3);
+        listview.setSwipeMode(SwipeListView.SWIPE_MODE_LEFT);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left));
         feedButton.setTextColor(Color.parseColor("#3a3b49"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right_active));
@@ -414,33 +423,36 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
         listview.invalidate();
     }
 
-    public void meTooEvent(String objectID, Boolean toRight) {
+    public void meTooEvent(String objectID, final Boolean toRight) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
 
         query.whereEqualTo(KEY_OBJECT_ID, objectID);
 
-        try {
-            ParseObject event = query.getFirst();
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject event, ParseException e) {
+                ParseRelation meToos = event.getRelation(COL_ME_TOOS);
+                ParseRelation hides = event.getRelation(COL_HIDES);
 
-            ParseRelation meToos = event.getRelation(COL_ME_TOOS);
-            ParseRelation hides = event.getRelation(COL_HIDES);
+                if(listview.getAdapter().equals(feedAdapter)) {
+                    if(toRight) {
+                        meToos.add(ParseUser.getCurrentUser());
+                    } else {
+                        hides.add(ParseUser.getCurrentUser());
+                    }
 
-            if(listview.getAdapter().equals(feedAdapter)) {
-                if(toRight) {
-                    meToos.add(ParseUser.getCurrentUser());
-                } else {
-                    hides.add(ParseUser.getCurrentUser());
+                } else if(listview.getAdapter().equals(meTooAdapter)){
+                    meToos.remove(ParseUser.getCurrentUser());
                 }
 
-            } else if(listview.getAdapter().equals(meTooAdapter)){
-                meToos.remove(ParseUser.getCurrentUser());
+                try {
+                    event.save();
+                } catch (Exception e2) {
+                    e2.printStackTrace();
+                }
             }
-
-            event.save();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     @Override
