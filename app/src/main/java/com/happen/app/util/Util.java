@@ -1,5 +1,6 @@
 package com.happen.app.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,6 +10,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Display;
 
 /**
@@ -99,5 +102,10 @@ public class Util {
         }
         Bitmap scaledImage = Bitmap.createScaledBitmap(newImage, 200, 200, false);
         return scaledImage;
+    }
+
+    public static float dipToPixels(Context context, float dipValue) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, metrics);
     }
 }

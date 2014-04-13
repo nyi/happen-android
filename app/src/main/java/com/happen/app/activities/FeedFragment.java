@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -34,6 +35,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +46,7 @@ import java.util.List;
 /**
  * Created by Nelson on 2/14/14.
  */
-public class FeedFragment extends Fragment implements View.OnClickListener {
+public class FeedFragment extends Fragment implements View.OnClickListener, OnRefreshListener {
     // XML node keys
     static final String KEY_EMPTY = "empty";
     static final String KEY_EVENT = "event"; // parent node
@@ -61,6 +65,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
     static final String COL_TIME_FRAME = "timeFrame";
     static final String COL_CREATED_AT = "createdAt";
     static final String COL_ME_TOOS = "meToos";
+    static final String COL_HIDES = "hides";
     static final String TABLE_USER = "User";
     static final String COL_PROFILE_PIC = "profilePic";
     static final String COL_FRIENDS = "friends";
@@ -75,6 +80,8 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
 
     Button feedButton;
     Button meToosButton;
+
+    private PullToRefreshLayout mPullToRefreshLayout;
 
     public static FeedFragment newInstance(int sectionNumber) {
         FeedFragment fragment = new FeedFragment();
@@ -98,6 +105,16 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
         feedAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
         meTooAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
         listview.setAdapter(feedAdapter);
+        mPullToRefreshLayout = (PullToRefreshLayout)v.findViewById(R.id.feed_ptr_layout);
+        ActionBarPullToRefresh.from(getActivity())
+                // Mark All Children as pullable
+                .theseChildrenArePullable(R.id.feed_swipe_list)
+                // Set a OnRefreshListener
+                .listener(this)
+                // Finally commit the setup to our PullToRefreshLayout
+                .setup(mPullToRefreshLayout);
+
+
 
         listview.setSwipeListViewListener(new SwipeListViewListenerBase() {
             @Override
@@ -107,7 +124,10 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                 String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
                 ((EventFeedAdapter)listview.getAdapter()).removeRow(position);
                 listview.closeAnimate(position);
-                meTooEvent(objectID);
+                /*listview.resetScrolling();
+                listview.resetCell();*/
+                meTooEvent(objectID, toRight);
+                //listview.invalidate();
             }
 
             @Override
@@ -133,6 +153,11 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                     meTooText.setVisibility(View.GONE);
                     removeMeTooText.setVisibility(View.VISIBLE);
                     backLayout.setBackgroundColor(Color.parseColor("#e86060"));
+                    if(listview.getAdapter().equals(feedAdapter)) {
+                        removeMeTooText.setText("hide");
+                    } else {
+                        removeMeTooText.setText("undo");
+                    }
                 } else {
                     removeMeTooText.setVisibility(View.GONE);
                     meTooText.setVisibility(View.VISIBLE);
@@ -175,11 +200,40 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
         return v;
     }
 
+    @Override
+    public void onRefreshStarted(View view) {
+        //setListShown(false); // This will hide the listview and visible a round progress bar
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                queryFeed();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
+
+                // if you set the "setListShown(false)" then you have to
+                //uncomment the below code segment
+
+//                        if (getView() != null) {
+//                            // Show the list again
+//                            setListShown(true);
+//                        }
+            }
+        }.execute();
+
+    }
+
     public void queryFeed() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
         query.orderByDescending(COL_CREATED_AT);
-        query.whereNotEqualTo(COL_ME_TOOS, ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId()));
+        ParseObject curUser = ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId());
+        query.whereNotEqualTo(COL_ME_TOOS, curUser);
+        query.whereNotEqualTo(COL_HIDES, curUser);
 
         try {
 
@@ -247,6 +301,9 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                         }
 
                         feedAdapter.replace(eventsList, profPictures);
+                        feedAdapter.notifyDataSetChanged();
+                        // Notify PullToRefreshLayout that the refresh has finished
+                        mPullToRefreshLayout.setRefreshComplete();
                     } else {
                         Log.d("score", "Error: " + e.getMessage());
                     }
@@ -335,7 +392,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
 
     public void switchListToFeed()
     {
-        listview.setSwipeMode(2);
+        listview.setSwipeMode(1);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
         feedButton.setTextColor(Color.parseColor("#FFFFFF"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right));
@@ -357,7 +414,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
         listview.invalidate();
     }
 
-    public void meTooEvent(String objectID) {
+    public void meTooEvent(String objectID, Boolean toRight) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
 
@@ -367,9 +424,15 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
             ParseObject event = query.getFirst();
 
             ParseRelation meToos = event.getRelation(COL_ME_TOOS);
+            ParseRelation hides = event.getRelation(COL_HIDES);
 
             if(listview.getAdapter().equals(feedAdapter)) {
-                meToos.add(ParseUser.getCurrentUser());
+                if(toRight) {
+                    meToos.add(ParseUser.getCurrentUser());
+                } else {
+                    hides.add(ParseUser.getCurrentUser());
+                }
+
             } else if(listview.getAdapter().equals(meTooAdapter)){
                 meToos.remove(ParseUser.getCurrentUser());
             }
@@ -391,9 +454,9 @@ public class FeedFragment extends Fragment implements View.OnClickListener {
                 switchListToMeToos();
                 break;
 
-            case R.id.me_too_button:
+            /*case R.id.me_too_button:
                 meTooEvent((String)v.getTag());
-                break;
+                break;*/
         }
     }
 }

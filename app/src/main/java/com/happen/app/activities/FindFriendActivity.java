@@ -181,11 +181,15 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                     ArrayList<HappenUser> map = new ArrayList<HappenUser>();
                     for (ParseUser u : users) {
                         boolean flag = true;
-                        for (ParseObject friend : friendList)
-                            if (friend.getObjectId() == u.getObjectId())
+                        for (ParseObject friend : friendList) {
+                            if (((ParseUser)friend).getObjectId().equals(u.getObjectId())) {
                                 flag = false;
-                        if (flag)
+                                break;
+                            }
+                        }
+                        if (flag) {
                             map.add(new HappenUser(u));
+                        }
                     }
                     mContactsAdapter.replace(map);
                 } else {
