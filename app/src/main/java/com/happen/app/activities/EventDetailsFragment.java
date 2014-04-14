@@ -1,7 +1,11 @@
 package com.happen.app.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -19,6 +23,7 @@ import com.happen.app.components.EventObject;
 import com.happen.app.components.MeTooImageView;
 import com.happen.app.util.FlowLayout;
 import com.happen.app.util.HappenUser;
+import com.happen.app.util.MyListCache;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
@@ -46,7 +51,7 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
 
     TextView eventText;
     EventObject event;
-    HashMap<String, ParseObject> myListEventCache;
+    MyListCache myListCache;
     Activity activity;
     FlowLayout flowLayout;
     Button deleteButton;
@@ -61,8 +66,12 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
         return fragment;
     }
 
-    public static EventDetailsFragment newInstance(EventObject eventObj) {
-        EventDetailsFragment fragment = new EventDetailsFragment(eventObj);
+    public static EventDetailsFragment newInstance(String objectId) {
+        EventDetailsFragment fragment;
+        if(objectId!=null)
+           fragment = new EventDetailsFragment(objectId);
+        else
+            fragment = new EventDetailsFragment();
         Bundle args = new Bundle();
 
         //for(int i = 0;)
@@ -71,26 +80,14 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
         return fragment;
     }
 
-    public static EventDetailsFragment newInstance(EventObject eventObj, HashMap<String, ParseObject> cache) {
-        EventDetailsFragment fragment = new EventDetailsFragment(eventObj, cache);
-        Bundle args = new Bundle();
-
-        //for(int i = 0;)
-            /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);*/
-        return fragment;
-    }
 
     public EventDetailsFragment() {
 
     }
 
-    public EventDetailsFragment(EventObject eventObj) {
-        this.event = eventObj;
-    }
-    public EventDetailsFragment(EventObject eventObj, HashMap<String, ParseObject> cache) {
-        this.event = eventObj;
-        this.myListEventCache = cache;
+    public EventDetailsFragment(String objectId) {
+        MyListCache cache = MyListCache.getInstance();
+        this.event = cache.get(objectId);
     }
 
 
@@ -112,8 +109,11 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
 
         ArrayList<HappenUser> meToos = new ArrayList<HappenUser>();
         ParseObject event;
-        if((event = myListEventCache.get(this.event.objectId)) != null)
+        myListCache = MyListCache.getInstance();
+        EventObject eventObj = MyListCache.get(this.event.objectId);
+        if(eventObj != null)
         {
+            event = eventObj.parseObj;
             ParseRelation relation = event.getRelation(Util.COL_ME_TOOS);
             ParseQuery query = relation.getQuery();
             query.findInBackground(new FindCallback<ParseObject>() {
@@ -194,6 +194,7 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
 
     public void deleteEvent(){
         HashMap<String, Object> params = new HashMap<String, Object>();
+        MyListCache.removeEvent(event.objectId);
         params.put("eventId", event.objectId);
         ParseCloud.callFunctionInBackground("deleteEvent", params, new FunctionCallback<String>() {
             public void done(String ret, ParseException e) {
@@ -216,8 +217,30 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
         {
             case(R.id.delete_button):
                 deleteButton.setClickable(false);
-                deleteEvent();
+                DeleteDialog dialog = new DeleteDialog();
+                dialog.show(this.getFragmentManager(), "delete");
                 break;
+        }
+    }
+
+    public class DeleteDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Are you sure?")
+                    .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            deleteEvent();
+                        }
+                    })
+                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
         }
     }
 

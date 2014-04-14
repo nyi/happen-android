@@ -73,10 +73,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     private NewsAdapter newsAdapter;
     private ArrayList<NewsObject> newsList;
 
-    //objectId -> Event
-    //Populated in myListFragmeny query, used in event details
-    public HashMap<String, ParseObject> myListEventCache;
-
+    private static String objToBeDeleted;
     //objectId -> profilePic
     //Populated in feedFragment query, used in event details
     public HashMap<String, Bitmap> imageCache;
@@ -96,7 +93,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         setContentView(R.layout.activity_main);
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
-        myListEventCache = new HashMap<String, ParseObject>();
         self = this;
         actionBar.setLogo(R.drawable.logo);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -148,6 +144,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -357,17 +355,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
-    public void replaceMyListPage(EventObject event)
+    public void replaceMyListPage(String eventId)
     {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.remove(myListPage);
         ft.commit();
         if (myListPage instanceof MyListFragment) {
-            myListPage = EventDetailsFragment.newInstance(event, myListEventCache);
+            myListPage = EventDetailsFragment.newInstance(eventId);
         }
         else {
-            myListPage = MyListFragment.newInstance(myListEventCache);
+            myListPage = MyListFragment.newInstance();
         }
         mSectionsPagerAdapter.notifyDataSetChanged();
     }
@@ -431,7 +429,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 // MyListFragment
                 case 2:
                     if (myListPage == null){
-                        myListPage = MyListFragment.newInstance(myListEventCache);
+                        myListPage = MyListFragment.newInstance();
                     }
                     return myListPage;
 
