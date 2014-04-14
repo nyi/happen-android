@@ -411,7 +411,7 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
     }
 
     /**
-     * Shows the progress UI and hides the login form.
+     * Shows the progress UI and hides the current form.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {

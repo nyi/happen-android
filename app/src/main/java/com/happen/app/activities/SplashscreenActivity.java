@@ -80,6 +80,13 @@ public class SplashscreenActivity extends Activity {
                 attemptLogin();
             }
         });
+
+        findViewById(R.id.sign_up_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadSignup();
+            }
+        });
     }
 
     @Override
@@ -119,8 +126,14 @@ public class SplashscreenActivity extends Activity {
         boolean cancel = false;
         View focusView = null;
 
+        // Check that the user entered a username
+        if(TextUtils.isEmpty(mEmail)){
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        }
         // Check for a valid password.
-        if (TextUtils.isEmpty(mPassword)) {
+        else if (TextUtils.isEmpty(mPassword)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
@@ -153,6 +166,11 @@ public class SplashscreenActivity extends Activity {
                 }
             });
         }
+    }
+
+    public void loadSignup(){
+        Intent i = new Intent(SplashscreenActivity.this, SignupActivity.class);
+        startActivity(i);
     }
 
     protected void onPostExecute(final Boolean success) {
@@ -207,16 +225,6 @@ public class SplashscreenActivity extends Activity {
             mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-    public void loadLogin(View view){
-        Intent i = new Intent(SplashscreenActivity.this, LoginActivity.class);
-        startActivity(i);
-    }
-
-    public void loadSignup(View view){
-        Intent i = new Intent(SplashscreenActivity.this, SignupActivity.class);
-        startActivity(i);
     }
 
 }
