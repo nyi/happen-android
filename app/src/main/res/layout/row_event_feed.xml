@@ -41,7 +41,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingBottom="15dip"
+    android:paddingBottom="5dip"
     android:paddingTop="5dip"
     android:paddingLeft="5dip"
     android:paddingRight="10dip"
@@ -55,7 +55,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/time_frame"
         android:orientation="horizontal"
-        android:padding="3dip"
+        android:paddingTop="3dip"
+        android:paddingBottom="3dip"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="5dip">
 
@@ -68,73 +71,79 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/full_name"
-        android:layout_width="wrap_content"
+    <FrameLayout
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/profile_pic_layout"
-        android:layout_below="@+id/time_frame"
-        android:text="Full Name"
-        android:textColor="#000000"
-        android:typeface="sans"
-        android:textSize="17dip"
-        android:textStyle="bold"
-        android:layout_marginRight="5dip" />
-
-    <TextView
-        android:id="@+id/event_details"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/full_name"
-        android:textColor="#000000"
-        android:textSize="12dip"
-        android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/profile_pic_layout"
-        android:text="Event Details" />
+        android:layout_toRightOf="@id/profile_pic_layout"
+        android:layout_centerVertical="true"
+        >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/event_details"
-        android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/profile_pic_layout">
-
-        <Button
-            android:id="@+id/me_too_button"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/time_frame"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="Me Too"/>
+            android:textColor="#343434"
+            android:textSize="10dip"
+            android:gravity="right"
+            android:layout_gravity="top|right"
+            android:text="Time Frame" />
 
-        <Button
-            android:id="@+id/hide_event_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:visibility="gone"
-            android:text="Hide"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            >
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/full_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/time_frame"
+                android:text="Full Name"
+                android:textColor="#000000"
+                android:typeface="sans"
+                android:textSize="17dip"
+                android:textStyle="bold"
+                android:layout_marginRight="5dip" />
 
-    <TextView
-        android:id="@+id/username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/full_name"
-        android:layout_marginTop="4dip"
-        android:textColor="#b9b9b9"
-        android:textSize="12dip"
-        android:layout_toRightOf="@+id/full_name"
-        android:text="Username" />
+            <TextView
+                android:id="@+id/event_details"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/full_name"
+                android:textColor="#000000"
+                android:textSize="12dip"
+                android:layout_marginTop="1dip"
+                android:text="Event Details" />
 
-    <TextView
-        android:id="@+id/time_frame"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#343434"
-        android:textSize="10dip"
-        android:gravity="right"
-        android:text="Time Frame" />
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/event_details"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@+id/profile_pic_layout">
+
+                <Button
+                    android:id="@+id/me_too_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text="Me Too"/>
+
+                <Button
+                    android:id="@+id/hide_event_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:visibility="gone"
+                    android:text="Hide"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
 </RelativeLayout>
 
 </FrameLayout>
