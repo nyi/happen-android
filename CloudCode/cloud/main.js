@@ -123,39 +123,37 @@ Parse.Cloud.define("deleteEvent", function(event, response) {
   var event = new Event();
   event.id = eventId;
   var newsQuery = new Parse.Query("News");
-  var eventQuery = new Parse.Query("Event");
-  eventQuery.equalTo("objectId", eventId);
+ 
   newsQuery.equalTo("event", event);
-  var eventObj;
 
   var error = false;
 
   newsQuery.find().then(function(news) {
-    if(news.length==0)
-    {
-      error = true;
-      response.error("Could not find associated news");
-    }
-    else
+    if(news!=null && news.length>0) 
     {
       for (var i = news.length - 1; i >= 0; i--) {
         news[i].destroy({});
       };
-      return eventQuery.find();
     }
-  }).then(function(event) {
-    if(event.length==0)
+    var eventQuery = new Parse.Query("Event");
+    eventQuery.equalTo("objectId", eventId);
+    return eventQuery.find();
+    
+  }).then(function(eventresult) {
+    if(eventresult == null || eventresult.length==0)
     {
       error = true;
       response.error("Could not find event");
     }
-    event[0].destroy({});
+    else {
+      eventresult[0].destroy({});
+    }
     return;
   }).then(function(done) {
     if(!error)
       response.success("deleted");
   }, function(error) {
-    response.error();
+    response.error("error deleting event");
   });
 });
 

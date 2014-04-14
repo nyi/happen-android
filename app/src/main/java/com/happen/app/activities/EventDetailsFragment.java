@@ -204,8 +204,10 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
                     System.out.print(e.getMessage());
                     //Error adding friend
                 }
+
             }
         });
+        ((MainActivity)getActivity()).replaceMyListPage(null);
     }
 
     @Override
@@ -213,6 +215,7 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
         switch(view.getId())
         {
             case(R.id.delete_button):
+                deleteButton.setClickable(false);
                 deleteEvent();
                 break;
         }
