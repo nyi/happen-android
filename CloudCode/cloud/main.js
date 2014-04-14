@@ -128,18 +128,22 @@ Parse.Cloud.define("deleteEvent", function(event, response) {
 
   var error = false;
 
+//delete news
   newsQuery.find().then(function(news) {
+    //if any news are found delete
     if(news!=null && news.length>0) 
     {
       for (var i = news.length - 1; i >= 0; i--) {
         news[i].destroy({});
       };
     }
+
+    //setup query for actual event
     var eventQuery = new Parse.Query("Event");
     eventQuery.equalTo("objectId", eventId);
     return eventQuery.find();
     
-  }).then(function(eventresult) {
+  }).then(function(eventresult) {  // then delete event itself
     if(eventresult == null || eventresult.length==0)
     {
       error = true;
@@ -154,6 +158,37 @@ Parse.Cloud.define("deleteEvent", function(event, response) {
       response.success("deleted");
   }, function(error) {
     response.error("error deleting event");
+  });
+});
+
+
+Parse.Cloud.define("meTooEvent", function(event, response) {
+  var eventQuery = new Parse.Query("Event");
+  eventQuery.equalTo("objectId", eventId);
+  var error = false;
+
+  eventQuery.find().then(function(eventFound) {
+    console.log("found news");
+    console.log(eventFound[0]);
+    var user = Parse.User.current();
+    var thisEvent = eventFound[0];
+    thisEvent.add("MeToos", user);
+    var tooCount = thisEvent.get("meTooCount");
+    console.log(tooCount);
+    if(tooCount==null)
+    {
+      thisEvent.set("meTooCount", 1);
+    }
+    else
+    {
+      thisEvent.set("meTooCount", tooCount+1);
+    }
+    return thisEvent.save();
+  }).then( function (saved)
+  {
+      response.success("meToo'ed event");
+  }, function(error) {
+      response.error("error me too-ing");
   });
 });
 
