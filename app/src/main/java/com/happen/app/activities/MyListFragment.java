@@ -23,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.happen.app.R;
+import com.happen.app.components.EventObject;
 import com.happen.app.components.UserListAdapter;
+import com.happen.app.util.MyListCache;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -35,6 +37,8 @@ import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,13 +70,19 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     UserListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
+    MyListCache listCache;
 
-    public static MyListFragment newInstance(int sectionNumber) {
+
+
+    public static MyListFragment newInstance() {
         MyListFragment fragment = new MyListFragment();
         Bundle args = new Bundle();
-        //for(int i = 0;)
-            /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);*/
+        return fragment;
+    }
+
+    public static MyListFragment newInstance(HashMap<String, ParseObject> cache) {
+        MyListFragment fragment = new MyListFragment();
+        Bundle args = new Bundle();
         return fragment;
     }
 
@@ -157,40 +167,47 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
 
         // Set up event list
         ListView listview = (ListView)v.findViewById(R.id.mylist_eventlist);
-        ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
-        adapter = new UserListAdapter(eventsList, inflater);
+        ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
+        adapter = new UserListAdapter(eventsList, inflater, this);
         listview.setAdapter(adapter);
+        listCache = MyListCache.getInstance();
+        if(listCache.size()>0) {
+           eventsList = listCache.getMyList();
+           adapter.replace(eventsList);
+        }
+        else
+        {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
+            query.include(COL_CREATOR);
+            query.whereEqualTo(COL_CREATOR, ParseObject.createWithoutData("_" + TABLE_USER, user.getObjectId()));
+            query.orderByDescending(COL_CREATED_AT);
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
-        query.include(COL_CREATOR);
-        query.whereEqualTo(COL_CREATOR, ParseObject.createWithoutData("_" + TABLE_USER, user.getObjectId()));
-        query.orderByDescending(COL_CREATED_AT);
-
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> object, ParseException e) {
-                if (e == null) {
-                    Log.d("MyListFragment", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
-                    if(object.size() == 0) { // User has not created any events yet
-                        HashMap<String, String> event = new HashMap<String, String>();
-                        event.put(KEY_EMPTY, "You have no events. You should create one!");
-                        eventsList.add(event);
-                    } else {
-                        for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, String> event = new HashMap<String, String>();
-                            if(object.get(i).has(COL_DETAILS)) {
-                                event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
-                            }
+            query.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> object, ParseException e) {
+                    if (e == null) {
+                        Log.d("MyListFragment", "Retrieved " + object.size() + " scores");
+                        ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
+                        if(object.size() == 0) { // User has not created any events yet
+                            EventObject event = new EventObject();
                             eventsList.add(event);
+                        } else {
+                            for (int i = 0; i < object.size(); i++) {
+                                String details = object.get(i).getString(COL_DETAILS);
+                                String objId = object.get(i).getObjectId();
+                                EventObject event = new EventObject(details, objId, object.get(i));
+                                eventsList.add(event);
+                            }
                         }
+                        listCache = MyListCache.getInstance();
+                        //Collections.reverse(eventsList);
+                        listCache.assignMyList(eventsList);
+                        adapter.replace(eventsList);
+                    } else {
+                        Log.d("MyListFragment", "Error: " + e.getMessage());
                     }
-
-                    adapter.replace(eventsList);
-                } else {
-                    Log.d("MyListFragment", "Error: " + e.getMessage());
                 }
-            }
-        });
+            });
+        }
 
         return v;
         //return super.onCreateView(inflater, container, savedInstanceState);
@@ -203,7 +220,17 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
             case R.id.mylist_picture:
                 changePhoto(v);
                 break;
+
+            case R.id.event_item:
+                EventObject clickedEvent = (EventObject) v.getTag();
+                switchToEventDetailsPage(clickedEvent);
+                break;
         }
+    }
+
+    public void switchToEventDetailsPage(EventObject event)
+    {
+        ((MainActivity)getActivity()).replaceMyListPage(event.objectId);
     }
 
     public void changePhoto(View view){
