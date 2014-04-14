@@ -43,13 +43,16 @@ Parse.Cloud.define("acceptFriendRequest", function(request, response) {
     source = friendRequest.get("source");
     target = friendRequest.get("target");
     var targetRelation = target.relation("friends");
+    //add source to target relation
     targetRelation.add(source);
     return target.save();
   }).then(function(targetSaved){
   	var sourceRelation = source.relation("friends");
+  	//add target to source relation
     sourceRelation.add(target);
     return source.save();
   }).then(function(sourceSaved){
+    //remove request from database
     friendRequest.destroy({});
   	return; 
   }).then(function(success){
@@ -112,3 +115,61 @@ Parse.Cloud.define("sendFriendRequest", function(request, response) {
     response.error();
   });
 });
+
+
+Parse.Cloud.define("deleteEvent", function(event, response) {
+  var Event = Parse.Object.extend("Event");
+  var eventId = event.params.eventId;
+  var event = new Event();
+  event.id = eventId;
+  var newsQuery = new Parse.Query("News");
+  var eventQuery = new Parse.Query("Event");
+  eventQuery.equalTo("objectId", eventId);
+  newsQuery.equalTo("event", event);
+  var eventObj;
+
+  var error = false;
+
+  newsQuery.find().then(function(news) {
+    if(news.length==0)
+    {
+      error = true;
+      response.error("Could not find associated news");
+    }
+    else
+    {
+      for (var i = news.length - 1; i >= 0; i--) {
+        news[i].destroy({});
+      };
+      return eventQuery.find();
+    }
+  }).then(function(event) {
+    if(event.length==0)
+    {
+      error = true;
+      response.error("Could not find event");
+    }
+    event[0].destroy({});
+    return;
+  }).then(function(done) {
+    if(!error)
+      response.success("deleted");
+  }, function(error) {
+    response.error();
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

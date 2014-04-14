@@ -33,7 +33,7 @@
         android:focusableInTouchMode="false" />
 
     <Button
-        android:id="@+id/delete_event"
+        android:id="@+id/delete_button"
         android:text="Delete"
         android:layout_width="80dp"
         android:layout_height="wrap_content"

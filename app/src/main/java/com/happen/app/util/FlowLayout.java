@@ -14,7 +14,7 @@ import android.view.ViewGroup;
  * @author Melinda Green
  */
 public class FlowLayout extends ViewGroup {
-    private final static int PAD_H = 2, PAD_V = 2; // Space between child views.
+    private final static int PAD_H = 10, PAD_V = 10; // Space between child views.
     private int mHeight;
 
     public FlowLayout(Context context) {

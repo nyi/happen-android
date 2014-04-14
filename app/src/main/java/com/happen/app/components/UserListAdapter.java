@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.activities.MyListFragment;
+import com.parse.ParseObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;

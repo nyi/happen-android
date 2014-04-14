@@ -67,6 +67,8 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     UserListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
+    HashMap<String, ParseObject> myListEventCache;
+
 
 
     public static MyListFragment newInstance(int sectionNumber) {
@@ -78,8 +80,21 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         return fragment;
     }
 
+    public static MyListFragment newInstance(HashMap<String, ParseObject> cache) {
+        MyListFragment fragment = new MyListFragment(cache);
+        Bundle args = new Bundle();
+        //for(int i = 0;)
+            /*args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);*/
+        return fragment;
+    }
+
     public MyListFragment() {
 
+    }
+
+    public MyListFragment(HashMap<String, ParseObject> cache) {
+        myListEventCache = cache;
     }
 
     @Override
@@ -181,7 +196,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                             String details = object.get(i).getString(COL_DETAILS);
                             String objId = object.get(i).getObjectId();
                             EventObject event = new EventObject(details, objId);
-
+                            myListEventCache.put(objId, object.get(i));
                             eventsList.add(event);
                         }
                     }
