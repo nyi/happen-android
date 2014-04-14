@@ -346,7 +346,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Log.d("MainActivity", "Going back to FriendsActivity");
             replaceFriendPage(null);
         }
-        if (currentPage == Pages.MY_LIST && myListPage instanceof EventDetailsFragment) {
+        else if (currentPage == Pages.MY_LIST && myListPage instanceof EventDetailsFragment) {
             Log.d("MainActivity", "Going back to MyList");
             replaceMyListPage(null);
         }
