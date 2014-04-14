@@ -219,6 +219,7 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
                 deleteButton.setClickable(false);
                 DeleteDialog dialog = new DeleteDialog();
                 dialog.show(this.getFragmentManager(), "delete");
+                deleteButton.setClickable(true);
                 break;
         }
     }

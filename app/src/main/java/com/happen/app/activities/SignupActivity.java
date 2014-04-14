@@ -280,31 +280,44 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password.
-        if (TextUtils.isEmpty(mPassword)) {
+        // Check for completion of fields
+        if (TextUtils.isEmpty(mFirstName)) {
+            mFirstNameView.setError(getString(R.string.error_field_required));
+            focusView = mFirstNameView;
+            cancel = true;
+        } else if (TextUtils.isEmpty(mLastName)) {
+            mLastNameView.setError(getString(R.string.error_field_required));
+            focusView = mLastNameView;
+            cancel = true;
+        } else if (TextUtils.isEmpty(mUsername)) {
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
+            cancel = true;
+        } else if (TextUtils.isEmpty(mPassword)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
-        } else if (mPassword.length() < 4) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+        } else if (TextUtils.isEmpty(mPhone)) {
+            mPhoneView.setError(getString(R.string.error_field_required));
+            focusView = mPhoneView;
             cancel = true;
         } else if (TextUtils.isEmpty(mConfirmPassword)) {
             mConfirmPasswordView.setError(getString(R.string.error_field_required));
             focusView = mConfirmPasswordView;
+            cancel = true;
+        }
+        // Check for a valid password.
+        else if (mPassword.length() < 4) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
             cancel = true;
         } else if (!mPassword.equals(mConfirmPassword)) {
             mConfirmPasswordView.setError(getString(R.string.error_mismatch_password));
             focusView = mConfirmPasswordView;
             cancel = true;
         }
-
         // Check for a valid phone number
-        if (TextUtils.isEmpty(mPhone)) {
-            mPhoneView.setError(getString(R.string.error_field_required));
-            focusView = mPhoneView;
-            cancel = true;
-        } else if (mPhone.length() < 10) {
+        else if (mPhone.length() < 10) {
             mPhoneView.setError(getString(R.string.error_invalid_number));
             focusView = mPhoneView;
             cancel = true;
@@ -316,23 +329,6 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
                 focusView = mPhoneView;
                 cancel = true;
             }
-        }
-
-        // Check for completion of other fields
-        if (TextUtils.isEmpty(mLastName)) {
-            mLastNameView.setError(getString(R.string.error_field_required));
-            focusView = mLastNameView;
-            cancel = true;
-        }
-        if (TextUtils.isEmpty(mFirstName)) {
-            mFirstNameView.setError(getString(R.string.error_field_required));
-            focusView = mFirstNameView;
-            cancel = true;
-        }
-        if (TextUtils.isEmpty(mUsername)) {
-            mUsernameView.setError(getString(R.string.error_field_required));
-            focusView = mUsernameView;
-            cancel = true;
         }
 
         if (cancel) {
@@ -377,6 +373,8 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
     }
 
     public void createParseUser(ParseUser user){
+        mSignupStatusMessageView.setText(R.string.signup_progress_signing_up);
+        showProgress(true);
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {
                 if (e == null) {
@@ -384,16 +382,13 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
                     System.out.println("succeeded!");
                     // Show a progress spinner, and kick off a background task to
                     // perform the user login attempt.
-                    mSignupStatusMessageView.setText(R.string.signup_progress_signing_up);
-                    showProgress(true);
-                    Intent i = new Intent(SignupActivity.this, SplashscreenActivity.class);
-                    startActivity(i);
+                    onPostExecute(true);
+
                 } else {
                     // Sign up didn't succeed. Look at the ParseException
                     // to figure out what went wrong
                     System.out.println(e);
-                    mUsernameView.setError(getString(R.string.error_username_taken));
-                    mUsernameView.requestFocus();
+                    onPostExecute(false);
                 }
             }
         });
@@ -402,10 +397,11 @@ public class SignupActivity extends Activity implements PopupMenu.OnMenuItemClic
     protected void onPostExecute(final Boolean success) {
         showProgress(false);
         if (success) {
-            Intent i = new Intent(SignupActivity.this, MainActivity.class);
+            Intent i = new Intent(SignupActivity.this, SplashscreenActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
             startActivity(i);
         } else {
-            mUsernameView.setError(getString(R.string.error_failed_signup));
+            mUsernameView.setError(getString(R.string.error_username_taken));
             mUsernameView.requestFocus();
         }
     }

@@ -76,7 +76,7 @@ public class EventFeedAdapter extends BaseAdapter {
 
         TextView fullName= (TextView)vi.findViewById(R.id.full_name);
         TextView eventDetails = (TextView)vi.findViewById(R.id.event_details);
-        TextView username = (TextView)vi.findViewById(R.id.username);
+        //TextView username = (TextView)vi.findViewById(R.id.username);
         TextView timeFrame = (TextView)vi.findViewById(R.id.time_frame);
         ImageView profilePic = (ImageView)vi.findViewById(R.id.profile_pic);
         Button meTooButton = (Button)vi.findViewById(R.id.me_too_button);
@@ -87,7 +87,7 @@ public class EventFeedAdapter extends BaseAdapter {
         if(event.containsKey(KEY_EMPTY)) {
             profilePic.setVisibility(View.GONE);
             eventDetails.setVisibility(View.GONE);
-            username.setVisibility(View.GONE);
+            //username.setVisibility(View.GONE);
             meTooButton.setVisibility(View.GONE);
             timeFrame.setVisibility(View.GONE);
             fullName.setText("You have no events to display.");
@@ -96,7 +96,7 @@ public class EventFeedAdapter extends BaseAdapter {
             // Setting the values
             fullName.setText(event.get(KEY_FULL_NAME));
             eventDetails.setText(event.get(KEY_EVENT_DETAILS));
-            username.setText(event.get(KEY_USERNAME));
+            //username.setText(event.get(KEY_USERNAME));
             timeFrame.setText(event.get(KEY_TIME_FRAME));
             if(pictures.size() > i) {
                 profilePic.setImageBitmap(pictures.get(i));
