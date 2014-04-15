@@ -73,4 +73,9 @@ public final class MyListCache {
         return null;
     }
 
+    public static void clear()
+    {
+        myList = new ArrayList<EventObject>();
+    }
+
 }

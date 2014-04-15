@@ -164,6 +164,50 @@ Parse.Cloud.define("deleteEvent", function(event, response) {
 
 Parse.Cloud.define("meTooEvent", function(event, response) {
   var eventQuery = new Parse.Query("Event");
+  var eventId = event.params.eventId;
+  eventQuery.equalTo("objectId", eventId);
+  var error = false;
+
+  eventQuery.find().then(function(eventFound) {
+    console.log(eventFound[0]);
+    var user = Parse.User.current();
+    var thisEvent = eventFound[0];
+    var meTooArray = thisEvent.get("MeToos");
+    var alreadyMeTooed = false;
+    for (var i = meTooArray.length - 1; i >= 0; i--) {
+      if(meTooArray[i].get("objectId") === eventId)
+      {
+        alreadyMeTooed = true;
+        break;
+      }
+    };
+    if(!alreadyMeTooed)
+    {
+      var tooCount = thisEvent.get("meTooCount");
+      console.log(tooCount);
+      if(tooCount==null)
+      {
+        thisEvent.set("meTooCount", 1);
+      }
+      else if(thisEvent.dirty)
+      {
+        console.log("Dirty");
+        thisEvent.set("meTooCount", tooCount+1);
+        return thisEvent.save();
+      }
+    }
+    return;
+  }).then( function (saved)
+  {
+      response.success("meToo'ed event");
+  }, function(error) {
+      response.error("error me too-ing");
+  });
+});
+
+Parse.Cloud.define("hideEvent", function(event, response) {
+  var eventQuery = new Parse.Query("Event");
+  var eventId = event.params.eventId;
   eventQuery.equalTo("objectId", eventId);
   var error = false;
 
@@ -172,17 +216,28 @@ Parse.Cloud.define("meTooEvent", function(event, response) {
     console.log(eventFound[0]);
     var user = Parse.User.current();
     var thisEvent = eventFound[0];
-    thisEvent.add("MeToos", user);
-    var tooCount = thisEvent.get("meTooCount");
-    console.log(tooCount);
-    if(tooCount==null)
-    {
-      thisEvent.set("meTooCount", 1);
-    }
-    else
-    {
-      thisEvent.set("meTooCount", tooCount+1);
-    }
+    thisEvent.addUnique("Hides", user);
+    return thisEvent.save();
+  }).then( function (saved)
+  {
+      response.success("meToo'ed event");
+  }, function(error) {
+      response.error("error me too-ing");
+  });
+});
+
+Parse.Cloud.define("undoMeToo", function(event, response) {
+  var eventQuery = new Parse.Query("Event");
+  var eventId = event.params.eventId;
+  eventQuery.equalTo("objectId", eventId);
+  var error = false;
+
+  eventQuery.find().then(function(eventFound) {
+    console.log("found news");
+    console.log(eventFound[0]);
+    var user = Parse.User.current();
+    var thisEvent = eventFound[0];
+    thisEvent.remove("MeToos", user);
     return thisEvent.save();
   }).then( function (saved)
   {

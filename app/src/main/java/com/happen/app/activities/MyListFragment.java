@@ -177,6 +177,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         }
         else
         {
+            listCache.clear();
             ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
             query.include(COL_CREATOR);
             query.whereEqualTo(COL_CREATOR, ParseObject.createWithoutData("_" + TABLE_USER, user.getObjectId()));

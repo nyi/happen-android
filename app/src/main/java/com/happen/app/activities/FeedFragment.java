@@ -23,11 +23,14 @@ import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.components.EventFeedAdapter;
+import com.happen.app.util.MyListCache;
 import com.happen.app.util.SwipeListView;
 import com.happen.app.util.SwipeListViewListener;
 import com.happen.app.util.SwipeListViewListenerBase;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -429,19 +432,74 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
             if(listview.getAdapter().equals(feedAdapter)) {
                 if(toRight) {
-                    meToos.add(ParseUser.getCurrentUser());
+                   // meToos.add(ParseUser.getCurrentUser());
+                    meTooCloudCode(event.getObjectId());
+
                 } else {
-                    hides.add(ParseUser.getCurrentUser());
+                    //hides.add(ParseUser.getCurrentUser());
+                    hideCloudCode(event.getObjectId());
                 }
 
             } else if(listview.getAdapter().equals(meTooAdapter)){
-                meToos.remove(ParseUser.getCurrentUser());
+                //meToos.remove(ParseUser.getCurrentUser());
+                undoMeTooCloudCode(event.getObjectId());
             }
 
             event.save();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void meTooCloudCode(String objectId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("eventId", objectId);
+        ParseCloud.callFunctionInBackground("meTooEvent", params, new FunctionCallback<String>() {
+            public void done(String ret, ParseException e) {
+                if (e == null) {
+                    System.out.println("success!");
+                    //Success
+                } else {
+                    System.out.print(e.getMessage());
+                    //Error adding friend
+                }
+
+            }
+        });
+    }
+
+    public void undoMeTooCloudCode(String objectId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("eventId", objectId);
+        ParseCloud.callFunctionInBackground("undoMeTooEvent", params, new FunctionCallback<String>() {
+            public void done(String ret, ParseException e) {
+                if (e == null) {
+                    System.out.println("success!");
+                    //Success
+                } else {
+                    System.out.print(e.getMessage());
+                    //Error adding friend
+                }
+
+            }
+        });
+    }
+
+    public void hideCloudCode(String objectId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("eventId", objectId);
+        ParseCloud.callFunctionInBackground("hideEvent", params, new FunctionCallback<String>() {
+            public void done(String ret, ParseException e) {
+                if (e == null) {
+                    System.out.println("success!");
+                    //Success
+                } else {
+                    System.out.print(e.getMessage());
+                    //Error adding friend
+                }
+
+            }
+        });
     }
 
     @Override
