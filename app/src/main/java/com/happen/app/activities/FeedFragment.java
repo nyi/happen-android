@@ -68,8 +68,8 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
     static final String COL_DETAILS = "details";
     static final String COL_TIME_FRAME = "timeFrame";
     static final String COL_CREATED_AT = "createdAt";
-    static final String COL_ME_TOOS = "meToos";
-    static final String COL_HIDES = "hides";
+    static final String COL_ME_TOOS = "MeToos";
+    static final String COL_HIDES = "Hides";
     static final String TABLE_USER = "User";
     static final String COL_PROFILE_PIC = "profilePic";
     static final String COL_FRIENDS = "friends";
@@ -428,35 +428,16 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
     }
 
     public void meTooEvent(String objectID, final Boolean toRight) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
-        query.include(COL_CREATOR);
 
-        query.whereEqualTo(KEY_OBJECT_ID, objectID);
-
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject event, ParseException e) {
-                ParseRelation meToos = event.getRelation(COL_ME_TOOS);
-                ParseRelation hides = event.getRelation(COL_HIDES);
-
-                if(listview.getAdapter().equals(feedAdapter)) {
-                    if(toRight) {
-                        //meToos.add(ParseUser.getCurrentUser());
-                    } else {
-                        //hides.add(ParseUser.getCurrentUser());
-                    }
-
-                } else if(listview.getAdapter().equals(meTooAdapter)){
-                    //meToos.remove(ParseUser.getCurrentUser());
-                }
-
-                try {
-                    event.save();
-                } catch (Exception e2) {
-                    e2.printStackTrace();
-                }
+        if(listview.getAdapter().equals(feedAdapter)) {
+            if(toRight) {
+                meTooCloudCode(objectID);
+            } else {
+                hideCloudCode(objectID);
             }
-        });
+        } else if(listview.getAdapter().equals(meTooAdapter)){
+            undoMeTooCloudCode(objectID);
+        }
     }
 
     public void meTooCloudCode(String objectId) {
