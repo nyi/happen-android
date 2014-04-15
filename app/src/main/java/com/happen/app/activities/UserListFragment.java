@@ -3,6 +3,7 @@ package com.happen.app.activities;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,12 +12,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.components.EventObject;
+import com.happen.app.components.EventFeedAdapter;
+import com.happen.app.components.EventObject;
 import com.happen.app.components.UserListAdapter;
+import com.happen.app.util.SwipeListView;
+import com.happen.app.util.SwipeListViewListenerBase;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -49,6 +55,7 @@ public class UserListFragment extends Fragment {
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
 
+    SwipeListView listview;
     UserListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
@@ -154,10 +161,81 @@ public class UserListFragment extends Fragment {
         }
 
         // Set up event list
-        ListView listview = (ListView)v.findViewById(R.id.mylist_eventlist);
+        listview = (SwipeListView)v.findViewById(R.id.mylist_eventlist);
         ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
         adapter = new UserListAdapter(eventsList, inflater);
+        listview.setSwipeMode(SwipeListView.SWIPE_MODE_BOTH);
         listview.setAdapter(adapter);
+
+        listview.setSwipeListViewListener(new SwipeListViewListenerBase() {
+            @Override
+            public void onOpened(int position, boolean toRight) {
+                Log.d("swipe", "onOpened " + position);
+            }
+
+            @Override
+            public void onClosed(int position, boolean fromRight) {
+            }
+
+            @Override
+            public void onListChanged() {
+            }
+
+            @Override
+            public void onMove(int position, float x) {
+            }
+
+            @Override
+            public void onStartOpen(int position, int action, boolean right) {
+                Log.d("swipe", String.format("onStartOpen %d - action %d", position, action));
+                View curRow = listview.getChildAt(position- listview.getFirstVisiblePosition());
+                TextView meTooText = (TextView)curRow.findViewById(R.id.me_too_text);
+                TextView removeMeTooText = (TextView)curRow.findViewById(R.id.remove_me_too_text);
+                LinearLayout backLayout = (LinearLayout)curRow.findViewById(R.id.back);
+                if(!right) {
+                    meTooText.setVisibility(View.GONE);
+                    removeMeTooText.setVisibility(View.VISIBLE);
+                    backLayout.setBackgroundColor(Color.parseColor("#e86060"));
+                } else {
+                    removeMeTooText.setVisibility(View.GONE);
+                    meTooText.setVisibility(View.VISIBLE);
+                    backLayout.setBackgroundColor(Color.parseColor("#68d2a4"));
+                }
+            }
+
+            @Override
+            public void onStartClose(int position, boolean right) {
+                Log.d("swipe", String.format("onStartClose %d", position));
+            }
+
+            @Override
+            public void onClickFrontView(int position) {
+                Log.d("swipe", String.format("onClickFrontView %d", position));
+
+                //swipeListView.openAnimate(position); //when you touch front view it will open
+
+            }
+
+            @Override
+            public void onClickBackView(int position) {
+                Log.d("swipe", String.format("onClickBackView %d", position));
+
+                //swipeListView.closeAnimate(position);//when you touch back view it will close
+            }
+
+            @Override
+            public void onDismiss(int[] reverseSortedPositions) {
+
+            }
+
+            @Override
+            public int onChangeSwipeMode(int position) {
+                /*if(position==0) {
+                    return SwipeListView.SWIPE_MODE_NONE;
+                }*/
+                return SwipeListView.SWIPE_MODE_DEFAULT;
+            }
+        });
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
