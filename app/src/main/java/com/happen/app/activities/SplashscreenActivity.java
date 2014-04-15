@@ -5,17 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -80,6 +77,13 @@ public class SplashscreenActivity extends Activity {
                 attemptLogin();
             }
         });
+
+        findViewById(R.id.sign_up_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadSignup();
+            }
+        });
     }
 
     @Override
@@ -101,6 +105,11 @@ public class SplashscreenActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void loadSignup(){
+        Intent i = new Intent(SplashscreenActivity.this, SignupActivity.class);
+        startActivity(i);
+    }
+
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -119,8 +128,14 @@ public class SplashscreenActivity extends Activity {
         boolean cancel = false;
         View focusView = null;
 
+        // Check that the user entered a username
+        if(TextUtils.isEmpty(mEmail)){
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        }
         // Check for a valid password.
-        if (TextUtils.isEmpty(mPassword)) {
+        else if (TextUtils.isEmpty(mPassword)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
@@ -207,16 +222,6 @@ public class SplashscreenActivity extends Activity {
             mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-    public void loadLogin(View view){
-        Intent i = new Intent(SplashscreenActivity.this, LoginActivity.class);
-        startActivity(i);
-    }
-
-    public void loadSignup(View view){
-        Intent i = new Intent(SplashscreenActivity.this, SignupActivity.class);
-        startActivity(i);
     }
 
 }

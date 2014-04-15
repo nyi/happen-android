@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.components.EventObject;
 import com.happen.app.components.UserListAdapter;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
@@ -153,7 +154,7 @@ public class FriendListActivity extends Activity {
 
         // Set up event list
         ListView listview = (ListView)findViewById(R.id.mylist_eventlist);
-        ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
+        ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
         adapter = new UserListAdapter(eventsList, inflater);
         listview.setAdapter(adapter);
 
@@ -166,17 +167,15 @@ public class FriendListActivity extends Activity {
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("FriendListActivity", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
+                    ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
                     if(object.size() == 0) { // User has not created any events yet
-                        HashMap<String, String> event = new HashMap<String, String>();
-                        event.put(KEY_EMPTY, "You have no events. You should create one!");
+                        EventObject event = new EventObject();
                         eventsList.add(event);
                     } else {
                         for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, String> event = new HashMap<String, String>();
-                            if(object.get(i).has(COL_DETAILS)) {
-                                event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
-                            }
+                            String details = object.get(i).getString(COL_DETAILS);
+                            String objId = object.get(i).getObjectId();
+                            EventObject event = new EventObject(details, objId);
                             eventsList.add(event);
                         }
                     }

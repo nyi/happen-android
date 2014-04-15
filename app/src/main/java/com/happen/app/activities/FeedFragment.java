@@ -282,6 +282,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                                     Bitmap image = BitmapFactory.decodeByteArray(file, 0, file.length);
                                     // Get screen dimensions and calculate desired profile picture size
                                     Display display = getActivity().getWindowManager().getDefaultDisplay();
+
                                     Point size = new Point();
                                     display.getSize(size);
                                     int width = size.x;

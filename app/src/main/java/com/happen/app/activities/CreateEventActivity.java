@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,11 +15,17 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.happen.app.R;
+import com.happen.app.components.EventObject;
+import com.happen.app.util.MyListCache;
+import com.happen.app.util.Util;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+
 
 /**
  * Activity which displays a login screen to the user, offering registration as
@@ -34,6 +41,7 @@ public class CreateEventActivity extends Activity {
     private EditText mTextView;
     private Spinner mDateView;
     private Button mButton;
+    private ParseObject event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,15 +122,21 @@ public class CreateEventActivity extends Activity {
     }
 
      void createEvent(String msg, ParseUser user, String date) {
-        ParseObject event = new ParseObject("Event");
+        event = new ParseObject("Event");
         event.put("details", msg);
         event.put("timeFrame", date);
         event.put("creator", user);
+
+        if(msg.equals("")){
+            onPostExecute(false);
+            return;
+        }
         event.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if(e==null){
-                    onPostExecute(true);
+                    MyListCache cache = MyListCache.getInstance();
+                    cache.addEvent(0, new EventObject((String) event.get("details"), event.getObjectId(), event));
                 }
                 else {
                     onPostExecute(false);
@@ -130,6 +144,8 @@ public class CreateEventActivity extends Activity {
 
             }
         });
+        onPostExecute(true);
+
     }
 
     protected void onPostExecute(final Boolean success) {
