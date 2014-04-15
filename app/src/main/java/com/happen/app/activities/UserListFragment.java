@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.happen.app.R;
 import com.happen.app.components.EventObject;
 import com.happen.app.components.EventFeedAdapter;
+import com.happen.app.components.EventObject;
 import com.happen.app.components.UserListAdapter;
 import com.happen.app.util.SwipeListView;
 import com.happen.app.util.SwipeListViewListenerBase;
@@ -163,6 +164,7 @@ public class UserListFragment extends Fragment {
         listview = (SwipeListView)v.findViewById(R.id.mylist_eventlist);
         ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
         adapter = new UserListAdapter(eventsList, inflater);
+        listview.setSwipeMode(SwipeListView.SWIPE_MODE_BOTH);
         listview.setAdapter(adapter);
 
         listview.setSwipeListViewListener(new SwipeListViewListenerBase() {

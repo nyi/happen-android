@@ -43,7 +43,6 @@
     android:id="@+id/event_item"
     android:orientation="horizontal"
     android:background="#ffffff"
-    android:id="@+id/front"
     android:tag="front"
     android:padding="15dip">
 

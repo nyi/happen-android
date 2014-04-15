@@ -44,11 +44,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/mylist_eventlist"
         android:focusableInTouchMode="false"
-        swipe:swipeFrontView="@+id/front"
+        swipe:swipeFrontView="@+id/event_item"
         swipe:swipeBackView="@+id/back"
         swipe:swipeActionLeft="reveal"
         swipe:swipeActionRight="reveal"
-        swipe:swipeMode="both"
+        swipe:swipeMode="none"
         swipe:swipeCloseAllItemsWhenMoveList="false"
         swipe:swipeOpenOnLongPress="false"
         swipe:swipeAnimationTime="200" />
