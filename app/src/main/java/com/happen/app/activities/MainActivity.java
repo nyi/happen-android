@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListPopupWindow;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -34,9 +35,12 @@ import com.happen.app.components.EventObject;
 import com.happen.app.components.FriendsAdapter;
 import com.happen.app.components.NewsAdapter;
 import com.happen.app.components.NewsObject;
+import com.happen.app.util.HappenUser;
+import com.happen.app.util.HappenUserCache;
 import com.happen.app.util.NonSwipeableViewPager;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
+import com.parse.GetDataCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -72,7 +76,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     private Fragment myListPage;
     private NewsAdapter newsAdapter;
     private ArrayList<NewsObject> newsList;
-
     private static String objToBeDeleted;
     //objectId -> profilePic
     //Populated in feedFragment query, used in event details
@@ -93,7 +96,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         setContentView(R.layout.activity_main);
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
+        //for self-reference in call-backs
         self = this;
+
         actionBar.setLogo(R.drawable.logo);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         //actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -122,6 +127,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         myListPage = null;
         this.initNews();
         this.queryNews();
+       // this.populateUserCache();
+
 
     }
 
@@ -280,6 +287,28 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Intent i = new Intent(MainActivity.this, FindFriendActivity.class);
         //   i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
         this.startActivity(i);
+    }
+
+    public void populateUserCache() {
+        HappenUserCache userCache = HappenUserCache.getInstance();
+        userCache.addUser(new HappenUser(ParseUser.getCurrentUser()));
+        ParseQuery<ParseObject> query = ParseUser.getCurrentUser().getRelation(Util.COL_FRIENDS).getQuery();
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> object, ParseException e) {
+                if (e == null) {
+                    Log.d("score", "Retrieved " + object.size() + " scores");
+                    for (int i = 0; i < object.size(); i++) {
+
+                        HappenUser user = new HappenUser((ParseUser)object.get(i));
+                        HappenUserCache userCache1 = HappenUserCache.getInstance();
+                        userCache1.addUser(user);
+                    }
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
     }
 
     @Override

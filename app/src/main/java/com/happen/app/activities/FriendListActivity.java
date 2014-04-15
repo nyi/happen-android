@@ -103,6 +103,8 @@ public class FriendListActivity extends Activity {
 
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
 
+
+
             // Get screen dimensions and calculate desired profile picture size
             Display display = this.getWindowManager().getDefaultDisplay();
             Point size = new Point();

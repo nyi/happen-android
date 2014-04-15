@@ -116,4 +116,5 @@ public class HappenUser {
         mPhoneNumber = mParseUser.getString(Util.COL_PHONE_NUM);
         mUsername = mParseUser.getUsername();
     }
+
 }

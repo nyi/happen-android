@@ -11,7 +11,7 @@ import java.util.HashMap;
 public final class MyListCache {
 
     private static MyListCache instance = null;
-    private static  ArrayList<EventObject> myList = new ArrayList<EventObject>();
+    private static ArrayList<EventObject> myList = new ArrayList<EventObject>();
 
     private MyListCache() {
         // Exists only to defeat instantiation.
