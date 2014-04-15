@@ -38,10 +38,19 @@
             android:textColor="@color/profile_font" />
     </LinearLayout>
 
-    <ListView
+    <com.happen.app.util.SwipeListView
+        xmlns:swipe="http://schemas.android.com/apk/res-auto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/mylist_eventlist"
-        android:focusableInTouchMode="false" />
+        android:focusableInTouchMode="false"
+        swipe:swipeFrontView="@+id/front"
+        swipe:swipeBackView="@+id/back"
+        swipe:swipeActionLeft="reveal"
+        swipe:swipeActionRight="reveal"
+        swipe:swipeMode="both"
+        swipe:swipeCloseAllItemsWhenMoveList="false"
+        swipe:swipeOpenOnLongPress="false"
+        swipe:swipeAnimationTime="200" />
 
 </LinearLayout>
