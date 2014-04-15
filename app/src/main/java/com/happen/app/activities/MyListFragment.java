@@ -222,7 +222,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                 changePhoto(v);
                 break;
 
-            case R.id.event_item:
+            case R.id.my_list_item:
                 EventObject clickedEvent = (EventObject) v.getTag();
                 switchToEventDetailsPage(clickedEvent);
                 break;

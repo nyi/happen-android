@@ -441,13 +441,13 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
                 if(listview.getAdapter().equals(feedAdapter)) {
                     if(toRight) {
-                        meToos.add(ParseUser.getCurrentUser());
+                        //meToos.add(ParseUser.getCurrentUser());
                     } else {
-                        hides.add(ParseUser.getCurrentUser());
+                        //hides.add(ParseUser.getCurrentUser());
                     }
 
                 } else if(listview.getAdapter().equals(meTooAdapter)){
-                    meToos.remove(ParseUser.getCurrentUser());
+                    //meToos.remove(ParseUser.getCurrentUser());
                 }
 
                 try {
