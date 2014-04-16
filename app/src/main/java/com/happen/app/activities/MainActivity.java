@@ -127,7 +127,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         myListPage = null;
         this.initNews();
         this.queryNews();
-       // this.populateUserCache();
+
+        //populate user cache, need screen dimensions for image processing
+        HappenUserCache userCache = HappenUserCache.getInstance();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        userCache.populateUserCache(width);
 
 
     }
@@ -287,28 +294,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Intent i = new Intent(MainActivity.this, FindFriendActivity.class);
         //   i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
         this.startActivity(i);
-    }
-
-    public void populateUserCache() {
-        HappenUserCache userCache = HappenUserCache.getInstance();
-        userCache.addUser(new HappenUser(ParseUser.getCurrentUser()));
-        ParseQuery<ParseObject> query = ParseUser.getCurrentUser().getRelation(Util.COL_FRIENDS).getQuery();
-
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> object, ParseException e) {
-                if (e == null) {
-                    Log.d("score", "Retrieved " + object.size() + " scores");
-                    for (int i = 0; i < object.size(); i++) {
-
-                        HappenUser user = new HappenUser((ParseUser)object.get(i));
-                        HappenUserCache userCache1 = HappenUserCache.getInstance();
-                        userCache1.addUser(user);
-                    }
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                }
-            }
-        });
     }
 
     @Override

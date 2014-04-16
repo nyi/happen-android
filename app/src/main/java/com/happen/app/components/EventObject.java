@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 public class EventObject implements Serializable{
     public String details;
-    public ArrayList<HappenUser> meToos;
     public String objectId;
     public ParseObject parseObj;
 
@@ -32,21 +31,7 @@ public class EventObject implements Serializable{
 
     public EventObject(String deets, String objId, ParseObject parse)
     {
-        this.details = deets;
-        this.objectId = objId;
-        this.empty = false;
-        this.parseObj = parse;
-    }
-
-    public EventObject(String deets, String objId, ArrayList<HappenUser> meTooed)
-    {
         this(deets, objId);
-        this.meToos = meTooed;
-    }
-
-    public EventObject(String deets, String objId, ArrayList<HappenUser> meTooed, ParseObject parse)
-    {
-        this(deets, objId, meTooed);
         this.parseObj = parse;
     }
 

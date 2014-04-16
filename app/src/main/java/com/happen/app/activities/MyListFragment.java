@@ -171,15 +171,20 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         adapter = new UserListAdapter(eventsList, inflater, this);
         listview.setAdapter(adapter);
         listCache = MyListCache.getInstance();
+
+        //if listcache exists, use it to populate list
         if(listCache.size()>0) {
            eventsList = listCache.getMyList();
            adapter.replace(eventsList);
         }
+
+        //else query for events
         else
         {
             listCache.clear();
             ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
             query.include(COL_CREATOR);
+            query.include(Util.COL_ME_TOOS_ARRAY);
             query.whereEqualTo(COL_CREATOR, ParseObject.createWithoutData("_" + TABLE_USER, user.getObjectId()));
             query.orderByDescending(COL_CREATED_AT);
 
@@ -188,7 +193,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                     if (e == null) {
                         Log.d("MyListFragment", "Retrieved " + object.size() + " scores");
                         ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
-                        if(object.size() == 0) { // User has not created any events yet
+                        if (object.size() == 0) { // User has not created any events yet
                             EventObject event = new EventObject();
                             eventsList.add(event);
                         } else {
@@ -212,6 +217,37 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
 
         return v;
         //return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    public void updateMeTooCount(){
+        if(listCache==null)
+            listCache = MyListCache.getInstance();
+
+        ArrayList<EventObject> eventList = listCache.getMyList();
+        for(int i = 0; i < eventList.size(); i++)
+        {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
+            query.whereEqualTo("objectId", eventList.get(i).objectId);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> object, ParseException e) {
+                    if (e == null) {
+                        Log.d("MyListFragment", "Retrieved " + object.size() + " scores");
+
+                        if(object.size() == 0) { // User has not created any events yet
+                            Log.e("MyListFragment", "couldn't query event in cache - something went wrong");
+                        } else {
+                            listCache = MyListCache.getInstance();
+                            EventObject event = listCache.get(object.get(0).getObjectId());
+                            event.parseObj = object.get(0);
+
+                        }
+
+                    } else {
+                        Log.d("MyListFragment", "Error: " + e.getMessage());
+                    }
+                }
+            });
+        }
     }
 
     // KEVIN: added function to bring up popup when selecting profile picture

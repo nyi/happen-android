@@ -107,7 +107,7 @@ public class HappenUser {
         return null;
     }
 
-    private void fetchData() {
+    public void fetchData() {
         if (mParseUser == null)
             return;
 

@@ -23,6 +23,7 @@ import com.happen.app.components.EventObject;
 import com.happen.app.components.MeTooImageView;
 import com.happen.app.util.FlowLayout;
 import com.happen.app.util.HappenUser;
+import com.happen.app.util.HappenUserCache;
 import com.happen.app.util.MyListCache;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
@@ -34,6 +35,7 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,79 +112,30 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
         ArrayList<HappenUser> meToos = new ArrayList<HappenUser>();
         ParseObject event;
         myListCache = MyListCache.getInstance();
-        EventObject eventObj = MyListCache.get(this.event.objectId);
+        EventObject eventObj = myListCache.get(this.event.objectId);
         if(eventObj != null)
         {
-            event = eventObj.parseObj;
-            ParseRelation relation = event.getRelation(Util.COL_ME_TOOS);
-            ParseQuery query = relation.getQuery();
-            query.findInBackground(new FindCallback<ParseObject>() {
-                public void done(List<ParseObject> object, ParseException e) {
-                    if (e == null) {
-                        for(int i = 0; i  < object.size(); i++)
-                        {
-                            ParseFile parsePic = (ParseFile)object.get(i).get(KEY_PROFILE_PIC);
-                            MeTooImageView imageView = new MeTooImageView(getActivity());
-                            if (parsePic == null) {
-                                Log.e("UserListFragment", "Failed to create ParseFile object");
-
-                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
-
-                                // Get screen dimensions and calculate desired profile picture size
-                                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                                Point size = new Point();
-                                display.getSize(size);
-                                int width = size.x;
-
-                                bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
-                                imageView.setImageBitmap(bitmap);
-                            }
-                            else {
-                                parsePic.getDataInBackground(new GetDataCallback() {
-                                    @Override
-                                    public void done(byte[] bytes, ParseException e) {
-                                        if (e == null) {
-                                            if (bytes == null || bytes.length == 0)
-                                                Log.e("UserListFragment", "Received invalid byte array for profile picture.");
-                                            else {
-                                                Bitmap bitmap;
-                                                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                                                // Get screen dimensions and calculate desired profile picture size
-                                                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                                                Point size = new Point();
-                                                display.getSize(size);
-                                                int width = size.x;
-                                                MeTooImageView dynamicImg = new MeTooImageView(activity);
-                                                bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
-                                                dynamicImg.setImageBitmap(bitmap);
-                                                flowLayout.addView(dynamicImg);
-
-                                            }
-                                        }
-                                        else {
-                                            Log.e("UserListFragment", "Failed to retrieve profile picture for user ");
-                                            Log.e("UserListFragment", "Error: " + e.getMessage());
-                                            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
-
-                                            // Get screen dimensions and calculate desired profile picture size
-                                            Display display = getActivity().getWindowManager().getDefaultDisplay();
-                                            Point size = new Point();
-                                            display.getSize(size);
-                                            int width = size.x;
-                                            MeTooImageView dynamicImg = new MeTooImageView(activity);
-                                            bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
-                                            dynamicImg.setImageBitmap(bitmap);
-                                            flowLayout.addView(dynamicImg);
-                                        }
-                                    }
-                                });
-                            }
-                        }
+            List<ParseUser> meToosList = eventObj.parseObj.getList(Util.COL_ME_TOOS_ARRAY);
+            if(meToosList!=null)
+            {
+                for(int i = 0; i < meToosList.size(); i++)
+                {
+                    MeTooImageView imageView = new MeTooImageView(getActivity());
+                    HappenUserCache userCache = HappenUserCache.getInstance();
+                    HappenUser user = userCache.getUser(meToosList.get(i).getObjectId());
+                    if(user == null)
+                    {
+                        Log.d("eventdetails", "user not found in cache - something went wrong");
+                        user = new HappenUser(meToosList.get(i));
                     }
+                    Display display = getActivity().getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    int width = size.x;
+                    imageView.setImageBitmap(user.getProfilePic(width, getResources()));
+                    flowLayout.addView(imageView);
                 }
-
-            });
+            }
 
         }
 
@@ -194,7 +147,9 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
 
     public void deleteEvent(){
         HashMap<String, Object> params = new HashMap<String, Object>();
-        MyListCache.removeEvent(event.objectId);
+        if(myListCache==null)
+            myListCache = MyListCache.getInstance();
+        myListCache.removeEvent(event.objectId);
         params.put("eventId", event.objectId);
         ParseCloud.callFunctionInBackground("deleteEvent", params, new FunctionCallback<String>() {
             public void done(String ret, ParseException e) {
