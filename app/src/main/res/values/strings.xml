@@ -17,6 +17,7 @@
     <string name="splashscreen_signup">SIGN UP</string>
     <string name="me_toos">Me too</string>
     <string name="loading">Loading...</string>
+    <string name="delete">Delete</string>
 
     <!-- Strings related to signup -->
     <string name="prompt_username">Username</string>
@@ -38,6 +39,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in_register"><b>Sign in</b> or register</string>
     <string name="action_sign_in_short">LOGIN</string>
+    <string name="action_sign_out">Sign out</string>
     <string name="action_forgot_password">Recover lost password</string>
     <string name="login_progress_signing_in">Signing in&#8230;</string>
     <string name="error_invalid_password">This password is too short</string>
