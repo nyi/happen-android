@@ -76,8 +76,9 @@ public class CreateEventActivity extends Activity {
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+//               NavUtils.navigateUpFromSameTask(this);
+                 this.finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -137,6 +138,7 @@ public class CreateEventActivity extends Activity {
                 if(e==null){
                     MyListCache cache = MyListCache.getInstance();
                     cache.addEvent(0, new EventObject((String) event.get("details"), event.getObjectId(), event));
+
                 }
                 else {
                     onPostExecute(false);
@@ -145,6 +147,7 @@ public class CreateEventActivity extends Activity {
             }
         });
         onPostExecute(true);
+
 
     }
 

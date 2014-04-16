@@ -373,6 +373,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     public void replaceMyListPage(String eventId)
     {
+        if(myListPage instanceof MyListFragment && eventId == null)
+        {
+            return;
+        }
+
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.remove(myListPage);
