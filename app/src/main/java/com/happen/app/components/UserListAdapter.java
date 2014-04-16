@@ -60,6 +60,7 @@ public class UserListAdapter extends BaseAdapter {
             vi = inflater.inflate(R.layout.row_my_list, null);
         }
         TextView eventDetails = (TextView)vi.findViewById(R.id.event_details);
+        ImageView button = (ImageView)vi.findViewById(R.id.me_too_checkmark);
 
         EventObject event;
         event = data.get(i);
@@ -84,6 +85,9 @@ public class UserListAdapter extends BaseAdapter {
         }
         if(event!=null)
             vi.setTag(event);
+            if(event.meToo) {
+                button.setVisibility(View.VISIBLE);
+            }
         return vi;
     }
 

@@ -14,6 +14,7 @@ public class EventObject implements Serializable{
     public String details;
     public String objectId;
     public ParseObject parseObj;
+    public Boolean meToo;
 
     //used by adapter to represent the case of empty list - still need one item for the list adapter to work so mark it empty
     private boolean empty;
@@ -27,6 +28,12 @@ public class EventObject implements Serializable{
         this.details = deets;
         this.objectId = objId;
         this.empty = false;
+        this.meToo=false;
+    }
+
+    public EventObject(String deets, String objId, Boolean m) {
+        this(deets,objId);
+        meToo = m;
     }
 
     public EventObject(String deets, String objId, ParseObject parse)

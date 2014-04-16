@@ -127,7 +127,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                 View curRow = listview.getChildAt(position - listview.getFirstVisiblePosition());
                 String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
                 ((EventFeedAdapter)listview.getAdapter()).removeRow(position);
-                listview.closeAnimate(position);
+                listview.closeAnimate2(position);
                 /*listview.resetScrolling();
                 listview.resetCell();*/
                 meTooEvent(objectID, toRight);

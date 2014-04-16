@@ -25,7 +25,9 @@ import com.happen.app.util.SwipeListView;
 import com.happen.app.util.SwipeListViewListenerBase;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -51,6 +53,7 @@ public class UserListFragment extends Fragment {
     static final String COL_CREATOR = "creator";
     static final String COL_DETAILS = "details";
     static final String COL_CREATED_AT = "createdAt";
+    static final String COL_OBJECT_ID = "objectId";
 
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
@@ -171,6 +174,43 @@ public class UserListFragment extends Fragment {
             @Override
             public void onOpened(int position, boolean toRight) {
                 Log.d("swipe", "onOpened " + position);
+                View curRow = listview.getChildAt(position - listview.getFirstVisiblePosition());
+                ImageView button = (ImageView)curRow.findViewById(R.id.me_too_checkmark);
+                String objectId = ((EventObject)curRow.getTag()).objectId;
+                listview.closeAnimate(position);
+                if(toRight) {
+                    button.setVisibility(View.VISIBLE);
+                    HashMap<String, Object> params = new HashMap<String, Object>();
+                    params.put("eventId", objectId);
+                    ParseCloud.callFunctionInBackground("meTooEvent", params, new FunctionCallback<String>() {
+                        public void done(String ret, ParseException e) {
+                            if (e == null) {
+                                System.out.println("success!");
+                                //Success
+                            } else {
+                                System.out.print(e.getMessage());
+                                //Error adding friend
+                            }
+
+                        }
+                    });
+                } else {
+                    button.setVisibility(View.GONE);
+                    HashMap<String, Object> params = new HashMap<String, Object>();
+                    params.put("eventId", objectId);
+                    ParseCloud.callFunctionInBackground("undoMeTooEvent", params, new FunctionCallback<String>() {
+                        public void done(String ret, ParseException e) {
+                            if (e == null) {
+                                System.out.println("success!");
+                                //Success
+                            } else {
+                                System.out.print(e.getMessage());
+                                //Error adding friend
+                            }
+
+                        }
+                    });
+                }
             }
 
             @Override
@@ -194,10 +234,12 @@ public class UserListFragment extends Fragment {
                 LinearLayout backLayout = (LinearLayout)curRow.findViewById(R.id.back);
                 if(!right) {
                     meTooText.setVisibility(View.GONE);
+                    ((EventObject)curRow.getTag()).meToo = false;
                     removeMeTooText.setVisibility(View.VISIBLE);
                     backLayout.setBackgroundColor(Color.parseColor("#e86060"));
                 } else {
                     removeMeTooText.setVisibility(View.GONE);
+                    ((EventObject)curRow.getTag()).meToo = true;
                     meTooText.setVisibility(View.VISIBLE);
                     backLayout.setBackgroundColor(Color.parseColor("#68d2a4"));
                 }
@@ -233,7 +275,12 @@ public class UserListFragment extends Fragment {
                 /*if(position==0) {
                     return SwipeListView.SWIPE_MODE_NONE;
                 }*/
-                return SwipeListView.SWIPE_MODE_DEFAULT;
+                View curRow = listview.getChildAt(position- listview.getFirstVisiblePosition());
+                Boolean meToo = ((EventObject)curRow.getTag()).meToo;
+               if(meToo) {
+                   return SwipeListView.SWIPE_MODE_LEFT;
+                }
+                return SwipeListView.SWIPE_MODE_RIGHT;
             }
         });
 
@@ -254,7 +301,18 @@ public class UserListFragment extends Fragment {
                         for (int i = 0; i < object.size(); i++) {
                             String details = object.get(i).getString(COL_DETAILS);
                             String objId = object.get(i).getObjectId();
-                            EventObject event = new EventObject(details, objId);
+                            Boolean meToo = false;
+                            ParseQuery<ParseObject> query2 = ParseQuery.getQuery(TABLE_EVENT);
+                            query2.whereEqualTo(Util.COL_ME_TOOS_ARRAY, ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId()));
+                            query2.whereEqualTo(COL_OBJECT_ID, objId);
+                            try {
+                                if(query2.count() == 1) {
+                                    meToo = true;
+                                }
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                            EventObject event = new EventObject(details, objId, meToo);
                             eventsList.add(event);
                         }
                     }
