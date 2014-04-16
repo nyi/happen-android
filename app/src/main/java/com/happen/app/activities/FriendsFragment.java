@@ -214,7 +214,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         });
     }
 
-    public void switchListToFriends(View v)
+    public void switchListToFriends()
     {
         friendsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
         friendsButton.setTextColor(Color.parseColor("#FFFFFF"));
@@ -224,7 +224,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         queryFriends();
     }
 
-    public void switchListToRequests(View v)
+    public void switchListToRequests()
     {
         friendsButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left));
         friendsButton.setTextColor(Color.parseColor("#3a3b49"));
@@ -238,11 +238,11 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.friend_tab:
-                switchListToFriends(v);
+                switchListToFriends();
                 break;
 
             case R.id.request_tab:
-                switchListToRequests(v);
+                switchListToRequests();
                 break;
 
             case R.id.accept_friend_button:
