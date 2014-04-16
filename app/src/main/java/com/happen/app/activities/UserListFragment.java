@@ -94,7 +94,7 @@ public class UserListFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the MyList fragment layout
-        View v = inflater.inflate(R.layout.fragment_mylist, container, false);
+        View v = inflater.inflate(R.layout.fragment_user_list, container, false);
 
         // Set up profile picture, full name and user handle
         imageView = (ImageView)v.findViewById(R.id.mylist_picture);
