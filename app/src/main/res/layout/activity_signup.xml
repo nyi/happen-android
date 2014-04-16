@@ -45,6 +45,14 @@
                 android:layout_gravity="center_horizontal"
                 android:paddingBottom="5dp"
                 android:onClick="changePhoto"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/profile_text"
+                android:text="Change photo"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/profile_font" />
         </LinearLayout>
 
         <!-- Login form -->

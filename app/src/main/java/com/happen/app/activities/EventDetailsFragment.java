@@ -187,8 +187,6 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
         }
 
         deleteButton.setOnClickListener(this);
-
-
         return v;
     }
 

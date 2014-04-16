@@ -1,8 +1,12 @@
 package com.happen.app.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -71,7 +76,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     ImageView imageView;
     TextView nameView, handleView;
     MyListCache listCache;
-
+    Button signoutButton;
 
 
     public static MyListFragment newInstance() {
@@ -105,6 +110,8 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         imageView.setOnClickListener(this);
         nameView = (TextView)v.findViewById(R.id.mylist_fullname);
         handleView = (TextView)v.findViewById(R.id.mylist_username);
+        signoutButton = (Button)v.findViewById(R.id.sign_out_button);
+        signoutButton.setOnClickListener(this);
 
         // Set full name and user handle
         nameView.setText(user.getString(KEY_FIRSTNAME) + " " + user.getString((KEY_LASTNAME)));
@@ -226,12 +233,27 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                 EventObject clickedEvent = (EventObject) v.getTag();
                 switchToEventDetailsPage(clickedEvent);
                 break;
+
+            case R.id.sign_out_button:
+                signoutButton.setClickable(false);
+                SignoutDialog dialog = new SignoutDialog();
+                dialog.show(this.getFragmentManager(), "signout");
+                signoutButton.setClickable(true);
+                break;
         }
     }
 
     public void switchToEventDetailsPage(EventObject event)
     {
         ((MainActivity)getActivity()).replaceMyListPage(event.objectId);
+    }
+
+    public void signOut(){
+        listCache = MyListCache.getInstance();
+        listCache.clear();
+        Intent i = new Intent(getActivity(), SplashscreenActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+        this.startActivity(i);
     }
 
     public void changePhoto(View view){
@@ -341,6 +363,27 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                 System.out.println(e);
             }
 
+        }
+    }
+
+    public class SignoutDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Are you sure?")
+                    .setNegativeButton("Sign out", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            signOut();
+                        }
+                    })
+                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
         }
     }
 }
