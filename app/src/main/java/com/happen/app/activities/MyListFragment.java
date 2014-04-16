@@ -246,7 +246,6 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                             listCache = MyListCache.getInstance();
                             EventObject event = listCache.get(object.get(0).getObjectId());
                             event.parseObj = object.get(0);
-
                         }
 
                     } else {

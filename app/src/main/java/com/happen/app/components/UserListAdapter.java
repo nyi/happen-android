@@ -70,12 +70,15 @@ public class UserListAdapter extends BaseAdapter {
             // Setting the values
             eventDetails.setText(event.details);
         }
-        //if parent!=null it means list adapter is used by mylist - should really be split into two classes
+        //if parent!=null it means list adapter is used by mylist (and should have meTOOCount displayed
+        // this should really be split into two classes
         if(parent!=null)
         {
             vi.setOnClickListener(parent);
             TextView meTooCount = (TextView) vi.findViewById(R.id.me_too_count);
-            meTooCount.setText("+" + ((Integer) event.parseObj.get("meTooCount")).toString());
+            Integer count = (Integer) event.parseObj.get("meTooCount");
+            if(count != null && count > 0)
+                meTooCount.setText("+" + count.toString());
         }
         if(event!=null)
             vi.setTag(event);
