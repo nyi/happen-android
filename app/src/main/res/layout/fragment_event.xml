@@ -57,13 +57,13 @@
         android:id="@+id/delete_button"
         android:text="@string/delete"
         android:layout_width="fill_parent"
-        android:layout_height="70dp"
+        android:layout_height="40dp"
         android:textAlignment="center"
-        android:padding="6dp"
+        android:padding="8dp"
         android:background="@color/hapred"
         android:layout_gravity="center_horizontal|bottom"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="18sp"
         android:layout_margin="10dp" />
 
 
