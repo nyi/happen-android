@@ -79,6 +79,8 @@ public class UserListAdapter extends BaseAdapter {
             Integer count = (Integer) event.parseObj.get("meTooCount");
             if(count != null && count > 0)
                 meTooCount.setText("+" + count.toString());
+            else
+                meTooCount.setText("");
         }
         if(event!=null)
             vi.setTag(event);
