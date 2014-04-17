@@ -179,6 +179,7 @@ public class UserListFragment extends Fragment {
                 String objectId = ((EventObject)curRow.getTag()).objectId;
                 listview.closeAnimate(position);
                 if(toRight) {
+                    ((EventObject)curRow.getTag()).meToo = true;
                     button.setVisibility(View.VISIBLE);
                     HashMap<String, Object> params = new HashMap<String, Object>();
                     params.put("eventId", objectId);
@@ -195,6 +196,7 @@ public class UserListFragment extends Fragment {
                         }
                     });
                 } else {
+                    ((EventObject)curRow.getTag()).meToo = false;
                     button.setVisibility(View.GONE);
                     HashMap<String, Object> params = new HashMap<String, Object>();
                     params.put("eventId", objectId);
@@ -234,12 +236,10 @@ public class UserListFragment extends Fragment {
                 LinearLayout backLayout = (LinearLayout)curRow.findViewById(R.id.back);
                 if(!right) {
                     meTooText.setVisibility(View.GONE);
-                    ((EventObject)curRow.getTag()).meToo = false;
                     removeMeTooText.setVisibility(View.VISIBLE);
                     backLayout.setBackgroundColor(Color.parseColor("#e86060"));
                 } else {
                     removeMeTooText.setVisibility(View.GONE);
-                    ((EventObject)curRow.getTag()).meToo = true;
                     meTooText.setVisibility(View.VISIBLE);
                     backLayout.setBackgroundColor(Color.parseColor("#68d2a4"));
                 }
