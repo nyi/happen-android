@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Nelson on 2/14/14.
+ * Created by Spencer on 4/17/14.
  */
 public class MyListAdapter extends BaseAdapter {
     // XML node keys

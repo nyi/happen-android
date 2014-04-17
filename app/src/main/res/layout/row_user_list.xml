@@ -68,20 +68,6 @@
         android:src="@drawable/metoo"
         android:visibility="gone"
         />
-
-    <TextView
-        android:id="@+id/me_too_count"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:padding="3dip"
-        android:textColor="@color/hapgreen"
-        android:typeface="sans"
-        android:textSize="20dip"
-        android:layout_alignParentLeft="false"
-        android:layout_marginRight="5dip"
-        android:layout_alignParentRight="true"
-        android:textAlignment="gravity"
-        android:gravity="right" />
 </RelativeLayout>
 
 </FrameLayout>
