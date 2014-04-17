@@ -286,6 +286,7 @@ public class UserListFragment extends Fragment {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
+        query.include(Util.COL_ME_TOOS_ARRAY);
         query.whereEqualTo(COL_CREATOR, ParseObject.createWithoutData("_" + TABLE_USER, user.getObjectId()));
         query.orderByDescending(COL_CREATED_AT);
 
@@ -301,18 +302,8 @@ public class UserListFragment extends Fragment {
                         for (int i = 0; i < object.size(); i++) {
                             String details = object.get(i).getString(COL_DETAILS);
                             String objId = object.get(i).getObjectId();
-                            Boolean meToo = false;
-                            ParseQuery<ParseObject> query2 = ParseQuery.getQuery(TABLE_EVENT);
-                            query2.whereEqualTo(Util.COL_ME_TOOS_ARRAY, ParseObject.createWithoutData("_" + TABLE_USER, ParseUser.getCurrentUser().getObjectId()));
-                            query2.whereEqualTo(COL_OBJECT_ID, objId);
-                            try {
-                                if(query2.count() == 1) {
-                                    meToo = true;
-                                }
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                            }
-                            EventObject event = new EventObject(details, objId, meToo);
+
+                            EventObject event = new EventObject(details, objId, object.get(i));
                             eventsList.add(event);
                         }
                     }

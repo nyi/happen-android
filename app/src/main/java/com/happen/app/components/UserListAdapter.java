@@ -1,6 +1,7 @@
 package com.happen.app.components;
 
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +11,13 @@ import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.activities.MyListFragment;
+import com.happen.app.util.Util;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Nelson on 2/14/14.
@@ -83,11 +87,19 @@ public class UserListAdapter extends BaseAdapter {
             else
                 meTooCount.setText("");
         }
-        if(event!=null)
+        if(event!=null) {
             vi.setTag(event);
-            if(event.meToo) {
-                button.setVisibility(View.VISIBLE);
+            List<ParseUser> users = event.parseObj.getList(Util.COL_ME_TOOS_ARRAY);
+            if (users != null) {
+                for(int j = 0; j < users.size(); j++) {
+                    if(users.get(j).getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                        event.meToo = true;
+                        button.setVisibility(View.VISIBLE);
+                    }
+                }
             }
+
+        }
         return vi;
     }
 

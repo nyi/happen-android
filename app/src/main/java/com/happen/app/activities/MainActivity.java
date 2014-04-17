@@ -123,7 +123,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        userCache.populateUserCache(width);
+        //userCache.populateUserCache(width);
 
 
     }
