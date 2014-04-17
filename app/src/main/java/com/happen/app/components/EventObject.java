@@ -21,6 +21,7 @@ public class EventObject implements Serializable{
 
     public EventObject(){
         empty = true;
+        meToo = false;
     }
 
     public EventObject(String deets, String objId)
