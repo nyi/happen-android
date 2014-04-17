@@ -96,13 +96,13 @@ public class UserListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Inflate the MyList fragment layout
+        // Inflate the UserList fragment layout
         View v = inflater.inflate(R.layout.fragment_user_list, container, false);
 
         // Set up profile picture, full name and user handle
-        imageView = (ImageView)v.findViewById(R.id.mylist_picture);
-        nameView = (TextView)v.findViewById(R.id.mylist_fullname);
-        handleView = (TextView)v.findViewById(R.id.mylist_username);
+        imageView = (ImageView)v.findViewById(R.id.user_list_picture);
+        nameView = (TextView)v.findViewById(R.id.user_list_fullname);
+        handleView = (TextView)v.findViewById(R.id.user_list_username);
 
         // Set full name and user handle
         nameView.setText(user.getString(KEY_FIRSTNAME) + " " + user.getString((KEY_LASTNAME)));
@@ -164,7 +164,7 @@ public class UserListFragment extends Fragment {
         }
 
         // Set up event list
-        listview = (SwipeListView)v.findViewById(R.id.mylist_eventlist);
+        listview = (SwipeListView)v.findViewById(R.id.user_list_eventlist);
         ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
         adapter = new UserListAdapter(eventsList, inflater);
         listview.setSwipeMode(SwipeListView.SWIPE_MODE_BOTH);

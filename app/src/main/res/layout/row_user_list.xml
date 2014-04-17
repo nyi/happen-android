@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/user_list_item"
+
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:paddingBottom="15dip"
+        android:paddingTop="5dip"
+        android:paddingLeft="30dip"
+        android:paddingRight="30dip"
+        android:id="@+id/back"
+        android:tag="back"
+        android:background="#68d2a4">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+            android:id="@+id/me_too_text"
+            android:text="me too"
+            android:textSize="30dip"
+            android:textStyle="bold"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="right|center_vertical"
+            android:id="@+id/remove_me_too_text"
+            android:text="undo"
+            android:textSize="30dip"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/event_item"
+    android:orientation="horizontal"
+    android:background="#ffffff"
+    android:tag="front"
+    android:padding="15dip">
+
+    <TextView
+        android:id="@+id/event_details"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:textColor="#040404"
+        android:typeface="sans"
+        android:textSize="20dip"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/me_too_checkmark"
+        android:layout_marginRight="5dip"/>
+
+    <ImageView
+        android:id="@+id/me_too_checkmark"
+        android:layout_alignParentRight="true"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/metoo"
+        android:visibility="gone"
+        />
+</RelativeLayout>
+
+</FrameLayout>

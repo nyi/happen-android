@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import com.happen.app.R;
 import com.happen.app.components.EventObject;
-import com.happen.app.components.UserListAdapter;
+import com.happen.app.components.MyListAdapter;
 import com.happen.app.util.MyListCache;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
@@ -42,8 +42,6 @@ import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -72,7 +70,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
 
-    UserListAdapter adapter;
+    MyListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
     MyListCache listCache;
@@ -175,7 +173,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         // Set up event list
         ListView listview = (ListView)v.findViewById(R.id.mylist_eventlist);
         ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
-        adapter = new UserListAdapter(eventsList, inflater, this);
+        adapter = new MyListAdapter(eventsList, inflater, this);
         listview.setAdapter(adapter);
         listCache = MyListCache.getInstance();
 
@@ -264,7 +262,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                 changePhoto(v);
                 break;
 
-            case R.id.my_list_item:
+            case R.id.user_list_item:
                 EventObject clickedEvent = (EventObject) v.getTag();
                 switchToEventDetailsPage(clickedEvent);
                 break;
