@@ -277,7 +277,8 @@ public class UserListFragment extends Fragment {
                 }*/
                 View curRow = listview.getChildAt(position- listview.getFirstVisiblePosition());
                 Boolean meToo = ((EventObject)curRow.getTag()).meToo;
-               if(meToo) {
+                ImageView checkMark = (ImageView)curRow.findViewById(R.id.me_too_checkmark);
+               if(checkMark.getVisibility() == View.VISIBLE) {
                    return SwipeListView.SWIPE_MODE_LEFT;
                 }
                 return SwipeListView.SWIPE_MODE_RIGHT;
