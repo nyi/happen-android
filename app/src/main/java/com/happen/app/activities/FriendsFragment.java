@@ -140,7 +140,32 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                             ParseUser requester = object.get(i).getParseUser(COL_SOURCE);
                             String fullName = requester.getString(COL_FIRST_NAME) + " " + requester.getString(COL_LAST_NAME);
                             String username = requester.getString(COL_USERNAME);
-                            FriendObject friend = new FriendObject(fullName, username, object.get(i));
+
+                            byte[] file;
+                            Bitmap image;
+                            ParseFile pfile;
+                            try {
+                                pfile = requester.getParseFile(COL_PROFILE_PIC);
+                                if(pfile!=null) {
+                                    file = pfile.getData();
+                                    image = BitmapFactory.decodeByteArray(file, 0, file.length);
+                                }
+                                else
+                                {
+                                    image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+                                }
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                                image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+                            }
+                            // Get screen dimensions and calculate desired profile picture size
+                            Display display = getActivity().getWindowManager().getDefaultDisplay();
+                            Point size = new Point();
+                            display.getSize(size);
+                            int width = size.x;
+                            image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
+
+                            FriendObject friend = new FriendObject(username, fullName, image);
                             request.put(KEY_REQUESTS, friend);
                             requestsList.add(request);
                         }
@@ -174,7 +199,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                 String fullName = object.get(i).getString(COL_FIRST_NAME) + " " + object.get(i).getString(COL_LAST_NAME);
                                 String username = object.get(i).getString(COL_USERNAME);
 
-                                byte[] file = new byte[0];
+                                byte[] file;
                                 Bitmap image;
                                 ParseFile pfile;
                                 try {
@@ -182,8 +207,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                     if(pfile!=null) {
                                         file = pfile.getData();
                                         image = BitmapFactory.decodeByteArray(file, 0, file.length);
-                                        // Get screen dimensions and calculate desired profile picture size
-
                                     }
                                     else
                                     {
@@ -250,6 +273,11 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                 requestsAdapter.removeRow(listview.getPositionForView(v));
                 break;
 
+            case R.id.decline_friend_button:
+                declineFriend((ParseObject)v.getTag());
+                requestsAdapter.removeRow(listview.getPositionForView(v));
+                break;
+
             case R.id.friend_item:
                 switchToFriendList((String)v.getTag());
                 break;
@@ -268,12 +296,18 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                     System.out.println("success!");
                     //Success
                 } else {
-                    System.out.print(e.getMessage());
+                    System.out.println(e.getMessage());
                     //Error adding friend
                 }
             }
         });
 
+    }
+
+    public void declineFriend(ParseObject request)
+    {
+        String requestId = request.getObjectId();
+        ParseObject.createWithoutData("FriendRequest", requestId).deleteEventually();
     }
 
     public void switchToFriendList(String username)

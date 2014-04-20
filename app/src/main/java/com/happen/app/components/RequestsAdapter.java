@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.happen.app.R;
@@ -58,10 +59,12 @@ public class RequestsAdapter extends BaseAdapter{
         if(view == null) {
             vi = inflater.inflate(R.layout.row_requests, null);
         }
-
         TextView requesterFullName = (TextView)vi.findViewById(R.id.friend_name);
         TextView requesterUsername = (TextView)vi.findViewById(R.id.friend_username);
-        Button requester = (Button) vi.findViewById(R.id.accept_friend_button);
+        ImageView requesterProfilePic = (ImageView)vi.findViewById(R.id.profile_pic);
+
+        Button acceptButton = (Button) vi.findViewById(R.id.accept_friend_button);
+        Button declineButton = (Button) vi.findViewById(R.id.decline_friend_button);
 
         HashMap<String,FriendsFragment.FriendObject> request;
         request = data.get(i);
@@ -69,18 +72,23 @@ public class RequestsAdapter extends BaseAdapter{
         if(request.containsKey(KEY_EMPTY)) {
             requesterFullName.setText(R.string.no_requests);
             requesterUsername.setText("");
-            requester.setVisibility(View.GONE);
+            acceptButton.setVisibility(View.GONE);
+            declineButton.setVisibility(View.GONE);
         } else {
             // Setting the values
             requesterFullName.setText(request.get(KEY_REQUESTS).getFullName());
-            requesterUsername.setText(request.get(KEY_REQUESTS).getUsername());
-            requester.setVisibility(View.VISIBLE);
+            requesterUsername.setText("@" + request.get(KEY_REQUESTS).getUsername());
+            requesterProfilePic.setImageBitmap(request.get(KEY_REQUESTS).getProfPic());
+            acceptButton.setVisibility(View.VISIBLE);
+            declineButton.setVisibility(View.VISIBLE);
             //adds the request object to the button
-            requester.setTag(request.get(KEY_REQUESTS).getRequest());
+            acceptButton.setTag(request.get(KEY_REQUESTS).getRequest());
+            declineButton.setTag(request.get(KEY_REQUESTS).getRequest());
 
             //parent is FriendsFragment, handles the button clicks
             if(parent!=null)
-                requester.setOnClickListener(parent);
+                acceptButton.setOnClickListener(parent);
+                declineButton.setOnClickListener(parent);
         }
 
         return vi;
