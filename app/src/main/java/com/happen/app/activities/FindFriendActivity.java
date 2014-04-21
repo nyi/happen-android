@@ -100,9 +100,24 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
         mUsername = mUsernameTextbox.getText().toString();
         mButton.setClickable(false);
         sendFriendRequest(mUsername);
+        mButton.setClickable(true);
     }
 
-    void sendFriendRequest(String targetUsername) {
+    private void sendFriendRequest(String targetUsername) {
+        // check if the input is empty
+        if (targetUsername.isEmpty()) {
+            mUsernameTextbox.setError("You need to type a username.");
+            mButton.setClickable(true);
+            return;
+        }
+
+        // check if the user is adding themself
+        String currentUsername = ParseUser.getCurrentUser().getUsername();
+        if (currentUsername.equals(targetUsername)) {
+            mUsernameTextbox.setError("You cannot add yourself!");
+            mButton.setClickable(true);
+            return;
+        }
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("source", ParseUser.getCurrentUser().getObjectId());
         params.put("target", targetUsername);
@@ -112,8 +127,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                 if (e == null) {
                     onPostExecute(true);
                 } else {
-                    mButton.setClickable(true);
-                    mUsernameTextbox.setError(e.getMessage());
+                    onPostExecute(false);
                 }
             }
         });
@@ -258,7 +272,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
             this.startActivity(i);
         } else {
-            mUsernameTextbox.setError("Error: could not find friends.");
+            mUsernameTextbox.setError("Could not find the given username.");
         }
     }
 

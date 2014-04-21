@@ -165,7 +165,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                             int width = size.x;
                             image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
 
-                            FriendObject friend = new FriendObject(username, fullName, image);
+                            FriendObject friend = new FriendObject(username, fullName, image, object.get(i));
                             request.put(KEY_REQUESTS, friend);
                             requestsList.add(request);
                         }
@@ -223,7 +223,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                 int width = size.x;
                                 image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
 
-                                FriendObject friend = new FriendObject(username, fullName, image);
+                                FriendObject friend = new FriendObject(username, fullName, image, object.get(i));
                                 friendMap.put(KEY_FRIENDS, friend);
                             }
                             friendsList.add(friendMap);
@@ -286,8 +286,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
     public void acceptFriend(ParseObject request)
     {
-        ParseUser source = (ParseUser)request.get(COL_SOURCE);
-        ParseUser target = (ParseUser)request.get(COL_TARGET);
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("friendRequest", request.getObjectId());
         ParseCloud.callFunctionInBackground("acceptFriendRequest", params, new FunctionCallback<Integer>() {
@@ -340,18 +338,12 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             this.fullName = f;
         }
 
-        public FriendObject(String u, String f, ParseObject req)
-        {
-            this.username = u;
-            this.fullName = f;
-            this.request = req;
-        }
-
-        public FriendObject(String u, String f, Bitmap p)
+        public FriendObject(String u, String f, Bitmap p, ParseObject req)
         {
             this.username = u;
             this.fullName = f;
             this.profPic = p;
+            this.request = req;
         }
 
         public String getUsername()
