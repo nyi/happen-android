@@ -253,6 +253,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                         if(object.size() == 0) {
                             EventObject event = new EventObject();
                             eventsList.add(event);
+                            listview.setSwipeMode(SwipeListView.SWIPE_MODE_NONE);
                         }
                         for (int i = 0; i < object.size(); i++) {
                             EventObject event = new EventObject();
@@ -338,6 +339,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                     if(object.size() == 0) {
                         EventObject event = new EventObject();
                         eventsList.add(event);
+                        listview.setSwipeMode(SwipeListView.SWIPE_MODE_NONE);
                     }
                     for (int i = 0; i < object.size(); i++) {
                         EventObject event = new EventObject();

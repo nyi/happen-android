@@ -5,6 +5,7 @@
     android:orientation="horizontal">
 
     <RelativeLayout
+        android:id="@+id/front"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -12,20 +13,21 @@
         android:paddingTop="20dip"
         android:paddingLeft="15dip"
         android:paddingRight="10dip"
-        android:id="@+id/front"
-        android:tag="front"
         android:background="#ffffff">
 
             <TextView
                 android:id="@+id/full_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/time_frame"
                 android:text="@string/no_event_feed"
                 android:textColor="#000000"
                 android:typeface="sans"
                 android:textSize="17dip"
                 android:layout_marginRight="5dip" />
-
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
     </RelativeLayout>
 </FrameLayout>

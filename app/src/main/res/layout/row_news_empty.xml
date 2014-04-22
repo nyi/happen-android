@@ -21,7 +21,7 @@
             android:padding="3dip"
             android:textColor="#040404"
             android:typeface="sans"
-            android:textSize="20dip"
+            android:textSize="17dip"
             android:layout_marginRight="5dip"
             android:text="@string/no_news"/>
 

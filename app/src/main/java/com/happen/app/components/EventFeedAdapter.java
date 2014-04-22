@@ -1,9 +1,6 @@
 package com.happen.app.components;
 
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +11,7 @@ import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.activities.FeedFragment;
-import com.happen.app.activities.MyListFragment;
-import com.happen.app.util.Util;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Nelson on 2/14/14.
@@ -78,7 +71,6 @@ public class EventFeedAdapter extends BaseAdapter {
 
         if(event.isEmpty()) {
             vi = inflater.inflate(R.layout.row_event_empty, null);
-
         } else {
             // Setting the values
             fullName.setText(event.owner);
@@ -88,7 +80,6 @@ public class EventFeedAdapter extends BaseAdapter {
                 profilePic.setImageBitmap(pictures.get(i));
             }
             meTooButton.setTag(event.objectId);
-
             if(parent!=null)
                 meTooButton.setOnClickListener(parent);
         }
