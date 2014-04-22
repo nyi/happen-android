@@ -137,7 +137,10 @@ public class CreateEventActivity extends Activity {
             public void done(ParseException e) {
                 if(e==null){
                     MyListCache cache = MyListCache.getInstance();
-                    cache.addEvent(0, new EventObject((String) event.get("details"), event.getObjectId(), event));
+                    cache.addEvent(0, new EventObject((String) event.get("creator"),
+                            (String) event.get("details"),
+                            (String) event.get("timeFrame"),
+                            event.getObjectId(), event));
 
                 }
                 else {

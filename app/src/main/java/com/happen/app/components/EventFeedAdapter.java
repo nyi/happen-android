@@ -24,28 +24,21 @@ import java.util.HashMap;
  * Created by Nelson on 2/14/14.
  */
 public class EventFeedAdapter extends BaseAdapter {
-    // XML node keys
-    static final String KEY_FULL_NAME = "fullName";
-    static final String KEY_EVENT_DETAILS = "eventDetails";
-    static final String KEY_USERNAME = "username";
-    static final String KEY_TIME_FRAME = "timeFrame";
-    static final String KEY_OBJECT_ID = "objectId";
-    static final String KEY_EMPTY = "empty";
 
     static final float WIDTH_RATIO = 0.25f; // 25%
 
-    private ArrayList<HashMap<String,String>> data;
+    private ArrayList<EventObject> data;
     private ArrayList<Bitmap> pictures;
     private static LayoutInflater inflater = null;
     private FeedFragment parent;
 
-    public EventFeedAdapter (ArrayList<HashMap<String,String>> d, ArrayList<Bitmap> p, LayoutInflater i) {
+    public EventFeedAdapter (ArrayList<EventObject> d, ArrayList<Bitmap> p, LayoutInflater i) {
         data = d;
         pictures = p;
         inflater = i;
     }
 
-    public EventFeedAdapter (ArrayList<HashMap<String,String>> d, ArrayList<Bitmap> p, LayoutInflater i, FeedFragment pa) {
+    public EventFeedAdapter (ArrayList<EventObject> d, ArrayList<Bitmap> p, LayoutInflater i, FeedFragment pa) {
         data = d;
         pictures = p;
         inflater = i;
@@ -80,26 +73,21 @@ public class EventFeedAdapter extends BaseAdapter {
         ImageView profilePic = (ImageView)vi.findViewById(R.id.profile_pic);
         Button meTooButton = (Button)vi.findViewById(R.id.me_too_button);
 
-        HashMap<String,String> event = new HashMap<String,String>();
+        EventObject event;
         event = data.get(i);
 
-        if(event.containsKey(KEY_EMPTY)) {
-            profilePic.setVisibility(View.GONE);
-            eventDetails.setVisibility(View.GONE);
-            meTooButton.setVisibility(View.GONE);
-            timeFrame.setVisibility(View.GONE);
-            fullName.setText(R.string.no_event_feed);
+        if(event.isEmpty()) {
+            vi = inflater.inflate(R.layout.row_event_empty, null);
 
         } else {
             // Setting the values
-            fullName.setText(event.get(KEY_FULL_NAME));
-            eventDetails.setText(event.get(KEY_EVENT_DETAILS));
-            //username.setText(event.get(KEY_USERNAME));
-            timeFrame.setText(event.get(KEY_TIME_FRAME));
+            fullName.setText(event.owner);
+            eventDetails.setText(event.details);
+            timeFrame.setText(event.timeFrame);
             if(pictures.size() > i) {
                 profilePic.setImageBitmap(pictures.get(i));
             }
-            meTooButton.setTag(event.get(KEY_OBJECT_ID));
+            meTooButton.setTag(event.objectId);
 
             if(parent!=null)
                 meTooButton.setOnClickListener(parent);
@@ -108,7 +96,7 @@ public class EventFeedAdapter extends BaseAdapter {
         return vi;
     }
 
-    public void replace(ArrayList<HashMap<String,String>> d, ArrayList<Bitmap> p) {
+    public void replace(ArrayList<EventObject> d, ArrayList<Bitmap> p) {
         this.data = d;
         this.pictures = p;
         this.notifyDataSetChanged();

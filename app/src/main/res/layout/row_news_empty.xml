@@ -23,7 +23,7 @@
             android:typeface="sans"
             android:textSize="20dip"
             android:layout_marginRight="5dip"
-            android:text="You have no news yet!"/>
+            android:text="@string/no_news"/>
 
 
 

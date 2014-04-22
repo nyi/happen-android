@@ -19,20 +19,17 @@ import java.util.HashMap;
  * Created by Nelson on 2/20/14.
  */
 public class RequestsAdapter extends BaseAdapter{
-    // XML node keys
-    static final String KEY_REQUESTS = "requests";
-    static final String KEY_EMPTY = "empty";
 
-    private ArrayList<HashMap<String,FriendsFragment.FriendObject>> data;
+    private ArrayList<FriendsFragment.FriendObject> data;
     private static LayoutInflater inflater = null;
     private FriendsFragment parent;
 
-    public RequestsAdapter(ArrayList<HashMap<String, FriendsFragment.FriendObject>> d, LayoutInflater i) {
+    public RequestsAdapter(ArrayList<FriendsFragment.FriendObject> d, LayoutInflater i) {
         data = d;
         inflater = i;
     }
 
-    public RequestsAdapter(ArrayList<HashMap<String, FriendsFragment.FriendObject>> d, LayoutInflater i, FriendsFragment parent) {
+    public RequestsAdapter(ArrayList<FriendsFragment.FriendObject> d, LayoutInflater i, FriendsFragment parent) {
         data = d;
         inflater = i;
         this.parent = parent;
@@ -66,25 +63,21 @@ public class RequestsAdapter extends BaseAdapter{
         Button acceptButton = (Button) vi.findViewById(R.id.accept_friend_button);
         Button declineButton = (Button) vi.findViewById(R.id.decline_friend_button);
 
-        HashMap<String,FriendsFragment.FriendObject> request;
+        FriendsFragment.FriendObject request;
         request = data.get(i);
 
-        if(request.containsKey(KEY_EMPTY)) {
-            requesterFullName.setText(R.string.no_requests);
-            requesterUsername.setText("");
-            requesterProfilePic.setVisibility(View.GONE);
-            acceptButton.setVisibility(View.GONE);
-            declineButton.setVisibility(View.GONE);
+        if(request.isEmpty()) {
+            vi = inflater.inflate(R.layout.row_request_empty, null);
         } else {
             // Setting the values
-            requesterFullName.setText(request.get(KEY_REQUESTS).getFullName());
-            requesterUsername.setText("@" + request.get(KEY_REQUESTS).getUsername());
-            requesterProfilePic.setImageBitmap(request.get(KEY_REQUESTS).getProfPic());
+            requesterFullName.setText(request.getFullName());
+            requesterUsername.setText("@" + request.getUsername());
+            requesterProfilePic.setImageBitmap(request.getProfPic());
             acceptButton.setVisibility(View.VISIBLE);
             declineButton.setVisibility(View.VISIBLE);
             //adds the request object to the button
-            acceptButton.setTag(request.get(KEY_REQUESTS).getRequest());
-            declineButton.setTag(request.get(KEY_REQUESTS).getRequest());
+            acceptButton.setTag(request.getRequest());
+            declineButton.setTag(request.getRequest());
 
             //parent is FriendsFragment, handles the button clicks
             if(parent!=null)
@@ -95,7 +88,7 @@ public class RequestsAdapter extends BaseAdapter{
         return vi;
     }
 
-    public void replace(ArrayList<HashMap<String,FriendsFragment.FriendObject>> d) {
+    public void replace(ArrayList<FriendsFragment.FriendObject> d) {
         this.data = d;
         this.notifyDataSetChanged();
     }

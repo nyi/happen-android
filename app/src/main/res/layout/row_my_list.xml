@@ -24,7 +24,7 @@
         android:padding="3dip"
         android:textColor="#040404"
         android:typeface="sans"
-        android:textSize="20dip"
+        android:textSize="17dip"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/me_too_count"
         android:layout_marginRight="5dip"/>
@@ -36,7 +36,7 @@
         android:padding="3dip"
         android:textColor="@color/hapgreen"
         android:typeface="sans"
-        android:textSize="20dip"
+        android:textSize="17dip"
         android:layout_alignParentLeft="false"
         android:layout_marginRight="5dip"
         android:layout_alignParentRight="true"

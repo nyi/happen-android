@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.components.EventFeedAdapter;
+import com.happen.app.components.EventObject;
 import com.happen.app.util.MyListCache;
 import com.happen.app.util.SwipeListView;
 import com.happen.app.util.SwipeListViewListener;
@@ -51,14 +52,6 @@ import java.util.List;
  * Created by Nelson on 2/14/14.
  */
 public class FeedFragment extends Fragment implements View.OnClickListener, OnRefreshListener {
-    // XML node keys
-    static final String KEY_EMPTY = "empty";
-    static final String KEY_EVENT = "event"; // parent node
-    static final String KEY_FULL_NAME = "fullName";
-    static final String KEY_EVENT_DETAILS = "eventDetails";
-    static final String KEY_USERNAME = "username";
-    static final String KEY_TIME_FRAME = "timeFrame";
-    static final String KEY_OBJECT_ID = "objectId";
     // Parse column names
     static final String TABLE_EVENT = "Event";
     static final String COL_CREATOR = "creator";
@@ -104,7 +97,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
         listview = (SwipeListView)v.findViewById(R.id.feed_swipe_list);
 
-        ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
+        ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
         ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
         feedAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
         meTooAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
@@ -255,24 +248,27 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                 public void done(List<ParseObject> object, ParseException e) {
                     if (e == null) {
                         Log.d("score", "Retrieved " + object.size() + " scores");
-                        ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
+                        ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
                         ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
+                        if(object.size() == 0) {
+                            EventObject event = new EventObject();
+                            eventsList.add(event);
+                        }
                         for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, String> event = new HashMap<String, String>();
+                            EventObject event = new EventObject();
                             if(object.get(i).has(COL_CREATOR)) {
-                                event.put(KEY_FULL_NAME, object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME));
-                                event.put(KEY_USERNAME, "@" + object.get(i).getParseObject(COL_CREATOR).getString(COL_USERNAME));
+                                event.owner = object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME);
                             } else { // Event doesn't have a creator associated with it
-                                event.put(KEY_FULL_NAME, "");
-                                event.put(KEY_USERNAME, "");
+                                event.owner = "";
                             }
                             if(object.get(i).has(COL_TIME_FRAME)) {
-                                event.put(KEY_TIME_FRAME, object.get(i).getString(COL_TIME_FRAME));
+                                event.timeFrame = object.get(i).getString(COL_TIME_FRAME);
                             }
                             if(object.get(i).has(COL_DETAILS)) {
-                                event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
+                                event.details = object.get(i).getString(COL_DETAILS);
                             }
-                            event.put(KEY_OBJECT_ID, object.get(i).getObjectId());
+                            event.objectId = object.get(i).getObjectId();
+                            event.setEmpty(false);
                             eventsList.add(event);
 
 
@@ -312,7 +308,6 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                                 e1.printStackTrace();
                             }
                         }
-
                         feedAdapter.replace(eventsList, profPictures);
                         feedAdapter.notifyDataSetChanged();
                         // Notify PullToRefreshLayout that the refresh has finished
@@ -338,26 +333,28 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
+                    ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
                     ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
+                    if(object.size() == 0) {
+                        EventObject event = new EventObject();
+                        eventsList.add(event);
+                    }
                     for (int i = 0; i < object.size(); i++) {
-                        HashMap<String, String> event = new HashMap<String, String>();
+                        EventObject event = new EventObject();
                         if (object.get(i).has(COL_CREATOR)) {
-                            event.put(KEY_FULL_NAME, object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME));
-                            event.put(KEY_USERNAME, "@" + object.get(i).getParseObject(COL_CREATOR).getString(COL_USERNAME));
+                            event.owner = object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME);
                         } else { // Event doesn't have a creator associated with it
-                            event.put(KEY_FULL_NAME, "");
-                            event.put(KEY_USERNAME, "");
+                            event.owner = "";
                         }
                         if (object.get(i).has(COL_TIME_FRAME)) {
-                            event.put(KEY_TIME_FRAME, object.get(i).getString(COL_TIME_FRAME));
+                            event.timeFrame = object.get(i).getString(COL_TIME_FRAME);
                         }
                         if (object.get(i).has(COL_DETAILS)) {
-                            event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
+                            event.details = object.get(i).getString(COL_DETAILS);
                         }
-                        event.put(KEY_OBJECT_ID, object.get(i).getObjectId());
+                        event.objectId = object.get(i).getObjectId();
+                        event.setEmpty(false);
                         eventsList.add(event);
-
 
                         byte[] file = new byte[0];
                         try {

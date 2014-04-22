@@ -36,12 +36,6 @@ import java.util.List;
  * Created by Nelson on 2/20/14.
  */
 public class FriendsFragment extends Fragment implements View.OnClickListener{
-    // XML node keys
-    static final String KEY_EMPTY = "empty";
-    static final String KEY_FRIENDS = "friends";
-    static final String KEY_FULL_NAME = "fullName";
-    static final String KEY_USERNAME = "username";
-    static final String KEY_REQUESTS = "requests";
     // Parse column names
     static final String TABLE_USER = "User";
     static final String TABLE_FRIEND_REQUEST = "FriendRequest";
@@ -59,8 +53,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
     FriendsAdapter friendsAdapter;
     RequestsAdapter requestsAdapter;
-    ArrayList<HashMap<String,FriendObject>> friendsList;
-    ArrayList<HashMap<String,FriendObject>> requestsList;
+    ArrayList<FriendObject> friendsList;
+    ArrayList<FriendObject> requestsList;
     ListView listview;
     MainActivity main;
     MainActivity.SectionsPagerAdapter pager;
@@ -100,8 +94,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         View v = inflater.inflate(R.layout.fragment_friends, container, false);
         // Set up event list
         listview = (ListView)v.findViewById(R.id.friend_list);
-        friendsList = new ArrayList<HashMap<String,FriendObject>>();
-        requestsList = new ArrayList<HashMap<String,FriendObject>>();
+        friendsList = new ArrayList<FriendObject>();
+        requestsList = new ArrayList<FriendObject>();
         friendsAdapter = new FriendsAdapter(friendsList, inflater, this);
         requestsAdapter = new RequestsAdapter(requestsList, inflater, this);
         listview.setAdapter(friendsAdapter);
@@ -117,7 +111,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
 
     public void queryRequests()
     {
-
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_FRIEND_REQUEST);
         query.include(COL_SOURCE);
         query.include(COL_TARGET);
@@ -129,14 +122,13 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
-                    requestsList = new ArrayList<HashMap<String, FriendObject>>();
-                    if(object.size() == 0) { // User has no friends
-                        HashMap<String, FriendObject> request = new HashMap<String, FriendObject>();
-                        request.put(KEY_EMPTY, new FriendObject("",""));
+                    requestsList = new ArrayList<FriendObject>();
+                    if(object.size() == 0) {
+                        FriendObject request = new FriendObject();
                         requestsList.add(request);
-                    } else {
+                    }
+                    else {
                         for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, FriendObject> request = new HashMap<String, FriendObject>();
                             ParseUser requester = object.get(i).getParseUser(COL_SOURCE);
                             String fullName = requester.getString(COL_FIRST_NAME) + " " + requester.getString(COL_LAST_NAME);
                             String username = requester.getString(COL_USERNAME);
@@ -166,8 +158,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                             image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
 
                             FriendObject friend = new FriendObject(username, fullName, image, object.get(i));
-                            request.put(KEY_REQUESTS, friend);
-                            requestsList.add(request);
+                            requestsList.add(friend);
                         }
                     }
 
@@ -187,12 +178,12 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, FriendObject>> friendsList = new ArrayList<HashMap<String, FriendObject>>();
-                    if(object.size() == 0) { // User has no friends
-                        HashMap<String, FriendObject> friendMap = new HashMap<String, FriendObject>();
-                        friendMap.put(KEY_EMPTY, null);
-                        friendsList.add(friendMap);
-                    } else {
+                    ArrayList<FriendObject> friendsList = new ArrayList<FriendObject>();
+                    if(object.size() == 0) {
+                        FriendObject request = new FriendObject();
+                        friendsList.add(request);
+                    }
+                    else {
                         for (int i = 0; i < object.size(); i++) {
                             HashMap<String, FriendObject> friendMap = new HashMap<String, FriendObject>();
                             if(object.get(i).has(COL_FRIENDS)) {
@@ -224,11 +215,11 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                 image = Util.circularCrop(image, (int) (width * WIDTH_RATIO / 2));
 
                                 FriendObject friend = new FriendObject(username, fullName, image, object.get(i));
-                                friendMap.put(KEY_FRIENDS, friend);
+                                friendsList.add(friend);
                             }
-                            friendsList.add(friendMap);
                         }
                     }
+
                     friendsAdapter.replace(friendsList);
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
@@ -318,7 +309,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                     ParseUser user = object.get(0);
                     //pager.setUser(user);
                     //main.switchToFriendList(user);
-                    ((MainActivity)getActivity()).replaceFriendPage(user);
+                    ((MainActivity) getActivity()).replaceFriendPage(user);
                 } else {
                     Log.e("FriendListActivity", "could not find user");
                 }
@@ -331,11 +322,18 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         private String fullName;
         private ParseObject request;
         private Bitmap profPic;
+        private Boolean empty;
+
+        public FriendObject()
+        {
+            this.empty = true;
+        }
 
         public FriendObject(String u, String f)
         {
             this.username = u;
             this.fullName = f;
+            this.empty = false;
         }
 
         public FriendObject(String u, String f, Bitmap p, ParseObject req)
@@ -344,6 +342,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             this.fullName = f;
             this.profPic = p;
             this.request = req;
+            this.empty = false;
         }
 
         public String getUsername()
@@ -362,6 +361,14 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         }
 
         public Bitmap getProfPic() { return this.profPic; }
+
+        public Boolean isEmpty() {
+            return this.empty;
+        }
+
+        public void setEmpty(Boolean empty) {
+            this.empty = empty;
+        }
 
     }
 
