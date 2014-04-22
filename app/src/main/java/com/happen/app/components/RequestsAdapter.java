@@ -72,6 +72,7 @@ public class RequestsAdapter extends BaseAdapter{
         if(request.containsKey(KEY_EMPTY)) {
             requesterFullName.setText(R.string.no_requests);
             requesterUsername.setText("");
+            requesterProfilePic.setVisibility(View.GONE);
             acceptButton.setVisibility(View.GONE);
             declineButton.setVisibility(View.GONE);
         } else {

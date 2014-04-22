@@ -65,7 +65,7 @@ public class MyListAdapter extends BaseAdapter {
         event = data.get(i);
 
         if(event.isEmpty()) {
-            eventDetails.setText("No events here. Create more events!");
+            eventDetails.setText(R.string.no_my_list);
             return vi;
         } else {
             // Setting the values

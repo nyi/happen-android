@@ -61,8 +61,11 @@
     <string name="requests">Requests</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
-    <string name="no_friends">You have no friends. You should add one!</string>
+    <string name="no_friends">You have no friends. Add one!</string>
     <string name="no_requests">You have no requests to display.</string>
+    <string name="no_event_feed">There are no upcoming events... =(</string>
+    <string name="no_my_list">You have no events. Make one now!</string>
+    <string name="no_user_list">This friend has no events.</string>
     <string name="add_username">By Username</string>
     <string name="add_contacts">From Contacts</string>
     <string name="add_friend">Add</string>

@@ -70,7 +70,7 @@ public class UserListAdapter extends BaseAdapter {
         event = data.get(i);
 
         if(event.isEmpty()) {
-            eventDetails.setText("This friend has no events... :(");
+            eventDetails.setText(R.string.no_user_list);
             return vi;
         } else {
             // Setting the values

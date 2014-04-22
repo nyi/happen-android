@@ -70,6 +70,8 @@ public class FriendsAdapter extends BaseAdapter{
 
         if(friend.containsKey(KEY_EMPTY)) {
             friendName.setText(R.string.no_friends);
+            friendUsername.setText("");
+            profPic.setVisibility(View.GONE);
         } else {
             // Setting the values
             friendName.setText(friend.get(KEY_FRIENDS).getFullName());
