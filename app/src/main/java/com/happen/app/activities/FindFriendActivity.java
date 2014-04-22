@@ -127,6 +127,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                 if (e == null) {
                     onPostExecute(true);
                 } else {
+                    mUsernameTextbox.setError(e.getMessage());
                     onPostExecute(false);
                 }
             }
@@ -272,7 +273,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
             this.startActivity(i);
         } else {
-            mUsernameTextbox.setError("Could not find the given username.");
+
         }
     }
 
