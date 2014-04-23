@@ -53,6 +53,7 @@
     <string name="prompt_date">When?</string>
     <string name="button_create">Add event</string>
     <string name="error_create_event_failed">Event failed to create</string>
+    <string name="event_created">Created new event!</string>
 
     <!-- Strings related to friend requesting -->
     <string name="prompt_find_friends">Search for friends here</string>
@@ -70,6 +71,7 @@
     <string name="add_username">By Username</string>
     <string name="add_contacts">From Contacts</string>
     <string name="add_friend">Add</string>
+    <string name="request_sent">Friend request sent!</string>
 
     <string-array name="date_array">
         <item>today</item>

@@ -43,10 +43,6 @@ import java.util.List;
 
 public class EventDetailsFragment extends Fragment  implements View.OnClickListener{
 
-    // XML node keys
-    static final String KEY_PROFILE_PIC = "profilePic";
-
-
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
 

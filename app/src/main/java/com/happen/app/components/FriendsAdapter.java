@@ -1,6 +1,5 @@
 package com.happen.app.components;
 
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import com.happen.app.R;
 import com.happen.app.activities.FriendsFragment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Nelson on 2/20/14.
@@ -53,7 +51,7 @@ public class FriendsAdapter extends BaseAdapter{
     public View getView(int i, View view, ViewGroup viewGroup) {
         View vi = view;
         if(view == null) {
-            vi = inflater.inflate(R.layout.row_friends, null);
+            vi = inflater.inflate(R.layout.row_friend, null);
         }
 
         TextView friendName = (TextView)vi.findViewById(R.id.friend);

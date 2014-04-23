@@ -3,8 +3,11 @@ package com.happen.app.activities;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.provider.ContactsContract;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.happen.app.R;
 import com.happen.app.util.HappenUser;
@@ -48,6 +53,9 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
     // Parse column names
     static final String COL_NUMBER = "phoneNumber";
     static final String COL_PROFILE_PIC = "profilePic";
+
+    // Percentage of profile picture width relative to screen size
+    static final float WIDTH_RATIO = 0.25f; // 25%
 
     // Values for username at the time of the find attempt.
     private String mUsername;
@@ -139,7 +147,8 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+//                NavUtils.navigateUpFromSameTask(this);
+                this.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -256,7 +265,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                 switchToContactsSearch();
                 break;
 
-            case R.id.add_friends_contacts_entry_add_button:
+            case R.id.add_contact_button:
                 sendFriendRequest(((HappenUser)v.getTag()).getUsername());
                 break;
 
@@ -269,11 +278,14 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
 
     protected void onPostExecute(final Boolean success) {
         if (success) {
-            Intent i = new Intent(FindFriendActivity.this, MainActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
-            this.startActivity(i);
-        } else {
+            mUsernameTextbox.setText("");
+            Context context = getApplicationContext();
+            CharSequence text = getString(R.string.request_sent);
+            int duration = Toast.LENGTH_SHORT;
 
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
         }
     }
 
@@ -309,13 +321,12 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
         public View getView(int i, View view, ViewGroup viewGroup) {
             View vi = view;
             if (vi == null) {
-                vi = inflater.inflate(R.layout.row_add_friends_contacts, null);
+                vi = inflater.inflate(R.layout.row_add_from_contacts, null);
             }
 
-            TextView textFullName = (TextView)vi.findViewById(R.id.add_friends_contacts_entry_fullname);
-            TextView textUsername = (TextView)vi.findViewById(R.id.add_friends_contacts_entry_username);
-            TextView textPhoneNumber = (TextView)vi.findViewById(R.id.add_friends_contacts_entry_phoneNumber);
-            Button addButton = (Button) vi.findViewById(R.id.add_friends_contacts_entry_add_button);
+            TextView textFullName = (TextView)vi.findViewById(R.id.contact_name);
+            TextView textUsername = (TextView)vi.findViewById(R.id.contact_username);
+            ImageView addButton = (ImageView) vi.findViewById(R.id.add_contact_button);
             ImageView imgProfilePic = (ImageView)vi.findViewById(R.id.profile_pic);
 
             HappenUser entry = data.get(i);
@@ -323,19 +334,26 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
             if(isDataEmpty) {
                 textFullName.setText("Could not find any matching user.");
                 textUsername.setText("");
-                textPhoneNumber.setText("");
                 addButton.setVisibility(View.GONE);
                 imgProfilePic.setVisibility(View.GONE);
             } else {
                 // Setting the values
                 textFullName.setText(entry.getFullname());
                 textUsername.setText("@" + entry.getUsername());
-                textPhoneNumber.setText(entry.getPhoneNumber());
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
                 int width = size.x;
-                imgProfilePic.setImageBitmap(entry.getProfilePic(width, getResources()));
+
+                Bitmap image = entry.getProfilePic(width, getResources());
+                if(image != null){
+                    imgProfilePic.setImageBitmap(image);
+                } else {
+                    Bitmap squareImage = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
+                    image = Util.circularCrop(squareImage, (int) (width * WIDTH_RATIO / 2));
+                    imgProfilePic.setImageBitmap(image);
+                }
+
                 addButton.setVisibility(View.VISIBLE);
                 addButton.setTag(entry);
                 addButton.setOnClickListener(listener);
