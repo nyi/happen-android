@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -64,7 +65,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
     private EditText mUsernameTextbox;
     private Button mButton;
     private ListView mContactsView;
-    private LinearLayout mUsernameView;
+    private FrameLayout mUsernameView;
     private Button mUsernameTabButton, mContactsTabButton;
 
     private ContactsSearchAdapter mContactsAdapter;
@@ -90,7 +91,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
             }
         });
         mContactsView = (ListView) findViewById(R.id.add_friends_contacts_view);
-        mUsernameView = (LinearLayout) findViewById(R.id.add_friends_username_view);
+        mUsernameView = (FrameLayout) findViewById(R.id.add_friends_username_view);
         mUsernameTabButton = (Button) findViewById(R.id.add_friends_username_tab_button);
         mUsernameTabButton.setOnClickListener(this);
         mContactsTabButton = (Button) findViewById(R.id.add_friends_contacts_tab_button);

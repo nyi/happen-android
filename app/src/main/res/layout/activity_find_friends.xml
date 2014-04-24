@@ -1,21 +1,28 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.happen.app.activities.FindFriendActivity">
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#ffffff">
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:id="@+id/add_friends_contacts_view"
+            android:visibility="gone" />
 
         <FrameLayout
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="10">
-
+            android:layout_weight="10"
+            android:id="@+id/add_friends_username_view">
 
             <LinearLayout style="@style/EventFormContainer"
                 android:orientation="vertical"
-                android:visibility="visible"
-                android:id="@+id/add_friends_username_view">
+                android:visibility="visible">
 
                 <EditText
                     android:id="@+id/add_friends_username_textbox"
@@ -35,12 +42,6 @@
                     android:layout_gravity="right" />
 
             </LinearLayout>
-
-            <ListView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/add_friends_contacts_view"
-                android:visibility="gone" />
         </FrameLayout>
 
         <LinearLayout

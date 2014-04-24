@@ -78,8 +78,8 @@
         <Button
             android:id="@+id/accept_friend_button"
             android:text="@string/accept"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:textSize="15dp"
             android:textAlignment="center"
             android:padding="5dp"
@@ -90,8 +90,8 @@
         <Button
             android:id="@+id/decline_friend_button"
             android:text="@string/decline"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:textSize="15dp"
             android:textAlignment="center"
             android:padding="5dp"
