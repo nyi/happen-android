@@ -128,21 +128,22 @@ public class UserListFragment extends Fragment {
                 @Override
                 public void done(byte[] bytes, ParseException e) {
                     if (e == null) {
-                        if (bytes == null || bytes.length == 0)
+                        Bitmap bitmap;
+                        if (bytes == null || bytes.length == 0) {
                             Log.e("UserListFragment", "Received invalid byte array for profile picture.");
-                        else {
-                            Bitmap bitmap;
-                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-
-                            // Get screen dimensions and calculate desired profile picture size
-                            Display display = getActivity().getWindowManager().getDefaultDisplay();
-                            Point size = new Point();
-                            display.getSize(size);
-                            int width = size.x;
-
-                            bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
-                            imageView.setImageBitmap(bitmap);
+                            bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
                         }
+                        else {
+                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        }
+                        // Get screen dimensions and calculate desired profile picture size
+                        Display display = getActivity().getWindowManager().getDefaultDisplay();
+                        Point size = new Point();
+                        display.getSize(size);
+                        int width = size.x;
+
+                        bitmap = Util.circularCrop(bitmap, (int) (width * WIDTH_RATIO / 2));
+                        imageView.setImageBitmap(bitmap);
                     }
                     else {
                         Log.e("UserListFragment", "Failed to retrieve profile picture for user " + user.getUsername());

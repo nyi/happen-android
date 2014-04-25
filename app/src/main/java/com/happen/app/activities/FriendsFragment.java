@@ -185,13 +185,12 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                     }
                     else {
                         for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, FriendObject> friendMap = new HashMap<String, FriendObject>();
                             if(object.get(i).has(COL_FRIENDS)) {
                                 String fullName = object.get(i).getString(COL_FIRST_NAME) + " " + object.get(i).getString(COL_LAST_NAME);
                                 String username = object.get(i).getString(COL_USERNAME);
 
                                 byte[] file;
-                                Bitmap image;
+                                Bitmap image = null;
                                 ParseFile pfile;
                                 try {
                                     pfile = object.get(i).getParseFile(COL_PROFILE_PIC);
@@ -209,6 +208,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                 }
                                 // Get screen dimensions and calculate desired profile picture size
                                 Display display = getActivity().getWindowManager().getDefaultDisplay();
+                                if (image == null)
+                                    image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
                                 Point size = new Point();
                                 display.getSize(size);
                                 int width = size.x;
