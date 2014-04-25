@@ -1,12 +1,10 @@
 package com.happen.app.activities;
 
 import android.app.Fragment;
-import android.app.ListFragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,26 +13,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.components.EventFeedAdapter;
+import com.happen.app.components.EventObject;
 import com.happen.app.util.SwipeListView;
-import com.happen.app.util.SwipeListViewListener;
 import com.happen.app.util.SwipeListViewListenerBase;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
@@ -47,14 +42,6 @@ import java.util.List;
  * Created by Nelson on 2/14/14.
  */
 public class FeedFragment extends Fragment implements View.OnClickListener, OnRefreshListener {
-    // XML node keys
-    static final String KEY_EMPTY = "empty";
-    static final String KEY_EVENT = "event"; // parent node
-    static final String KEY_FULL_NAME = "fullName";
-    static final String KEY_EVENT_DETAILS = "eventDetails";
-    static final String KEY_USERNAME = "username";
-    static final String KEY_TIME_FRAME = "timeFrame";
-    static final String KEY_OBJECT_ID = "objectId";
     // Parse column names
     static final String TABLE_EVENT = "Event";
     static final String COL_CREATOR = "creator";
@@ -64,8 +51,8 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
     static final String COL_DETAILS = "details";
     static final String COL_TIME_FRAME = "timeFrame";
     static final String COL_CREATED_AT = "createdAt";
-    static final String COL_ME_TOOS = "meToos";
-    static final String COL_HIDES = "hides";
+    static final String COL_ME_TOOS = "MeToos";
+    static final String COL_HIDES = "Hides";
     static final String TABLE_USER = "User";
     static final String COL_PROFILE_PIC = "profilePic";
     static final String COL_FRIENDS = "friends";
@@ -100,7 +87,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
         listview = (SwipeListView)v.findViewById(R.id.feed_swipe_list);
 
-        ArrayList<HashMap<String,String>> eventsList = new ArrayList<HashMap<String,String>>();
+        ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
         ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
         feedAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
         meTooAdapter = new EventFeedAdapter(eventsList, profPictures, inflater, this);
@@ -123,7 +110,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                 View curRow = listview.getChildAt(position - listview.getFirstVisiblePosition());
                 String objectID = (String)(curRow.findViewById(R.id.me_too_button)).getTag();
                 ((EventFeedAdapter)listview.getAdapter()).removeRow(position);
-                listview.closeAnimate(position);
+                listview.closeAnimate2(position);
                 /*listview.resetScrolling();
                 listview.resetCell();*/
                 meTooEvent(objectID, toRight);
@@ -189,6 +176,14 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
             public void onDismiss(int[] reverseSortedPositions) {
 
             }
+
+            @Override
+            public int onChangeSwipeMode(int position) {
+                /*if(position==0) {
+                    return SwipeListView.SWIPE_MODE_NONE;
+                }*/
+                return SwipeListView.SWIPE_MODE_DEFAULT;
+            }
         });
 
         feedButton = (Button) v.findViewById(R.id.feed_tab);
@@ -243,24 +238,28 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                 public void done(List<ParseObject> object, ParseException e) {
                     if (e == null) {
                         Log.d("score", "Retrieved " + object.size() + " scores");
-                        ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
+                        ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
                         ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
+                        if(object.size() == 0) {
+                            EventObject event = new EventObject();
+                            eventsList.add(event);
+                            listview.setSwipeMode(SwipeListView.SWIPE_MODE_NONE);
+                        }
                         for (int i = 0; i < object.size(); i++) {
-                            HashMap<String, String> event = new HashMap<String, String>();
+                            EventObject event = new EventObject();
                             if(object.get(i).has(COL_CREATOR)) {
-                                event.put(KEY_FULL_NAME, object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME));
-                                event.put(KEY_USERNAME, "@" + object.get(i).getParseObject(COL_CREATOR).getString(COL_USERNAME));
+                                event.owner = object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME);
                             } else { // Event doesn't have a creator associated with it
-                                event.put(KEY_FULL_NAME, "");
-                                event.put(KEY_USERNAME, "");
+                                event.owner = "";
                             }
                             if(object.get(i).has(COL_TIME_FRAME)) {
-                                event.put(KEY_TIME_FRAME, object.get(i).getString(COL_TIME_FRAME));
+                                event.timeFrame = object.get(i).getString(COL_TIME_FRAME);
                             }
                             if(object.get(i).has(COL_DETAILS)) {
-                                event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
+                                event.details = object.get(i).getString(COL_DETAILS);
                             }
-                            event.put(KEY_OBJECT_ID, object.get(i).getObjectId());
+                            event.objectId = object.get(i).getObjectId();
+                            event.setEmpty(false);
                             eventsList.add(event);
 
 
@@ -300,7 +299,6 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
                                 e1.printStackTrace();
                             }
                         }
-
                         feedAdapter.replace(eventsList, profPictures);
                         feedAdapter.notifyDataSetChanged();
                         // Notify PullToRefreshLayout that the refresh has finished
@@ -326,26 +324,29 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
             public void done(List<ParseObject> object, ParseException e) {
                 if (e == null) {
                     Log.d("score", "Retrieved " + object.size() + " scores");
-                    ArrayList<HashMap<String, String>> eventsList = new ArrayList<HashMap<String, String>>();
+                    ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
                     ArrayList<Bitmap> profPictures = new ArrayList<Bitmap>();
+                    if(object.size() == 0) {
+                        EventObject event = new EventObject();
+                        eventsList.add(event);
+                        listview.setSwipeMode(SwipeListView.SWIPE_MODE_NONE);
+                    }
                     for (int i = 0; i < object.size(); i++) {
-                        HashMap<String, String> event = new HashMap<String, String>();
+                        EventObject event = new EventObject();
                         if (object.get(i).has(COL_CREATOR)) {
-                            event.put(KEY_FULL_NAME, object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME));
-                            event.put(KEY_USERNAME, "@" + object.get(i).getParseObject(COL_CREATOR).getString(COL_USERNAME));
+                            event.owner = object.get(i).getParseObject(COL_CREATOR).getString(COL_FIRST_NAME) + " " + object.get(i).getParseObject(COL_CREATOR).getString(COL_LAST_NAME);
                         } else { // Event doesn't have a creator associated with it
-                            event.put(KEY_FULL_NAME, "");
-                            event.put(KEY_USERNAME, "");
+                            event.owner = "";
                         }
                         if (object.get(i).has(COL_TIME_FRAME)) {
-                            event.put(KEY_TIME_FRAME, object.get(i).getString(COL_TIME_FRAME));
+                            event.timeFrame = object.get(i).getString(COL_TIME_FRAME);
                         }
                         if (object.get(i).has(COL_DETAILS)) {
-                            event.put(KEY_EVENT_DETAILS, object.get(i).getString(COL_DETAILS));
+                            event.details = object.get(i).getString(COL_DETAILS);
                         }
-                        event.put(KEY_OBJECT_ID, object.get(i).getObjectId());
+                        event.objectId = object.get(i).getObjectId();
+                        event.setEmpty(false);
                         eventsList.add(event);
-
 
                         byte[] file = new byte[0];
                         try {
@@ -393,7 +394,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
     public void switchListToFeed()
     {
-        listview.setSwipeMode(1);
+        listview.setSwipeMode(SwipeListView.SWIPE_MODE_BOTH);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left_active));
         feedButton.setTextColor(Color.parseColor("#FFFFFF"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right));
@@ -405,7 +406,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
 
     public void switchListToMeToos()
     {
-        listview.setSwipeMode(3);
+        listview.setSwipeMode(SwipeListView.SWIPE_MODE_LEFT);
         feedButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_left));
         feedButton.setTextColor(Color.parseColor("#3a3b49"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right_active));
@@ -415,33 +416,68 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
         listview.invalidate();
     }
 
-    public void meTooEvent(String objectID, Boolean toRight) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
-        query.include(COL_CREATOR);
+    public void meTooEvent(String objectID, final Boolean toRight) {
 
-        query.whereEqualTo(KEY_OBJECT_ID, objectID);
+        if(listview.getAdapter().equals(feedAdapter)) {
+            if(toRight) {
+                meTooCloudCode(objectID);
+            } else {
+                hideCloudCode(objectID);
+            }
+        } else if(listview.getAdapter().equals(meTooAdapter)){
+            undoMeTooCloudCode(objectID);
+        }
+    }
 
-        try {
-            ParseObject event = query.getFirst();
-
-            ParseRelation meToos = event.getRelation(COL_ME_TOOS);
-            ParseRelation hides = event.getRelation(COL_HIDES);
-
-            if(listview.getAdapter().equals(feedAdapter)) {
-                if(toRight) {
-                    meToos.add(ParseUser.getCurrentUser());
+    public void meTooCloudCode(String objectId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("eventId", objectId);
+        ParseCloud.callFunctionInBackground("meTooEvent", params, new FunctionCallback<String>() {
+            public void done(String ret, ParseException e) {
+                if (e == null) {
+                    System.out.println("success!");
+                    //Success
                 } else {
-                    hides.add(ParseUser.getCurrentUser());
+                    System.out.print(e.getMessage());
+                    //Error adding friend
                 }
 
-            } else if(listview.getAdapter().equals(meTooAdapter)){
-                meToos.remove(ParseUser.getCurrentUser());
             }
+        });
+    }
 
-            event.save();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void undoMeTooCloudCode(String objectId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("eventId", objectId);
+        ParseCloud.callFunctionInBackground("undoMeTooEvent", params, new FunctionCallback<String>() {
+            public void done(String ret, ParseException e) {
+                if (e == null) {
+                    System.out.println("success!");
+                    //Success
+                } else {
+                    System.out.print(e.getMessage());
+                    //Error adding friend
+                }
+
+            }
+        });
+    }
+
+    public void hideCloudCode(String objectId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("eventId", objectId);
+        ParseCloud.callFunctionInBackground("hideEvent", params, new FunctionCallback<String>() {
+            public void done(String ret, ParseException e) {
+                if (e == null) {
+                    System.out.println("success!");
+                    //Success
+                } else {
+                    System.out.print(e.getMessage());
+                    //Error adding friend
+                }
+
+            }
+        });
     }
 
     @Override

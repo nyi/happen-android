@@ -11,52 +11,57 @@ import java.util.ArrayList;
  */
 
 public class EventObject implements Serializable{
+    public String owner;
     public String details;
-    public ArrayList<HappenUser> meToos;
+    public String timeFrame;
     public String objectId;
     public ParseObject parseObj;
+    public Boolean meToo;
 
-    //used by adapter to represent the case of empty list - still need one item for the list adapter to work so mark it empty
-    private boolean empty;
+    public Boolean empty;
 
     public EventObject(){
+        meToo = false;
         empty = true;
     }
 
-    public EventObject(String deets, String objId)
+    public EventObject(String details, String objId, ParseObject parseObj)
     {
-        this.details = deets;
+        this.details = details;
         this.objectId = objId;
+        this.parseObj = parseObj;
+        this.meToo = false;
         this.empty = false;
     }
 
-    public EventObject(String deets, String objId, ParseObject parse)
+    public EventObject(String name, String details, String time, String objId)
     {
-        this.details = deets;
+        this.owner = name;
+        this.details = details;
+        this.timeFrame = time;
         this.objectId = objId;
+        this.meToo = false;
         this.empty = false;
+
+    }
+
+    public EventObject(String name, String details, String time, String objId, Boolean m) {
+        this(name, details, time, objId);
+        meToo = m;
+    }
+
+    public EventObject(String name, String details, String time, String objId, ParseObject parse)
+    {
+        this(name, details, time, objId);
         this.parseObj = parse;
     }
 
-    public EventObject(String deets, String objId, ArrayList<HappenUser> meTooed)
-    {
-        this(deets, objId);
-        this.meToos = meTooed;
-    }
-
-    public EventObject(String deets, String objId, ArrayList<HappenUser> meTooed, ParseObject parse)
-    {
-        this(deets, objId, meTooed);
-        this.parseObj = parse;
-    }
-
-    public void setEmpty(boolean e)
-    {
-        this.empty = e;
-    }
-
-    public boolean isEmpty()
-    {
+    public Boolean isEmpty(){
         return empty;
     }
+
+    public void setEmpty(Boolean empty){
+        this.empty = empty;
+    }
+
 }

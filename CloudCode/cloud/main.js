@@ -128,18 +128,22 @@ Parse.Cloud.define("deleteEvent", function(event, response) {
 
   var error = false;
 
+//delete news
   newsQuery.find().then(function(news) {
+    //if any news are found delete
     if(news!=null && news.length>0) 
     {
       for (var i = news.length - 1; i >= 0; i--) {
         news[i].destroy({});
       };
     }
+
+    //setup query for actual event
     var eventQuery = new Parse.Query("Event");
     eventQuery.equalTo("objectId", eventId);
     return eventQuery.find();
     
-  }).then(function(eventresult) {
+  }).then(function(eventresult) {  // then delete event itself
     if(eventresult == null || eventresult.length==0)
     {
       error = true;
@@ -154,6 +158,107 @@ Parse.Cloud.define("deleteEvent", function(event, response) {
       response.success("deleted");
   }, function(error) {
     response.error("error deleting event");
+  });
+});
+
+
+Parse.Cloud.define("meTooEvent", function(event, response) {
+  var eventQuery = new Parse.Query("Event");
+  var eventId = event.params.eventId;
+  eventQuery.equalTo("objectId", eventId);
+  var error = false;
+  var user = Parse.User.current();
+  var thisEvent;
+
+//first find event
+  eventQuery.find().then(function(eventFound) {
+
+    thisEvent = eventFound[0];
+    //add this user to me too array
+    thisEvent.addUnique("MeToos", user);
+    var meTooArray = thisEvent.get("MeToos");
+
+    thisEvent.set("meTooCount", meTooArray.length);   
+    return thisEvent.save();
+  }).then( function(newscreate) {
+
+    //now create news
+    var News = Parse.Object.extend("News");
+    var newsItem = new News();
+    newsItem.set("source", user);
+    newsItem.set("target", thisEvent.get("creator"));
+    newsItem.set("isUnread", true);
+    newsItem.set("type", "ME_TOO");
+    newsItem.set("event", thisEvent);
+    return newsItem.save();
+
+  }).then( function(saved)
+  {
+      response.success("meToo'ed event successfully");
+  }, function(error) {
+      response.error("error me too-ing");
+  });
+});
+
+Parse.Cloud.define("hideEvent", function(event, response) {
+  var eventQuery = new Parse.Query("Event");
+  var eventId = event.params.eventId;
+  eventQuery.equalTo("objectId", eventId);
+  var error = false;
+
+  eventQuery.find().then(function(eventFound) {
+    var user = Parse.User.current();
+    var thisEvent = eventFound[0];
+    thisEvent.addUnique("Hides", user);
+    return thisEvent.save();
+  }).then( function(saved) {
+      response.success("hid event");
+  }, function(error) {
+      response.error("error hiding event");
+  });
+});
+
+Parse.Cloud.define("undoMeTooEvent", function(event, response) {
+  var eventQuery = new Parse.Query("Event");
+  var eventId = event.params.eventId;
+  eventQuery.equalTo("objectId", eventId);
+  var error = false;
+
+  var thisEvent, user;
+
+  eventQuery.find().then(function(eventFound) {
+    //find event
+    user = Parse.User.current();
+    thisEvent = eventFound[0];
+
+    //remove user from event list of metoos
+    thisEvent.remove("MeToos", user);
+
+    //sync meTooCount
+    var meTooArray = thisEvent.get("MeToos");
+    thisEvent.set("meTooCount", meTooArray.length);   
+
+    //save
+    return thisEvent.save();
+  }).then( function(deleteNews) {
+
+    //querynews
+    var newsQuery = new Parse.Query("News");
+    newsQuery.equalTo("event", thisEvent);
+    newsQuery.equalTo("source", user);
+    return newsQuery.find();
+
+  }).then( function(newsToDelete) {
+    if(newsToDelete!=null && newsToDelete.length>0) 
+    {
+      for (var i = newsToDelete.length - 1; i >= 0; i--) {
+        newsToDelete[i].destroy({});
+      };
+    }
+  }).then (function(end) {
+      response.success("undid meToo");
+  }, function(error) {
+      response.error("error undoing me-too-ing");
   });
 });
 

@@ -1,8 +1,12 @@
 package com.happen.app.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -24,7 +29,7 @@ import android.widget.Toast;
 
 import com.happen.app.R;
 import com.happen.app.components.EventObject;
-import com.happen.app.components.UserListAdapter;
+import com.happen.app.components.MyListAdapter;
 import com.happen.app.util.MyListCache;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
@@ -37,8 +42,6 @@ import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -67,11 +70,11 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
 
-    UserListAdapter adapter;
+    MyListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
     MyListCache listCache;
-
+    Button signoutButton;
 
 
     public static MyListFragment newInstance() {
@@ -105,6 +108,8 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         imageView.setOnClickListener(this);
         nameView = (TextView)v.findViewById(R.id.mylist_fullname);
         handleView = (TextView)v.findViewById(R.id.mylist_username);
+        signoutButton = (Button)v.findViewById(R.id.sign_out_button);
+        signoutButton.setOnClickListener(this);
 
         // Set full name and user handle
         nameView.setText(user.getString(KEY_FIRSTNAME) + " " + user.getString((KEY_LASTNAME)));
@@ -168,17 +173,23 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         // Set up event list
         ListView listview = (ListView)v.findViewById(R.id.mylist_eventlist);
         ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
-        adapter = new UserListAdapter(eventsList, inflater, this);
+        adapter = new MyListAdapter(eventsList, inflater, this);
         listview.setAdapter(adapter);
         listCache = MyListCache.getInstance();
+
+        //if listcache exists, use it to populate list
         if(listCache.size()>0) {
            eventsList = listCache.getMyList();
            adapter.replace(eventsList);
         }
+
+        //else query for events
         else
         {
+            listCache.clear();
             ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
             query.include(COL_CREATOR);
+            query.include(Util.COL_ME_TOOS_ARRAY);
             query.whereEqualTo(COL_CREATOR, ParseObject.createWithoutData("_" + TABLE_USER, user.getObjectId()));
             query.orderByDescending(COL_CREATED_AT);
 
@@ -187,7 +198,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                     if (e == null) {
                         Log.d("MyListFragment", "Retrieved " + object.size() + " scores");
                         ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
-                        if(object.size() == 0) { // User has not created any events yet
+                        if (object.size() == 0) { // User has not created any events yet
                             EventObject event = new EventObject();
                             eventsList.add(event);
                         } else {
@@ -213,6 +224,36 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
         //return super.onCreateView(inflater, container, savedInstanceState);
     }
 
+    public void updateMeTooCount(){
+        if(listCache==null)
+            listCache = MyListCache.getInstance();
+
+        ArrayList<EventObject> eventList = listCache.getMyList();
+        for(int i = 0; i < eventList.size(); i++)
+        {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
+            query.whereEqualTo("objectId", eventList.get(i).objectId);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> object, ParseException e) {
+                    if (e == null) {
+                        Log.d("MyListFragment", "Retrieved " + object.size() + " scores");
+
+                        if(object.size() == 0) { // User has not created any events yet
+                            Log.e("MyListFragment", "couldn't query event in cache - something went wrong");
+                        } else {
+                            listCache = MyListCache.getInstance();
+                            EventObject event = listCache.get(object.get(0).getObjectId());
+                            event.parseObj = object.get(0);
+                        }
+
+                    } else {
+                        Log.d("MyListFragment", "Error: " + e.getMessage());
+                    }
+                }
+            });
+        }
+    }
+
     // KEVIN: added function to bring up popup when selecting profile picture
     @Override
     public void onClick(View v){
@@ -221,9 +262,16 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                 changePhoto(v);
                 break;
 
-            case R.id.event_item:
+            case R.id.user_list_item:
                 EventObject clickedEvent = (EventObject) v.getTag();
                 switchToEventDetailsPage(clickedEvent);
+                break;
+
+            case R.id.sign_out_button:
+                signoutButton.setClickable(false);
+                SignoutDialog dialog = new SignoutDialog();
+                dialog.show(this.getFragmentManager(), "signout");
+                signoutButton.setClickable(true);
                 break;
         }
     }
@@ -231,6 +279,14 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     public void switchToEventDetailsPage(EventObject event)
     {
         ((MainActivity)getActivity()).replaceMyListPage(event.objectId);
+    }
+
+    public void signOut(){
+        listCache = MyListCache.getInstance();
+        listCache.clear();
+        Intent i = new Intent(getActivity(), SplashscreenActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
+        this.startActivity(i);
     }
 
     public void changePhoto(View view){
@@ -340,6 +396,27 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
                 System.out.println(e);
             }
 
+        }
+    }
+
+    public class SignoutDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Are you sure?")
+                    .setNegativeButton("Sign out", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            signOut();
+                        }
+                    })
+                    .setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
         }
     }
 }

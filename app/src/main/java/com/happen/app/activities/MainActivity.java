@@ -23,17 +23,12 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListPopupWindow;
-import android.widget.PopupMenu;
-import android.widget.TextView;
 
 import com.happen.app.R;
-import com.happen.app.components.EventObject;
-import com.happen.app.components.FriendsAdapter;
 import com.happen.app.components.NewsAdapter;
 import com.happen.app.components.NewsObject;
+import com.happen.app.util.HappenUserCache;
 import com.happen.app.util.NonSwipeableViewPager;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
@@ -62,17 +57,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     NonSwipeableViewPager mViewPager;
 
-    protected SimpleFeedFragment simpleFeedFragment;
-    protected FeedFragment feedFragment;
-    protected MyListFragment mylistFragment;
     protected Menu myMenu;
     public enum Pages {FEED, FRIENDS, MY_LIST};
     public Pages currentPage;
+    private FeedFragment feedPage;
     private Fragment friendPage;
     private Fragment myListPage;
     private NewsAdapter newsAdapter;
     private ArrayList<NewsObject> newsList;
-
     private static String objToBeDeleted;
     //objectId -> profilePic
     //Populated in feedFragment query, used in event details
@@ -93,7 +85,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         setContentView(R.layout.activity_main);
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
+        //for self-reference in call-backs
         self = this;
+
         actionBar.setLogo(R.drawable.logo);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         //actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -122,6 +116,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         myListPage = null;
         this.initNews();
         this.queryNews();
+
+        //populate user cache, need screen dimensions for image processing
+        HappenUserCache userCache = HappenUserCache.getInstance();
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        //userCache.populateUserCache(width);
+
 
     }
 
@@ -286,7 +289,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
-        if(myMenu!=null){
+        if(myMenu != null){
             switch(tab.getPosition()) {
                 case 0:
                     currentPage = Pages.FEED;
@@ -322,23 +325,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    public void replaceFriendPage(ParseUser targetUser) {
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        ft.remove(friendPage);
-        ft.commit();
-        if (friendPage instanceof FriendsFragment) {
-            friendPage = UserListFragment.newInstance(targetUser);
+        if (currentPage == Pages.FEED) {
+            feedPage.switchListToFeed();
         }
-        else {
-            friendPage = FriendsFragment.newInstance(0);
+        if (currentPage == Pages.FRIENDS) {
+            replaceFriendPage(null);
         }
-        mSectionsPagerAdapter.notifyDataSetChanged();
-    }
+        else if (currentPage == Pages.MY_LIST) {
+            replaceMyListPage(null);
+        }
 
+    }
 
     @Override
     public void onBackPressed() {
@@ -346,7 +343,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Log.d("MainActivity", "Going back to FriendsActivity");
             replaceFriendPage(null);
         }
-        if (currentPage == Pages.MY_LIST && myListPage instanceof EventDetailsFragment) {
+        else if (currentPage == Pages.MY_LIST && myListPage instanceof EventDetailsFragment) {
             Log.d("MainActivity", "Going back to MyList");
             replaceMyListPage(null);
         }
@@ -355,8 +352,32 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
+    public void replaceFriendPage(ParseUser targetUser) {
+        // for when the user clicks the friend tab when in the requests view
+        if (friendPage instanceof FriendsFragment && targetUser == null) {
+            ((FriendsFragment) friendPage).switchListToFriends();
+            return;
+        }
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        ft.remove(friendPage);
+        ft.commit();
+        if (friendPage instanceof FriendsFragment && targetUser != null) {
+            friendPage = UserListFragment.newInstance(targetUser);
+        }
+        else {
+            friendPage = FriendsFragment.newInstance(0);
+        }
+        mSectionsPagerAdapter.notifyDataSetChanged();
+    }
+
     public void replaceMyListPage(String eventId)
     {
+        if(myListPage instanceof MyListFragment && eventId == null)
+        {
+            return;
+        }
+
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.remove(myListPage);
@@ -417,7 +438,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             switch (position) {
                 // Feed Fragment
                 case 0:
-                    return FeedFragment.newInstance(0);
+                    if (feedPage == null) {
+                        feedPage = FeedFragment.newInstance(0);
+                    }
+                    return feedPage;
 
                 // Handle special case (friend page)
                 case 1:

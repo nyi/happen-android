@@ -3,6 +3,7 @@ package com.happen.app.activities;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,15 +12,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.happen.app.R;
 import com.happen.app.components.EventObject;
+import com.happen.app.components.EventFeedAdapter;
+import com.happen.app.components.EventObject;
 import com.happen.app.components.UserListAdapter;
+import com.happen.app.util.SwipeListView;
+import com.happen.app.util.SwipeListViewListenerBase;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -45,10 +53,12 @@ public class UserListFragment extends Fragment {
     static final String COL_CREATOR = "creator";
     static final String COL_DETAILS = "details";
     static final String COL_CREATED_AT = "createdAt";
+    static final String COL_OBJECT_ID = "objectId";
 
     // Percentage of profile picture width relative to screen size
     static final float WIDTH_RATIO = 0.25f; // 25%
 
+    SwipeListView listview;
     UserListAdapter adapter;
     ImageView imageView;
     TextView nameView, handleView;
@@ -86,13 +96,13 @@ public class UserListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Inflate the MyList fragment layout
-        View v = inflater.inflate(R.layout.fragment_mylist, container, false);
+        // Inflate the UserList fragment layout
+        View v = inflater.inflate(R.layout.fragment_user_list, container, false);
 
         // Set up profile picture, full name and user handle
-        imageView = (ImageView)v.findViewById(R.id.mylist_picture);
-        nameView = (TextView)v.findViewById(R.id.mylist_fullname);
-        handleView = (TextView)v.findViewById(R.id.mylist_username);
+        imageView = (ImageView)v.findViewById(R.id.user_list_picture);
+        nameView = (TextView)v.findViewById(R.id.user_list_fullname);
+        handleView = (TextView)v.findViewById(R.id.user_list_username);
 
         // Set full name and user handle
         nameView.setText(user.getString(KEY_FIRSTNAME) + " " + user.getString((KEY_LASTNAME)));
@@ -154,13 +164,130 @@ public class UserListFragment extends Fragment {
         }
 
         // Set up event list
-        ListView listview = (ListView)v.findViewById(R.id.mylist_eventlist);
+        listview = (SwipeListView)v.findViewById(R.id.user_list_eventlist);
         ArrayList<EventObject> eventsList = new ArrayList<EventObject>();
         adapter = new UserListAdapter(eventsList, inflater);
+        listview.setSwipeMode(SwipeListView.SWIPE_MODE_BOTH);
         listview.setAdapter(adapter);
+
+        listview.setSwipeListViewListener(new SwipeListViewListenerBase() {
+            @Override
+            public void onOpened(int position, boolean toRight) {
+                Log.d("swipe", "onOpened " + position);
+                View curRow = listview.getChildAt(position - listview.getFirstVisiblePosition());
+                ImageView button = (ImageView)curRow.findViewById(R.id.me_too_checkmark);
+                String objectId = ((EventObject)curRow.getTag()).objectId;
+                listview.closeAnimate(position);
+                if(toRight) {
+                    ((EventObject)curRow.getTag()).meToo = true;
+                    button.setVisibility(View.VISIBLE);
+                    HashMap<String, Object> params = new HashMap<String, Object>();
+                    params.put("eventId", objectId);
+                    ParseCloud.callFunctionInBackground("meTooEvent", params, new FunctionCallback<String>() {
+                        public void done(String ret, ParseException e) {
+                            if (e == null) {
+                                System.out.println("success!");
+                                //Success
+                            } else {
+                                System.out.print(e.getMessage());
+                                //Error adding friend
+                            }
+
+                        }
+                    });
+                } else {
+                    ((EventObject)curRow.getTag()).meToo = false;
+                    button.setVisibility(View.GONE);
+                    HashMap<String, Object> params = new HashMap<String, Object>();
+                    params.put("eventId", objectId);
+                    ParseCloud.callFunctionInBackground("undoMeTooEvent", params, new FunctionCallback<String>() {
+                        public void done(String ret, ParseException e) {
+                            if (e == null) {
+                                System.out.println("success!");
+                                //Success
+                            } else {
+                                System.out.print(e.getMessage());
+                                //Error adding friend
+                            }
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onClosed(int position, boolean fromRight) {
+            }
+
+            @Override
+            public void onListChanged() {
+            }
+
+            @Override
+            public void onMove(int position, float x) {
+            }
+
+            @Override
+            public void onStartOpen(int position, int action, boolean right) {
+                Log.d("swipe", String.format("onStartOpen %d - action %d", position, action));
+                View curRow = listview.getChildAt(position- listview.getFirstVisiblePosition());
+                TextView meTooText = (TextView)curRow.findViewById(R.id.me_too_text);
+                TextView removeMeTooText = (TextView)curRow.findViewById(R.id.remove_me_too_text);
+                LinearLayout backLayout = (LinearLayout)curRow.findViewById(R.id.back);
+                if(!right) {
+                    meTooText.setVisibility(View.GONE);
+                    removeMeTooText.setVisibility(View.VISIBLE);
+                    backLayout.setBackgroundColor(Color.parseColor("#e86060"));
+                } else {
+                    removeMeTooText.setVisibility(View.GONE);
+                    meTooText.setVisibility(View.VISIBLE);
+                    backLayout.setBackgroundColor(Color.parseColor("#68d2a4"));
+                }
+            }
+
+            @Override
+            public void onStartClose(int position, boolean right) {
+                Log.d("swipe", String.format("onStartClose %d", position));
+            }
+
+            @Override
+            public void onClickFrontView(int position) {
+                Log.d("swipe", String.format("onClickFrontView %d", position));
+
+                //swipeListView.openAnimate(position); //when you touch front view it will open
+
+            }
+
+            @Override
+            public void onClickBackView(int position) {
+                Log.d("swipe", String.format("onClickBackView %d", position));
+
+                //swipeListView.closeAnimate(position);//when you touch back view it will close
+            }
+
+            @Override
+            public void onDismiss(int[] reverseSortedPositions) {
+
+            }
+
+            @Override
+            public int onChangeSwipeMode(int position) {
+                /*if(position==0) {
+                    return SwipeListView.SWIPE_MODE_NONE;
+                }*/
+                View curRow = listview.getChildAt(position- listview.getFirstVisiblePosition());
+                Boolean meToo = ((EventObject)curRow.getTag()).meToo;
+                ImageView checkMark = (ImageView)curRow.findViewById(R.id.me_too_checkmark);
+               if(checkMark.getVisibility() == View.VISIBLE) {
+                   return SwipeListView.SWIPE_MODE_LEFT;
+                }
+                return SwipeListView.SWIPE_MODE_RIGHT;
+            }
+        });
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(TABLE_EVENT);
         query.include(COL_CREATOR);
+        query.include(Util.COL_ME_TOOS_ARRAY);
         query.whereEqualTo(COL_CREATOR, ParseObject.createWithoutData("_" + TABLE_USER, user.getObjectId()));
         query.orderByDescending(COL_CREATED_AT);
 
@@ -176,7 +303,8 @@ public class UserListFragment extends Fragment {
                         for (int i = 0; i < object.size(); i++) {
                             String details = object.get(i).getString(COL_DETAILS);
                             String objId = object.get(i).getObjectId();
-                            EventObject event = new EventObject(details, objId);
+
+                            EventObject event = new EventObject(details, objId, object.get(i));
                             eventsList.add(event);
                         }
                     }

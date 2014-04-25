@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/user_list_item"
+
+    android:orientation="horizontal">
+
+
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
     android:id="@+id/event_item"
     android:orientation="horizontal"
+    android:background="#ffffff"
+    android:tag="front"
     android:padding="15dip">
 
     <TextView
@@ -13,7 +24,24 @@
         android:padding="3dip"
         android:textColor="#040404"
         android:typeface="sans"
-        android:textSize="20dip"
+        android:textSize="17dip"
         android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/me_too_count"
         android:layout_marginRight="5dip"/>
+
+    <TextView
+        android:id="@+id/me_too_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:textColor="@color/hapgreen"
+        android:typeface="sans"
+        android:textSize="17dip"
+        android:layout_alignParentLeft="false"
+        android:layout_marginRight="5dip"
+        android:layout_alignParentRight="true"
+        android:textAlignment="gravity"
+        android:gravity="right" />
 </RelativeLayout>
+
+</FrameLayout>

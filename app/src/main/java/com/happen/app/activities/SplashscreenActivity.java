@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.happen.app.R;
+import com.happen.app.util.MyListCache;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -175,6 +176,8 @@ public class SplashscreenActivity extends Activity {
         showProgress(false);
 
         if (success) {
+            MyListCache oldCache = MyListCache.getInstance();
+            oldCache.clear();
             Intent i = new Intent(SplashscreenActivity.this, MainActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
             this.startActivity(i);

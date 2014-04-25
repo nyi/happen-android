@@ -327,6 +327,10 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
         closeAnimate(swipeListView.getChildAt(position - swipeListView.getFirstVisiblePosition()).findViewById(swipeFrontView), position);
     }
 
+    protected void closeAnimate2(int position) {
+        closeAnimate2(swipeListView.getChildAt(position - swipeListView.getFirstVisiblePosition()).findViewById(swipeFrontView), position);
+    }
+
     /**
      * Swap choice state in item
      *
@@ -460,6 +464,12 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
      * @param position Position of list
      */
     private void closeAnimate(View view, int position) {
+        if (opened.get(position)) {
+            generateRevealAnimate(view, true, false, position);
+        }
+    }
+
+    private void closeAnimate2(View view, int position) {
         if (opened.get(position)) {
             generateRevealAnimate2(view, true, false, position);
         }

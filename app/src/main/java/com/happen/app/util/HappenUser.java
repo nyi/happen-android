@@ -107,7 +107,7 @@ public class HappenUser {
         return null;
     }
 
-    private void fetchData() {
+    public void fetchData() {
         if (mParseUser == null)
             return;
 
@@ -116,4 +116,5 @@ public class HappenUser {
         mPhoneNumber = mParseUser.getString(Util.COL_PHONE_NUM);
         mUsername = mParseUser.getUsername();
     }
+
 }

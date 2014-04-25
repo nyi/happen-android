@@ -43,6 +43,7 @@ public class Util {
     public static final String COL_PROFILE_PIC         = "profilePic";
     public static final String COL_PHONE_NUM           = "phoneNumber";
     public static final String COL_ME_TOOS             = "meToos";
+    public static final String COL_ME_TOOS_ARRAY       = "MeToos";
     public static final String COL_FRIENDS             = "friends";
     public static final String COL_EVENT               = "event";
 

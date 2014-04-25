@@ -17,14 +17,14 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/mylist_picture"
+            android:id="@+id/user_list_picture"
             android:layout_gravity="center_horizontal"
             android:paddingBottom="5dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/mylist_fullname"
+            android:id="@+id/user_list_fullname"
             android:text="Full Name"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/profile_font" />
@@ -33,22 +33,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="\@username"
-            android:id="@+id/mylist_username"
+            android:id="@+id/user_list_username"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/profile_font" />
 
     </LinearLayout>
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
         <com.happen.app.util.SwipeListView
             xmlns:swipe="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/mylist_eventlist"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/user_list_eventlist"
             android:focusableInTouchMode="false"
-            android:layout_above="@+id/sign_out_button"
             swipe:swipeFrontView="@+id/event_item"
             swipe:swipeBackView="@+id/back"
             swipe:swipeActionLeft="reveal"
@@ -58,21 +58,6 @@
             swipe:swipeOpenOnLongPress="false"
             swipe:swipeAnimationTime="200" />
 
-        <Button
-            android:id="@+id/sign_out_button"
-            android:text="@string/action_sign_out"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:textAlignment="center"
-            android:padding="8dp"
-            android:background="@color/hapgreen"
-            android:layout_gravity="center_horizontal|bottom"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:layout_margin="10dp" />
     </RelativeLayout>
-
-
 
 </LinearLayout>

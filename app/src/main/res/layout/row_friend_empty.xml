@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="20dip"
+    android:paddingTop="20dip"
+    android:paddingLeft="15dip"
+    android:paddingRight="10dip">
+
+    <TextView
+        android:id="@+id/friend_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/no_friends"
+        android:textColor="#000000"
+        android:typeface="sans"
+        android:textSize="17dip"
+        android:layout_marginRight="5dip"/>
+
+</RelativeLayout>
