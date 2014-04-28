@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.happen.app.R;
 import com.happen.app.util.HappenUser;
+import com.happen.app.util.HappenUserCache;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
@@ -188,16 +189,9 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
 
     public void displayMatchingContacts() {
         ArrayList<String> numbers = getContactList();
-        final List<ParseObject> friendList;
-        try {
-             friendList = ParseUser.getCurrentUser().getRelation(Util.COL_FRIENDS).getQuery().find();
-        }
-        catch (Exception ex) {
-            Log.e("FindFriendActivity", "Error occurred while fetching friends");
-            return;
-        }
 
         ParseQuery<ParseUser> query = ParseUser.getQuery();
+        final HappenUserCache userCache = HappenUserCache.getInstance();
         query.whereContainedIn(COL_NUMBER, numbers);
 
         query.findInBackground(new FindCallback<ParseUser>() {
@@ -205,6 +199,7 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                 if (ex == null) {
                     ArrayList<HappenUser> map = new ArrayList<HappenUser>();
                     for (ParseUser u : users) {
+                        /*
                         boolean flag = true;
                         for (ParseObject friend : friendList) {
                             if (((ParseUser)friend).getObjectId().equals(u.getObjectId())) {
@@ -215,6 +210,11 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                         if (flag) {
                             map.add(new HappenUser(u));
                         }
+                        */
+                        if (!userCache.isUserCached(u)) {
+                            userCache.addUser(new HappenUser(u));
+                        }
+                        map.add(userCache.getUser(u.getObjectId()));
                     }
                     mContactsAdapter.replace(map);
                 } else {
@@ -355,9 +355,21 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
                     imgProfilePic.setImageBitmap(image);
                 }
 
-                addButton.setVisibility(View.VISIBLE);
-                addButton.setTag(entry);
-                addButton.setOnClickListener(listener);
+                HappenUserCache userCache = HappenUserCache.getInstance();
+
+                if (userCache.getCurrentUser().isFriendsWith(entry)) {
+                    addButton.setVisibility(View.VISIBLE);
+                    addButton.setImageDrawable(getResources().getDrawable(R.drawable.friendadded));
+                    addButton.setTag(entry);
+                    addButton.setOnClickListener(listener);
+                    addButton.setClickable(false);
+                }
+                else {
+                    addButton.setVisibility(View.VISIBLE);
+                    addButton.setTag(entry);
+                    addButton.setOnClickListener(listener);
+                    addButton.setClickable(true);
+                }
             }
             return vi;
         }

@@ -3,12 +3,18 @@ package com.happen.app.util;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
-import android.view.Display;
+import android.util.Log;
 
 import com.happen.app.R;
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bluejay on 3/26/14.
@@ -17,6 +23,7 @@ public class HappenUser {
     private String mFirstName, mLastName, mPhoneNumber, mUsername;
     private ParseUser mParseUser;
     private Bitmap mProfilePic;
+    private ArrayList<HappenUser> mFriendList;
 
     public HappenUser() {
         mFirstName = null;
@@ -24,14 +31,17 @@ public class HappenUser {
         mPhoneNumber = null;
         mParseUser = null;
         mProfilePic = null;
+        mFriendList = null;
     }
 
     public HappenUser(ParseUser pUser) {
         mParseUser = pUser;
+        getData();
     }
 
     public void setParseUser(ParseUser pUser) {
         this.mParseUser = pUser;
+        getData();
     }
 
     public Bitmap getProfilePic(double width, Resources res) {
@@ -76,7 +86,7 @@ public class HappenUser {
             return mFirstName + " " + mLastName;
 
         if (mParseUser != null) {
-            fetchData();
+            getData();
             return mFirstName + " " + mLastName;
         }
 
@@ -88,7 +98,7 @@ public class HappenUser {
             return mUsername;
 
         if (mParseUser != null) {
-            fetchData();
+            getData();
             return mUsername;
         }
 
@@ -100,14 +110,14 @@ public class HappenUser {
             return mPhoneNumber;
 
         if (mParseUser != null) {
-            fetchData();
+            getData();
             return mPhoneNumber;
         }
 
         return null;
     }
 
-    public void fetchData() {
+    private void getData() {
         if (mParseUser == null)
             return;
 
@@ -117,4 +127,66 @@ public class HappenUser {
         mUsername = mParseUser.getUsername();
     }
 
+    // Fetches the up-to-date list of friend of this user
+    // This is a *SYNCHRONOUS* call
+    public void fetchFriends() {
+        if (mParseUser == null)
+            return;
+        ParseQuery<ParseObject> query = mParseUser.getRelation(Util.COL_FRIENDS).getQuery();
+        try {
+            List<ParseObject> list = query.find();
+            HappenUserCache userCache = HappenUserCache.getInstance();
+            if (mFriendList == null)
+                mFriendList = new ArrayList<HappenUser>();
+            mFriendList.clear();
+            for (ParseObject f : list) {
+                // If this friend if not already cached, add him/her
+                if (!userCache.isUserCached((ParseUser)f)) {
+                    userCache.addParseUser((ParseUser) f);
+                }
+
+                mFriendList.add(userCache.getUser(f.getObjectId()));
+            }
+        }
+        catch (ParseException ex) {
+
+        }
+    }
+
+    // Refresh this user's data from Parse DB
+    // This is a *SYNCHRONOUS* call
+    public void fetchData() {
+        if (mParseUser == null)
+            return;
+
+        try {
+            mParseUser.fetchIfNeeded();
+            getData();
+        }
+        catch (com.parse.ParseException ex) {
+        }
+    }
+
+    public void fetchEverything() {
+        fetchData();
+        fetchFriends();
+    }
+
+    public List<HappenUser> getFriends() {
+        if (mParseUser == null)
+            return null;
+        return mFriendList;
+    }
+
+    public boolean isFriendsWith(HappenUser huser) {
+        if (mFriendList == null)
+            fetchFriends();
+
+        boolean flag = false;
+        for (HappenUser u : mFriendList) {
+            if (u.getUsername().equals(huser.getUsername()))
+                flag = true;
+        }
+        return flag;
+    }
 }

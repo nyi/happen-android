@@ -63,10 +63,26 @@ public final class HappenUserCache {
         userCache.put(obj.getParseUser().getObjectId(), obj);
     }
 
+    public void addParseUser(ParseUser obj)
+    {
+        userCache.put(obj.getObjectId(), new HappenUser(obj));
+    }
 
     public HappenUser getUser(String objectId)
     {
         return userCache.get(objectId);
+    }
+
+    public HappenUser getCurrentUser()
+    {
+        if (!isUserCached(ParseUser.getCurrentUser()))
+            addParseUser(ParseUser.getCurrentUser());
+        return userCache.get(ParseUser.getCurrentUser().getObjectId());
+    }
+
+    public boolean isUserCached(ParseUser puser)
+    {
+        return userCache.containsKey(puser.getObjectId());
     }
 
     public void clear()
@@ -74,13 +90,26 @@ public final class HappenUserCache {
         userCache = new HashMap<String, HappenUser>();
     }
 
+    public void refreshUser(String objectID)
+    {
+        if (!userCache.containsKey(objectID))
+            return;
+        userCache.get(objectID).fetchEverything();
+    }
+
     //Adds current user and then queries for all of user's friends.
     public void populateUserCache(int width) {
         screenWidth = width;
         HappenUserCache userCache = HappenUserCache.getInstance();
+        if (isUserCached(ParseUser.getCurrentUser()))
+            return;
+
         HappenUser curUser = new HappenUser(ParseUser.getCurrentUser());
-        curUser.getProfilePic(screenWidth, Resources.getSystem());
+        //curUser.getProfilePic(screenWidth, Resources.getSystem());  <- Spencer, you don't need to do this
         userCache.addUser(curUser);
+        refreshUser(curUser.getParseUser().getObjectId());
+
+        /*
         ParseQuery<ParseObject> query = ParseUser.getCurrentUser().getRelation(Util.COL_FRIENDS).getQuery();
 
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -99,6 +128,7 @@ public final class HappenUserCache {
                 }
             }
         });
+        */
     }
 
 }
