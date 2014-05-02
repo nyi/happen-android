@@ -103,7 +103,9 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
         activity = getActivity();
 
         // Set full name and user handle
-        eventText.setText(this.event.details);
+        if(this.event != null && this.event.details != null) {
+            eventText.setText(this.event.details);
+        }
 
         ArrayList<HappenUser> meToos = new ArrayList<HappenUser>();
         ParseObject event;
