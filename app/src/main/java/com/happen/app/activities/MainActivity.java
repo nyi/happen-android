@@ -421,8 +421,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             int width = bb.getWidth();
             int height = bb.getHeight();
 
-            float scaleWidth = ((float) 200) / width;
-            float scaleHeight = ((float) 200) / height;
+            float scaleWidth = (Util.dipToPixels(getApplicationContext(),75)) / width;
+            float scaleHeight = (Util.dipToPixels(getApplicationContext(),75)) / height;
 
             Matrix matrix = new Matrix();
             matrix.postScale(scaleWidth, scaleHeight);
