@@ -399,9 +399,21 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
         feedButton.setTextColor(Color.parseColor("#FFFFFF"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right));
         meToosButton.setTextColor(Color.parseColor("#3a3b49"));
-        queryFeed();
+        //queryFeed();
         listview.setAdapter(feedAdapter);
         listview.invalidate();
+
+        AsyncTask async = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                queryFeed();
+
+                return null;
+            }
+        };
+
+        Void[] param = null;
+        async.execute(param);
     }
 
     public void switchListToMeToos()
@@ -411,9 +423,21 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
         feedButton.setTextColor(Color.parseColor("#3a3b49"));
         meToosButton.setBackground(getResources().getDrawable(R.drawable.rounded_stroked_box_right_active));
         meToosButton.setTextColor(Color.parseColor("#FFFFFF"));
-        queryMeToos();
+        //queryMeToos();
         listview.setAdapter(meTooAdapter);
         listview.invalidate();
+
+        AsyncTask async = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                queryMeToos();
+
+                return null;
+            }
+        };
+
+        Void[] param = null;
+        async.execute(param);
     }
 
     public void meTooEvent(String objectID, final Boolean toRight) {
