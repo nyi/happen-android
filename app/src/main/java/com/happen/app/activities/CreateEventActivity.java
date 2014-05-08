@@ -135,30 +135,25 @@ public class CreateEventActivity extends Activity {
         event.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e==null){
+                if (e == null) {
                     MyListCache cache = MyListCache.getInstance();
                     cache.addEvent(0, new EventObject(event.get("creator").toString(),
                             (String) event.get("details"),
                             (String) event.get("timeFrame"),
                             event.getObjectId(), event));
-
-                }
-                else {
+                    MyListFragment fragment = cache.getMyListFragment();
+                    fragment.adapter.replace(cache.getMyList());
+                    onPostExecute(true);
+                } else {
                     onPostExecute(false);
                 }
-
             }
         });
-        onPostExecute(true);
-
-
-    }
+     }
 
     protected void onPostExecute(final Boolean success) {
         if (success) {
-            Intent i = new Intent(CreateEventActivity.this, MainActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
-            this.startActivity(i);
+            this.finish();
         } else {
             mButton.setClickable(true);
             mTextView.setError("Error: could not create event.");

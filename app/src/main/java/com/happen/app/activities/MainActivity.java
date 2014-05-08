@@ -29,6 +29,7 @@ import com.happen.app.R;
 import com.happen.app.components.NewsAdapter;
 import com.happen.app.components.NewsObject;
 import com.happen.app.util.HappenUserCache;
+import com.happen.app.util.MyListCache;
 import com.happen.app.util.NonSwipeableViewPager;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
@@ -454,6 +455,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 2:
                     if (myListPage == null){
                         myListPage = MyListFragment.newInstance();
+                        MyListCache cache = MyListCache.getInstance();
+                        cache.assignMyListFragment((MyListFragment) myListPage);
                     }
                     return myListPage;
 
