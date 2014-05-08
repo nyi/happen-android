@@ -2,21 +2,22 @@ package com.happen.app.activities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -24,26 +25,27 @@ import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListPopupWindow;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroupOverlay;
+import android.view.ViewOverlay;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.happen.app.R;
-import com.happen.app.components.NewsAdapter;
-import com.happen.app.components.NewsObject;
-import com.happen.app.util.HappenUserCache;
 import com.happen.app.util.MyListCache;
 import com.happen.app.util.NonSwipeableViewPager;
-import com.happen.app.util.Util;
-import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 
@@ -71,9 +73,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     private Fragment friendPage;
     private Fragment myListPage;
     private NewsFragment newsPage;
+    Dialog numNewsDialog;
 
     //@spencer used to self-identify in callback response...
-    private Activity self;
+    private MainActivity self;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +117,41 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         friendPage = null;
         myListPage = null;
 
+    }
+
+    private ViewGroup setContentViewWithWrapper(int resContent) {
+        ViewGroup decorView = (ViewGroup) this.getWindow().getDecorView();
+        ViewGroup decorChild = (ViewGroup) decorView.getChildAt(0);
+
+        // Removing decorChild, we'll add it back soon
+        decorView.removeAllViews();
+
+        ViewGroup wrapperView = new FrameLayout(this);
+
+        // You should set some ID, if you'll want to reference this wrapper in that manner later
+        //
+        // The ID, such as "R.id.ACTIVITY_LAYOUT_WRAPPER" can be set at a resource file, such as:
+        //  <resources xmlns:android="http://schemas.android.com/apk/res/android">
+        //      <item type="id" name="ACTIVITY_LAYOUT_WRAPPER"/>
+        //  </resources>
+        //
+        wrapperView.setId(R.id.ACTIVITY_LAYOUT_WRAPPER);
+
+        // Now we are rebuilding the DecorView, but this time we
+        // have our wrapper view to stand between the real content and the decor
+        decorView.addView(wrapperView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        wrapperView.addView(decorChild, decorChild.getLayoutParams());
+        //This is for Jelly, ICS, Honeycomb
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2){
+            LayoutInflater.from(this).inflate(resContent, (ViewGroup)((LinearLayout)wrapperView.getChildAt(0)).getChildAt(1), true);}
+        //This is for KitKat and Jelly 4.3
+        else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
+            LayoutInflater.from(this).inflate(resContent, (ViewGroup) (((ViewGroup) wrapperView.getChildAt(0)).getChildAt(0)), true);}
+        //This is for Ginger
+        else{
+            LayoutInflater.from(this).inflate(resContent, (ViewGroup) ((LinearLayout)((FrameLayout) wrapperView.getChildAt(0)).getChildAt(0)).getChildAt(1), true);}
+
+        return wrapperView;
     }
 
     private void setOptionTitle(int id, String title)
@@ -187,7 +225,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     break;
                 case 2:
                     currentPage = Pages.NEWS;
-                    //clearNewsIsRead();
+                    clearNewsIsRead();
                     switchMenuToAddEvent();
                     break;
                 case 3:
@@ -206,13 +244,26 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             public void done(String resp, ParseException e) {
                 if (e == null) {
                     System.out.println(" reading news a success!");
-                    //Success
+                    numNewsDialog.hide();
                 } else {
                     System.out.println(e.getMessage());
                     //Error clearing news
                 }
             }
         });
+
+
+    }
+
+    public void updateNewNews(int newNews)
+    {
+        if(newNews>0)
+        {
+            TextView textView = (TextView)findViewById(R.id.news_num);
+            textView.setText(Integer.toString(newNews));
+            textView.setVisibility(View.VISIBLE);
+
+        }
     }
 
     public void switchMenuToAddFriend() {
@@ -353,7 +404,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 // MyListFragment
                 case 2:
                     if (newsPage == null){
-                        newsPage = NewsFragment.newInstance();
+                        newsPage = NewsFragment.newInstance(self);
                     }
                     return newsPage;
 

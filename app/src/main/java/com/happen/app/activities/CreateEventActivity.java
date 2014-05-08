@@ -127,36 +127,55 @@ public class CreateEventActivity extends Activity {
         event.put("details", msg);
         event.put("timeFrame", date);
         event.put("creator", user);
+         EventObject newEvent = new EventObject(event.get("creator").toString(),
+                 (String) event.get("details"),
+                 (String) event.get("timeFrame"),
+                 event.getObjectId(), event);
 
         if(msg.equals("")){
-            onPostExecute(false);
+            onPostExecute(false, null);
             return;
         }
+
         event.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    MyListCache cache = MyListCache.getInstance();
-                    cache.addEvent(0, new EventObject(event.get("creator").toString(),
+
+                } else {
+                    EventObject failedEvent = new EventObject(event.get("creator").toString(),
                             (String) event.get("details"),
                             (String) event.get("timeFrame"),
-                            event.getObjectId(), event));
-                    MyListFragment fragment = cache.getMyListFragment();
-                    fragment.adapter.replace(cache.getMyList());
-                    onPostExecute(true);
-                } else {
-                    onPostExecute(false);
+                            event.getObjectId(), event);
+                    onPostExecute(false, failedEvent);
                 }
             }
         });
+         MyListCache cache = MyListCache.getInstance();
+         cache.addEvent(0, newEvent);
+         MyListFragment fragment = cache.getMyListFragment();
+         fragment.adapter.replace(cache.getMyList());
+         onPostExecute(true, newEvent);
+
      }
 
-    protected void onPostExecute(final Boolean success) {
+    protected void onPostExecute(final Boolean success, EventObject newEvent) {
         if (success) {
             this.finish();
         } else {
-            mButton.setClickable(true);
-            mTextView.setError("Error: could not create event.");
+            //if null, it wasn't created yet and user made error (empty details field)
+            if(newEvent==null)
+            {
+                mButton.setClickable(true);
+                mTextView.setError("Error: could not create event.");
+            }
+            //else an error occurred creating object, so remove from cache and notify after leaving the activity user of database error/network error
+            else
+            {
+                //todo notify user of error after navigating away from activity, b/c event is created optimistically and now deleted
+                MyListCache cache = MyListCache.getInstance();
+                cache.removeEvent(newEvent.objectId);
+            }
         }
     }
 }

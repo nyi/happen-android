@@ -41,15 +41,18 @@ public class NewsFragment extends Fragment implements View.OnClickListener{
     MainActivity.SectionsPagerAdapter pager;
     ViewPager viewPager;
     public  ArrayList<Bitmap> profPictures;
+    int newNews;
     NewsFragment self;
 
-    public static NewsFragment newInstance() {
-        NewsFragment fragment = new NewsFragment();
+    public static NewsFragment newInstance(MainActivity parent) {
+        NewsFragment fragment = new NewsFragment(parent);
         return fragment;
     }
 
-    public NewsFragment() {
+    public NewsFragment(MainActivity m) {
         self = this;
+        newNews = 0;
+        main = m;
 
     }
 
@@ -90,6 +93,10 @@ public class NewsFragment extends Fragment implements View.OnClickListener{
                         ParseUser target = object.get(i).getParseUser(Util.COL_TARGET);
                         String eventType = (String)object.get(i).get(Util.COL_TYPE);
                         boolean isUnread = (Boolean)object.get(i).get(Util.COL_UNREAD);
+                        if(isUnread)
+                        {
+                            newNews++;
+                        }
                         NewsObject newsObj;
                         String sourceName = requester.getString(Util.COL_FIRST_NAME) + " " + requester.getString(Util.COL_LAST_NAME);
                         String targetName = target.getString(Util.COL_FIRST_NAME) + " " + target.getString(Util.COL_LAST_NAME);
@@ -140,6 +147,11 @@ public class NewsFragment extends Fragment implements View.OnClickListener{
                             ex.printStackTrace();
                         }
                     }
+                    //updates the counter for new news if necessary
+                    if(main!=null)
+                    {
+                        main.updateNewNews(5);
+                    }
                     newsAdapter.replace(newsList, profPictures);
                     newsAdapter.notifyDataSetChanged();
 
@@ -149,6 +161,14 @@ public class NewsFragment extends Fragment implements View.OnClickListener{
             }
         });
 
+    }
+
+    public int getNewNews() {
+        return newNews;
+    }
+
+    public void resetNewNews() {
+        newNews = 0;
     }
 
     @Override

@@ -21,23 +21,15 @@ import java.util.HashMap;
  * Created by Spencer on 3/28/14.
  */
 public class NewsAdapter extends BaseAdapter{
-    static final String KEY_REQUESTS = "requests";
-    static final String KEY_EMPTY = "empty";
 
     private ArrayList<NewsObject> data;
     private ArrayList<Bitmap> pictures;
     private static LayoutInflater inflater = null;
-    private MainActivity parent;
+
 
     public NewsAdapter(ArrayList<NewsObject> d, LayoutInflater i) {
         data = d;
         inflater = i;
-    }
-
-    public NewsAdapter(ArrayList<NewsObject> d, LayoutInflater i, MainActivity parent) {
-        data = d;
-        inflater = i;
-        this.parent = parent;
     }
 
     @Override
