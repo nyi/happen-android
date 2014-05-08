@@ -32,7 +32,9 @@ import com.happen.app.util.HappenUserCache;
 import com.happen.app.util.NonSwipeableViewPager;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.Parse;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -175,6 +177,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     break;
                 case 2:
                     currentPage = Pages.NEWS;
+                    //clearNewsIsRead();
                     switchMenuToAddEvent();
                     break;
                 case 3:
@@ -185,6 +188,21 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
         mViewPager.setCurrentItem(tab.getPosition());
 
+    }
+
+    public void clearNewsIsRead(){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        ParseCloud.callFunctionInBackground("allNewsRead", params, new FunctionCallback<String>() {
+            public void done(String resp, ParseException e) {
+                if (e == null) {
+                    System.out.println(" reading news a success!");
+                    //Success
+                } else {
+                    System.out.println(e.getMessage());
+                    //Error clearing news
+                }
+            }
+        });
     }
 
     public void switchMenuToAddFriend() {

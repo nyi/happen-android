@@ -262,6 +262,40 @@ Parse.Cloud.define("undoMeTooEvent", function(event, response) {
   });
 });
 
+Parse.Cloud.define("allNewsRead", function(news, response) {
+  var newsQuery = new Parse.Query("News");
+  var user = Parse.User.current();
+  newsQuery.equalTo("target", user);
+  newsQuery.equalTo("isUnread", true);
+  var success = false;
+  newsQuery.find().then (function(readNews) {
+    if(readNews!=null)
+    {
+      for ( var i = readNews.length - 1; i >= 0; i--) {
+        readNews[i].set("isUnread", false);
+      };
+      Parse.Object.saveAll(readNews, {
+        success: function(list) {
+          response.success("saved all successfully");
+          success=true;
+        },
+        error: function(error) {
+            // An error occurred while saving one of the objects.
+          response.error("did NOT save all successfully");
+        },
+      }); 
+    }
+    else
+    {
+      response.success("no news to read");
+    }
+
+
+  }, function(error) {
+
+  });
+});
+
 
 
 
