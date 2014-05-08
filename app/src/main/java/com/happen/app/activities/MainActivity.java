@@ -13,7 +13,10 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -59,22 +62,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     NonSwipeableViewPager mViewPager;
 
     protected Menu myMenu;
-    public enum Pages {FEED, FRIENDS, MY_LIST};
+    public enum Pages {FEED, FRIENDS, NEWS, MY_LIST};
     public Pages currentPage;
     private FeedFragment feedPage;
     private Fragment friendPage;
     private Fragment myListPage;
-    private NewsAdapter newsAdapter;
-    private ArrayList<NewsObject> newsList;
-    private static String objToBeDeleted;
-    //objectId -> profilePic
-    //Populated in feedFragment query, used in event details
-    public HashMap<String, Bitmap> imageCache;
-
-    protected ListPopupWindow popup;
-    private LayoutInflater inflater;
-    public  ArrayList<Bitmap> profPictures;
-
+    private NewsFragment newsPage;
 
     //@spencer used to self-identify in callback response...
     private Activity self;
@@ -108,24 +101,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             // this tab is selected.
             actionBar.addTab(
                     actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
+                            /*.setText(mSectionsPagerAdapter.getPageTitle(i))*/
+                            .setIcon(mSectionsPagerAdapter.getPageIcon(i,false,true))
                             .setTabListener(this));
         }
         currentPage = Pages.FEED;
 
         friendPage = null;
         myListPage = null;
-        this.initNews();
-        this.queryNews();
-
-        //populate user cache, need screen dimensions for image processing
-        HappenUserCache userCache = HappenUserCache.getInstance();
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        //userCache.populateUserCache(width);
-
 
     }
 
@@ -149,8 +132,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         return true;
     }
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -164,115 +145,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 switchToCreateFriendView();
             return true;
         }
-        if(id == R.id.action_news)
-        {
-            popup.setAnchorView(this.findViewById(R.id.action_news));
-            queryNews();
-            newsAdapter.notifyDataSetChanged();
-            popup.show();
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void initNews()
-    {
-        popup = new ListPopupWindow(MainActivity.this);
-        int height = (int) Util.dipToPixels(this.getApplicationContext(), 450);
-        int width = (int) Util.dipToPixels(this.getApplicationContext(), 300);
-        popup.setHeight(height);
-        popup.setWidth(width);
-        popup.setModal(true);
-        newsList = new ArrayList<NewsObject>();
-        newsAdapter = new NewsAdapter(newsList, profPictures, this.getLayoutInflater());
-        popup.setAdapter(newsAdapter);
-    }
 
-    public void queryNews()
-    {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Util.TABLE_NEWS);
-        profPictures = new ArrayList<Bitmap>();
-
-        query.orderByDescending(Util.COL_CREATED_AT);
-        query.include(Util.COL_TARGET);
-        query.include(Util.COL_SOURCE);
-        query.include(Util.COL_EVENT);
-        query.whereEqualTo(Util.COL_TARGET, ParseUser.getCurrentUser());
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> object, ParseException e) {
-                if (e == null) {
-                    Log.d("score", "Retrieved " + object.size() + " scores");
-                    newsList = new ArrayList<NewsObject>();
-                    if(object.size()==0)
-                    {
-                        NewsObject newsObj = new NewsObject(Util.NEWS_EMPTY, null, null);
-                        newsList.add(newsObj);
-                    }
-                    for (int i = 0; i < object.size(); i++) {
-                        ParseUser requester = object.get(i).getParseUser(Util.COL_SOURCE);
-                        ParseUser target = object.get(i).getParseUser(Util.COL_TARGET);
-                        String eventType = (String)object.get(i).get(Util.COL_TYPE);
-
-                        NewsObject newsObj;
-                        String sourceName = requester.getString(Util.COL_FIRST_NAME) + " " + requester.getString(Util.COL_LAST_NAME);
-                        String targetName = target.getString(Util.COL_FIRST_NAME) + " " + target.getString(Util.COL_LAST_NAME);
-                        if(eventType.equals("ME_TOO"))
-                        {
-                            String event = (String)((ParseObject)object.get(i).get(Util.COL_EVENT)).get(Util.COL_DETAILS);
-                            newsObj = new NewsObject(eventType, targetName, sourceName, event);
-                        }
-                        else
-                        {
-                            newsObj = new NewsObject(eventType, targetName, sourceName);
-                        }
-                        newsList.add(newsObj);
-                        byte[] file = new byte[0];
-                        try {
-                            boolean imgNotFound = true;
-                            ParseFile pfile = requester.getParseFile(Util.COL_PROFILE_PIC);
-                            if(pfile!=null) {
-                                file = pfile.getData();
-                                Bitmap image = BitmapFactory.decodeByteArray(file, 0, file.length);
-                                // Get screen dimensions and calculate desired profile picture size
-                                Display display = self.getWindowManager().getDefaultDisplay();
-                                Point size = new Point();
-                                display.getSize(size);
-                                int width = size.x;
-                                if(image!=null) {
-                                    imgNotFound=false;
-                                    image = Util.circularCrop(image, (int) (width * Util.WIDTH_RATIO / 2));
-                                    profPictures.add(image);
-                                }
-                            }
-                            if (imgNotFound){
-
-                                Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.defaultprofile);
-
-                                // Get screen dimensions and calculate desired profile picture size
-                                Display display = self.getWindowManager().getDefaultDisplay();
-                                Point size = new Point();
-                                display.getSize(size);
-                                int width = size.x;
-
-                                image = Util.circularCrop(image, (int) (width * Util.WIDTH_RATIO / 2));
-                                profPictures.add(image);
-                            }
-                        }
-                        catch(Exception ex)
-                        {
-                            ex.printStackTrace();
-                        }
-                    }
-                    newsAdapter.replace(newsList, profPictures);
-                    newsAdapter.notifyDataSetChanged();
-
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                }
-            }
-        });
-
-    }
 
     public void switchToCreateEventView() {
         Intent i = new Intent(MainActivity.this, CreateEventActivity.class);
@@ -291,6 +169,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         if(myMenu != null){
+            tab.setIcon(mSectionsPagerAdapter.getPageIcon(tab.getPosition(),true,false));
+            getActionBar().getTabAt(mViewPager.getCurrentItem()).setIcon(mSectionsPagerAdapter.getPageIcon(mViewPager.getCurrentItem(),false,false));
             switch(tab.getPosition()) {
                 case 0:
                     currentPage = Pages.FEED;
@@ -301,6 +181,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     switchMenuToAddFriend();
                     break;
                 case 2:
+                    currentPage = Pages.NEWS;
+                    switchMenuToAddEvent();
+                    break;
+                case 3:
                     currentPage = Pages.MY_LIST;
                     switchMenuToAddEvent();
                     break;
@@ -335,7 +219,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         else if (currentPage == Pages.MY_LIST) {
             replaceMyListPage(null);
         }
-
     }
 
     @Override
@@ -403,13 +286,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         FragmentManager mFragmentManager;
 
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-            mFragmentManager = fm;
-            init();
-        }
-
         public SectionsPagerAdapter(FragmentManager fm, MainActivity main) {
             super(fm);
             mFragmentManager = fm;
@@ -421,6 +297,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             pagesList = new ArrayList<Pages>();
             pagesList.add(Pages.FEED);
             pagesList.add(Pages.FRIENDS);
+            pagesList.add(Pages.NEWS);
             pagesList.add(Pages.MY_LIST);
         }
 
@@ -453,6 +330,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
                 // MyListFragment
                 case 2:
+                    if (newsPage == null){
+                        newsPage = NewsFragment.newInstance();
+                    }
+                    return newsPage;
+
+                // MyListFragment
+                case 3:
                     if (myListPage == null){
                         myListPage = MyListFragment.newInstance();
                         MyListCache cache = MyListCache.getInstance();
@@ -495,12 +379,61 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
+                    return getString(R.string.title_section3).toUpperCase(l);
+                case 3:
                     return getString(R.string.title_section4).toUpperCase(l);
             }
             return "Default Title";
         }
+
+        public Drawable getPageIcon(int position, boolean isSelected, boolean isDefault) {
+            Locale l = Locale.getDefault();
+            Drawable tabIcon = getResources().getDrawable(R.drawable.tab_feed);
+            switch (position) {
+                case 0:
+                    if(isSelected || isDefault) {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_feed_hover);
+                    } else {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_feed);
+                    }
+                    break;
+                case 1:
+                    if(isSelected) {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_friends_hover);
+                    } else {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_friends);
+                    }
+                    break;
+                case 2:
+                    if(isSelected) {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_news_hover);
+                    } else {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_news);
+                    }
+                    break;
+                case 3:
+                    if(isSelected) {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_mylist_hover);
+                    } else {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_mylist);
+                    }
+                    break;
+            }
+            Bitmap bb=((BitmapDrawable) tabIcon).getBitmap();
+
+            int width = bb.getWidth();
+            int height = bb.getHeight();
+
+            float scaleWidth = ((float) 200) / width;
+            float scaleHeight = ((float) 200) / height;
+
+            Matrix matrix = new Matrix();
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            Bitmap resultBitmap = Bitmap.createBitmap(bb, 0, 0,width, height, matrix, true);
+            tabIcon = new BitmapDrawable(resultBitmap);
+
+            return tabIcon;
+        }
     }
-
-
-
 }

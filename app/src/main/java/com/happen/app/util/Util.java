@@ -46,6 +46,7 @@ public class Util {
     public static final String COL_ME_TOOS_ARRAY       = "MeToos";
     public static final String COL_FRIENDS             = "friends";
     public static final String COL_EVENT               = "event";
+    public static final String COL_UNREAD            = "isUnread";
 
     public static final String NEWS_TYPE_REQ_RECEIVED  = "SENT_REQUEST";
     public static final String NEWS_TYPE_REQ_ACCEPT    = "ACCEPT_REQUEST";
