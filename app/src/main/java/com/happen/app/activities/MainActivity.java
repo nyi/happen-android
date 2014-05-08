@@ -270,7 +270,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             myListPage = EventDetailsFragment.newInstance(eventId);
         }
         else {
-            myListPage = MyListFragment.newInstance();
+            MyListCache cache = MyListCache.getInstance();
+            myListPage = cache.getMyListFragment();
         }
         mSectionsPagerAdapter.notifyDataSetChanged();
     }

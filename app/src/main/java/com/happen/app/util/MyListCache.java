@@ -134,7 +134,4 @@ public final class MyListCache {
             }
         });
     }
-
-
-
 }
