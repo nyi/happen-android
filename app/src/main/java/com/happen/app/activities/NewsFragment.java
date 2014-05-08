@@ -82,25 +82,25 @@ public class NewsFragment extends Fragment implements View.OnClickListener{
                     newsList = new ArrayList<NewsObject>();
                     if(object.size()==0)
                     {
-                        NewsObject newsObj = new NewsObject(Util.NEWS_EMPTY, null, null);
+                        NewsObject newsObj = new NewsObject(Util.NEWS_EMPTY, null, null, false);
                         newsList.add(newsObj);
                     }
                     for (int i = 0; i < object.size(); i++) {
                         ParseUser requester = object.get(i).getParseUser(Util.COL_SOURCE);
                         ParseUser target = object.get(i).getParseUser(Util.COL_TARGET);
                         String eventType = (String)object.get(i).get(Util.COL_TYPE);
-
+                        boolean isUnread = (Boolean)object.get(i).get(Util.COL_UNREAD);
                         NewsObject newsObj;
                         String sourceName = requester.getString(Util.COL_FIRST_NAME) + " " + requester.getString(Util.COL_LAST_NAME);
                         String targetName = target.getString(Util.COL_FIRST_NAME) + " " + target.getString(Util.COL_LAST_NAME);
                         if(eventType.equals("ME_TOO"))
                         {
                             String event = (String)((ParseObject)object.get(i).get(Util.COL_EVENT)).get(Util.COL_DETAILS);
-                            newsObj = new NewsObject(eventType, targetName, sourceName, event);
+                            newsObj = new NewsObject(eventType, targetName, sourceName, event, isUnread);
                         }
                         else
                         {
-                            newsObj = new NewsObject(eventType, targetName, sourceName);
+                            newsObj = new NewsObject(eventType, targetName, sourceName, isUnread);
                         }
                         newsList.add(newsObj);
                         byte[] file = new byte[0];

@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:layout_width="fill_parent"
+    android:layout_height="100dp"
+    android:weightSum="1">
+
+<RelativeLayout
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="3dip">
+    android:padding="3dip"
+    android:layout_marginRight="10dp"
+    android:layout_gravity="left">
 
     <ImageView
         android:layout_width="50dip"
@@ -17,6 +25,8 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/lin_layout"
+
         android:paddingTop="5dp"
         android:paddingBottom="5dp">
 
@@ -53,4 +63,23 @@
         android:layout_marginLeft="65dip"
         android:layout_marginTop="25dip"/>
 
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:id="@+id/dot"
+        android:paddingBottom="0dp"
+        android:src="@drawable/notificationx"
+        android:paddingTop="0dp"
+        android:layout_marginTop="0dp"
+        android:paddingRight="0dp"
+        android:clickable="false"
+        android:visibility="visible"
+        android:padding="5dp"
+        android:layout_alignEnd="@id/lin_layout"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="false" />
+
+
 </RelativeLayout>
+
+</LinearLayout>
