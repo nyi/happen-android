@@ -34,12 +34,6 @@ public class NewsAdapter extends BaseAdapter{
         inflater = i;
     }
 
-    public NewsAdapter(ArrayList<NewsObject> d, ArrayList<Bitmap> pics, LayoutInflater i) {
-        data = d;
-        pictures=pics;
-        inflater = i;
-    }
-
     public NewsAdapter(ArrayList<NewsObject> d, LayoutInflater i, MainActivity parent) {
         data = d;
         inflater = i;
