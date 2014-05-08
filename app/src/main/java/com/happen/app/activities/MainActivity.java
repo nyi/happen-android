@@ -13,7 +13,10 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -97,7 +100,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             // this tab is selected.
             actionBar.addTab(
                     actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
+                            /*.setText(mSectionsPagerAdapter.getPageTitle(i))*/
+                            .setIcon(mSectionsPagerAdapter.getPageIcon(i,false,true))
                             .setTabListener(this));
         }
         currentPage = Pages.FEED;
@@ -164,6 +168,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         if(myMenu != null){
+            tab.setIcon(mSectionsPagerAdapter.getPageIcon(tab.getPosition(),true,false));
+            getActionBar().getTabAt(mViewPager.getCurrentItem()).setIcon(mSectionsPagerAdapter.getPageIcon(mViewPager.getCurrentItem(),false,false));
             switch(tab.getPosition()) {
                 case 0:
                     currentPage = Pages.FEED;
@@ -375,6 +381,56 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     return getString(R.string.title_section4).toUpperCase(l);
             }
             return "Default Title";
+        }
+
+        public Drawable getPageIcon(int position, boolean isSelected, boolean isDefault) {
+            Locale l = Locale.getDefault();
+            Drawable tabIcon = getResources().getDrawable(R.drawable.tab_feed);
+            switch (position) {
+                case 0:
+                    if(isSelected || isDefault) {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_feed_hover);
+                    } else {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_feed);
+                    }
+                    break;
+                case 1:
+                    if(isSelected) {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_friends_hover);
+                    } else {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_friends);
+                    }
+                    break;
+                case 2:
+                    if(isSelected) {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_news_hover);
+                    } else {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_news);
+                    }
+                    break;
+                case 3:
+                    if(isSelected) {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_mylist_hover);
+                    } else {
+                        tabIcon = getResources().getDrawable(R.drawable.tab_mylist);
+                    }
+                    break;
+            }
+            Bitmap bb=((BitmapDrawable) tabIcon).getBitmap();
+
+            int width = bb.getWidth();
+            int height = bb.getHeight();
+
+            float scaleWidth = ((float) 200) / width;
+            float scaleHeight = ((float) 200) / height;
+
+            Matrix matrix = new Matrix();
+            matrix.postScale(scaleWidth, scaleHeight);
+
+            Bitmap resultBitmap = Bitmap.createBitmap(bb, 0, 0,width, height, matrix, true);
+            tabIcon = new BitmapDrawable(resultBitmap);
+
+            return tabIcon;
         }
     }
 }
