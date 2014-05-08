@@ -2,6 +2,7 @@ package com.happen.app.util;
 
 import android.util.Log;
 
+import com.happen.app.activities.MyListFragment;
 import com.happen.app.components.EventObject;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -19,6 +20,7 @@ import java.util.List;
 public final class MyListCache {
 
     private static MyListCache instance = null;
+    private static MyListFragment fragment = null;
     private static ArrayList<EventObject> myList = new ArrayList<EventObject>();
 
     private MyListCache() {
@@ -40,6 +42,16 @@ public final class MyListCache {
     public ArrayList<EventObject> getMyList()
     {
         return myList;
+    }
+
+    public void assignMyListFragment(MyListFragment myListFragment)
+    {
+        fragment = myListFragment;
+    }
+
+    public MyListFragment getMyListFragment()
+    {
+        return fragment;
     }
 
     public int size()
@@ -122,7 +134,4 @@ public final class MyListCache {
             }
         });
     }
-
-
-
 }
