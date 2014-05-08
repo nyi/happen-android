@@ -88,8 +88,20 @@ public class NewsAdapter extends BaseAdapter{
             } else if(news.type.equals(Util.NEWS_EMPTY)){
                 vi = inflater.inflate(R.layout.row_news_empty, null);
             }
+
             if(pictures.size() > i) {
                 profilePic.setImageBitmap(pictures.get(i));
+            }
+
+            if(news.isUnread)
+            {
+                ImageView newsCircle = (ImageView) vi.findViewById(R.id.dot);
+                newsCircle.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                ImageView newsCircle = (ImageView) vi.findViewById(R.id.dot);
+                newsCircle.setVisibility(View.INVISIBLE);
             }
         }
 
