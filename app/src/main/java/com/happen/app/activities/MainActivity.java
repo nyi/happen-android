@@ -21,6 +21,7 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -106,6 +107,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             .setTabListener(this));
         }
         currentPage = Pages.FEED;
+        actionBar.setTitle(mSectionsPagerAdapter.getPageTitle(0));
 
         friendPage = null;
         myListPage = null;
@@ -171,6 +173,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         if(myMenu != null){
             tab.setIcon(mSectionsPagerAdapter.getPageIcon(tab.getPosition(),true,false));
             getActionBar().getTabAt(mViewPager.getCurrentItem()).setIcon(mSectionsPagerAdapter.getPageIcon(mViewPager.getCurrentItem(),false,false));
+            getActionBar().setTitle(mSectionsPagerAdapter.getPageTitle(tab.getPosition()));
             switch(tab.getPosition()) {
                 case 0:
                     currentPage = Pages.FEED;
@@ -376,13 +379,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
+                    return " "+getString(R.string.title_section1);
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
+                    return " "+getString(R.string.title_section2);
                 case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+                    return " "+getString(R.string.title_section3);
                 case 3:
-                    return getString(R.string.title_section4).toUpperCase(l);
+                    return " "+getString(R.string.title_section4);
             }
             return "Default Title";
         }
@@ -420,7 +423,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     }
                     break;
             }
-            Bitmap bb=((BitmapDrawable) tabIcon).getBitmap();
+            /*Bitmap bb=((BitmapDrawable) tabIcon).getBitmap();
 
             int width = bb.getWidth();
             int height = bb.getHeight();
@@ -432,9 +435,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             matrix.postScale(scaleWidth, scaleHeight);
 
             Bitmap resultBitmap = Bitmap.createBitmap(bb, 0, 0,width, height, matrix, true);
-            tabIcon = new BitmapDrawable(resultBitmap);
+            tabIcon = new BitmapDrawable(resultBitmap);*/
 
-            return tabIcon;
+            DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+            float densityScale = metrics.density;
+
+            float scaledWidth = 25 * densityScale;
+            float scaledHeight = 25 * densityScale;
+
+            Bitmap bitmap = ((BitmapDrawable) tabIcon).getBitmap();
+            Drawable d = new BitmapDrawable(getApplicationContext().getResources(),Bitmap.createScaledBitmap(bitmap, (int)scaledWidth, (int)scaledHeight, true));
+
+            return d;
         }
     }
 }
