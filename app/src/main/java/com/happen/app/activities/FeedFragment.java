@@ -203,6 +203,7 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
             @Override
             protected Void doInBackground(Void... params) {
                 queryFeed();
+                queryMeToos();
                 return null;
             }
 
@@ -407,7 +408,6 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
             @Override
             protected Void doInBackground(Void... voids) {
                 queryFeed();
-
                 return null;
             }
         };
@@ -431,7 +431,6 @@ public class FeedFragment extends Fragment implements View.OnClickListener, OnRe
             @Override
             protected Void doInBackground(Void... voids) {
                 queryMeToos();
-
                 return null;
             }
         };
