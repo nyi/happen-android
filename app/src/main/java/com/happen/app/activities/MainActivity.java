@@ -36,6 +36,7 @@ import android.view.ViewOverlay;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -73,6 +74,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     private Fragment friendPage;
     private Fragment myListPage;
     private NewsFragment newsPage;
+    private ViewGroup wrapperView;
     Dialog numNewsDialog;
 
     //@spencer used to self-identify in callback response...
@@ -83,6 +85,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onCreate(savedInstanceState);
         Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
         setContentView(R.layout.activity_main);
+
+        // DON'T CALL `setContentView`,
+        // we are replacing that line with this code:
+        //wrapperView = setContentViewWithWrapper(R.layout.activity_main);
+
+        // Now, because the wrapper view contains the entire screen (including the notification bar
+        // which is above the ActionBar) I think you'll find it useful to know the exact Y where the
+        // action bar is located.
+        // You can use something like that:
+//        ActionBar actionBar = (ActionBr)((LinearLayout)wrapperView.getChildAt(0)).getChildAt(0);
+//        int topOffset = actionBar.getTop();
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         //for self-reference in call-backs
@@ -108,7 +121,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             actionBar.addTab(
                     actionBar.newTab()
                             /*.setText(mSectionsPagerAdapter.getPageTitle(i))*/
-                            .setIcon(mSectionsPagerAdapter.getPageIcon(i,false,true))
+                            .setIcon(mSectionsPagerAdapter.getPageIcon(i, false, true))
                             .setTabListener(this));
         }
         currentPage = Pages.FEED;
@@ -119,6 +132,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     }
 
+    //used to wrap the main view with wrapperView to facilitate adding an overlay view for number of news
     private ViewGroup setContentViewWithWrapper(int resContent) {
         ViewGroup decorView = (ViewGroup) this.getWindow().getDecorView();
         ViewGroup decorChild = (ViewGroup) decorView.getChildAt(0);
@@ -211,8 +225,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
         if(myMenu != null){
-            tab.setIcon(mSectionsPagerAdapter.getPageIcon(tab.getPosition(),true,false));
-            getActionBar().getTabAt(mViewPager.getCurrentItem()).setIcon(mSectionsPagerAdapter.getPageIcon(mViewPager.getCurrentItem(),false,false));
+            tab.setIcon(mSectionsPagerAdapter.getPageIcon(tab.getPosition(), true, false));
+            getActionBar().getTabAt(mViewPager.getCurrentItem()).setIcon(mSectionsPagerAdapter.getPageIcon(mViewPager.getCurrentItem(), false, false));
             getActionBar().setTitle(mSectionsPagerAdapter.getPageTitle(tab.getPosition()));
             switch(tab.getPosition()) {
                 case 0:
@@ -225,7 +239,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     break;
                 case 2:
                     currentPage = Pages.NEWS;
-                    clearNewsIsRead();
+                    //clearNewsIsRead();
                     switchMenuToAddEvent();
                     break;
                 case 3:
@@ -259,9 +273,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     {
         if(newNews>0)
         {
-            TextView textView = (TextView)findViewById(R.id.news_num);
-            textView.setText(Integer.toString(newNews));
-            textView.setVisibility(View.VISIBLE);
+
 
         }
     }
@@ -277,7 +289,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     }
 
     @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction  ){
     }
 
     @Override
@@ -517,5 +529,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
             return d;
         }
+
+
     }
 }

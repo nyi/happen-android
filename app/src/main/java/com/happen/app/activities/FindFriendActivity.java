@@ -192,6 +192,18 @@ public class FindFriendActivity extends Activity implements View.OnClickListener
 
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         final HappenUserCache userCache = HappenUserCache.getInstance();
+
+        for(int i = 0; i < numbers.size(); i++)
+        {
+            String number = numbers.get(i);
+            if(number.length()==11)
+            {
+                String newNumber = number.substring(1);
+                numbers.remove(i);
+                numbers.add(i, newNumber);
+            }
+        }
+
         query.whereContainedIn(COL_NUMBER, numbers);
 
         query.findInBackground(new FindCallback<ParseUser>() {
