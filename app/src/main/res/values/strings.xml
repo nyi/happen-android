@@ -6,7 +6,7 @@
     <string name="title_activity_signup">Sign up</string>
     <string name="app_name">Happen</string>
     <string name="title_section1">Happen</string>
-    <string name="title_section2">Friend</string>
+    <string name="title_section2">Friends</string>
     <string name="title_section3">News</string>
     <string name="title_section4">My List</string>
     <string name="action_create_event">Add Event</string>

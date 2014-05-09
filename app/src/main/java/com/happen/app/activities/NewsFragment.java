@@ -18,12 +18,15 @@ import com.happen.app.components.NewsAdapter;
 import com.happen.app.components.NewsObject;
 import com.happen.app.util.Util;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -150,10 +153,12 @@ public class NewsFragment extends Fragment implements View.OnClickListener{
                     //updates the counter for new news if necessary
                     if(main!=null)
                     {
-                        main.updateNewNews(5);
+                        main.updateNewNews(newNews);
                     }
                     newsAdapter.replace(newsList, profPictures);
                     newsAdapter.notifyDataSetChanged();
+                    clearNewsIsRead();
+
 
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
@@ -163,12 +168,30 @@ public class NewsFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    public int getNewNews() {
-        return newNews;
+
+    public void clearNewsIsRead(){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        ParseCloud.callFunctionInBackground("allNewsRead", params, new FunctionCallback<String>() {
+            public void done(String resp, ParseException e) {
+                if (e == null) {
+                    System.out.println(" reading news a success!");
+                } else {
+                    System.out.println(e.getMessage());
+                    //Error clearing news
+                }
+            }
+        });
+
+
     }
 
     public void resetNewNews() {
         newNews = 0;
+        for(int i = 0; i < newsList.size(); i++)
+        {
+            newsList.get(i).setNewsRead();
+        }
+        newsAdapter.notifyDataSetChanged();
     }
 
     @Override

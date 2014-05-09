@@ -26,6 +26,10 @@ public class NewsObject
 
     }
 
+    public void setNewsRead() {
+        this.isUnread = false;
+    }
+
     public String toString()
     {
         return "NewsObj: " + type + "- " + nameSource;

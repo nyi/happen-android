@@ -75,7 +75,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     private Fragment myListPage;
     private NewsFragment newsPage;
     private ViewGroup wrapperView;
-    Dialog numNewsDialog;
 
     //@spencer used to self-identify in callback response...
     private MainActivity self;
@@ -86,16 +85,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
         setContentView(R.layout.activity_main);
 
-        // DON'T CALL `setContentView`,
-        // we are replacing that line with this code:
-        //wrapperView = setContentViewWithWrapper(R.layout.activity_main);
-
-        // Now, because the wrapper view contains the entire screen (including the notification bar
-        // which is above the ActionBar) I think you'll find it useful to know the exact Y where the
-        // action bar is located.
-        // You can use something like that:
-//        ActionBar actionBar = (ActionBr)((LinearLayout)wrapperView.getChildAt(0)).getChildAt(0);
-//        int topOffset = actionBar.getTop();
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         //for self-reference in call-backs
@@ -130,42 +119,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         friendPage = null;
         myListPage = null;
 
-    }
-
-    //used to wrap the main view with wrapperView to facilitate adding an overlay view for number of news
-    private ViewGroup setContentViewWithWrapper(int resContent) {
-        ViewGroup decorView = (ViewGroup) this.getWindow().getDecorView();
-        ViewGroup decorChild = (ViewGroup) decorView.getChildAt(0);
-
-        // Removing decorChild, we'll add it back soon
-        decorView.removeAllViews();
-
-        ViewGroup wrapperView = new FrameLayout(this);
-
-        // You should set some ID, if you'll want to reference this wrapper in that manner later
-        //
-        // The ID, such as "R.id.ACTIVITY_LAYOUT_WRAPPER" can be set at a resource file, such as:
-        //  <resources xmlns:android="http://schemas.android.com/apk/res/android">
-        //      <item type="id" name="ACTIVITY_LAYOUT_WRAPPER"/>
-        //  </resources>
-        //
-        wrapperView.setId(R.id.ACTIVITY_LAYOUT_WRAPPER);
-
-        // Now we are rebuilding the DecorView, but this time we
-        // have our wrapper view to stand between the real content and the decor
-        decorView.addView(wrapperView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        wrapperView.addView(decorChild, decorChild.getLayoutParams());
-        //This is for Jelly, ICS, Honeycomb
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2){
-            LayoutInflater.from(this).inflate(resContent, (ViewGroup)((LinearLayout)wrapperView.getChildAt(0)).getChildAt(1), true);}
-        //This is for KitKat and Jelly 4.3
-        else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
-            LayoutInflater.from(this).inflate(resContent, (ViewGroup) (((ViewGroup) wrapperView.getChildAt(0)).getChildAt(0)), true);}
-        //This is for Ginger
-        else{
-            LayoutInflater.from(this).inflate(resContent, (ViewGroup) ((LinearLayout)((FrameLayout) wrapperView.getChildAt(0)).getChildAt(0)).getChildAt(1), true);}
-
-        return wrapperView;
     }
 
     private void setOptionTitle(int id, String title)
@@ -224,6 +177,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
+
+        //if navigating away from news in tab browser, clear the green dots
+        if(currentPage==Pages.NEWS)
+        {
+            newsPage.resetNewNews();
+        }
         if(myMenu != null){
             tab.setIcon(mSectionsPagerAdapter.getPageIcon(tab.getPosition(),true,false));
             getActionBar().getTabAt(mViewPager.getCurrentItem()).setIcon(mSectionsPagerAdapter.getPageIcon(mViewPager.getCurrentItem(),false,false));
@@ -239,7 +198,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     break;
                 case 2:
                     currentPage = Pages.NEWS;
-                    //clearNewsIsRead();
                     switchMenuToAddEvent();
                     break;
                 case 3:
@@ -248,33 +206,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     break;
             }
         }
+
         mViewPager.setCurrentItem(tab.getPosition());
 
     }
 
-    public void clearNewsIsRead(){
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        ParseCloud.callFunctionInBackground("allNewsRead", params, new FunctionCallback<String>() {
-            public void done(String resp, ParseException e) {
-                if (e == null) {
-                    System.out.println(" reading news a success!");
-                    numNewsDialog.hide();
-                } else {
-                    System.out.println(e.getMessage());
-                    //Error clearing news
-                }
-            }
-        });
 
-
-    }
 
     public void updateNewNews(int newNews)
     {
         if(newNews>0)
         {
-
-
+            getActionBar().getTabAt(2).setIcon(mSectionsPagerAdapter.getPageIcon(newNews));
         }
     }
 
