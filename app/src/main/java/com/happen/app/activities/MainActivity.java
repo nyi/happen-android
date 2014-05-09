@@ -141,7 +141,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_create) {
-            if(currentPage == Pages.FEED || currentPage == Pages.MY_LIST)
+            if(currentPage == Pages.FEED || currentPage == Pages.NEWS || currentPage == Pages.MY_LIST)
                 switchToCreateEventView();
             else if(currentPage == Pages.FRIENDS)
                 switchToCreateFriendView();
