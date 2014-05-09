@@ -390,7 +390,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             return "Default Title";
         }
 
-        public Drawable getPageIcon(int position, boolean isSelected, boolean isDefault) {
+        public Drawable getPageIcon(int position, boolean isSelected, boolean isDefault, int numNotifications) {
             Locale l = Locale.getDefault();
             Drawable tabIcon = getResources().getDrawable(R.drawable.tab_feed);
             switch (position) {
@@ -412,7 +412,39 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     if(isSelected) {
                         tabIcon = getResources().getDrawable(R.drawable.tab_news_hover);
                     } else {
-                        tabIcon = getResources().getDrawable(R.drawable.tab_news);
+                        if(numNotifications > 0) {
+                            switch(numNotifications) {
+                                case 1:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_1);
+                                    break;
+                                case 2:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_2);
+                                    break;
+                                case 3:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_3);
+                                    break;
+                                case 4:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_4);
+                                    break;
+                                case 5:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_5);
+                                    break;
+                                case 6:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_6);
+                                    break;
+                                case 7:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_7);
+                                    break;
+                                case 8:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_8);
+                                    break;
+                                default:
+                                    tabIcon = getResources().getDrawable(R.drawable.tab_news_9plus);
+                                    break;
+                            }
+                        } else {
+                            tabIcon = getResources().getDrawable(R.drawable.tab_news);
+                        }
                     }
                     break;
                 case 3:
@@ -423,19 +455,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     }
                     break;
             }
-            /*Bitmap bb=((BitmapDrawable) tabIcon).getBitmap();
-
-            int width = bb.getWidth();
-            int height = bb.getHeight();
-
-            float scaleWidth = (Util.dipToPixels(getApplicationContext(),75)) / width;
-            float scaleHeight = (Util.dipToPixels(getApplicationContext(),75)) / height;
-
-            Matrix matrix = new Matrix();
-            matrix.postScale(scaleWidth, scaleHeight);
-
-            Bitmap resultBitmap = Bitmap.createBitmap(bb, 0, 0,width, height, matrix, true);
-            tabIcon = new BitmapDrawable(resultBitmap);*/
 
             DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
             float densityScale = metrics.density;
@@ -447,6 +466,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Drawable d = new BitmapDrawable(getApplicationContext().getResources(),Bitmap.createScaledBitmap(bitmap, (int)scaledWidth, (int)scaledHeight, true));
 
             return d;
+        }
+
+        public Drawable getPageIcon(int position, boolean isSelected, boolean isDefault) {
+            return getPageIcon(position, isSelected, isDefault, 0);
+        }
+
+        public Drawable getPageIcon(int numNotifications) {
+            return getPageIcon(2, false, false, numNotifications);
         }
     }
 }
