@@ -173,6 +173,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
     public void queryFriends()
     {
         ParseQuery<ParseObject> query = ParseUser.getCurrentUser().getRelation(COL_FRIENDS).getQuery();
+        query.orderByAscending(COL_LAST_NAME +","+ COL_FIRST_NAME);
 
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> object, ParseException e) {
