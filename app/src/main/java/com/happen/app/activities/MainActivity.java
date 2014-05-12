@@ -154,18 +154,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 switchToCreateFriendView();
             return true;
         }
-        if (id ==android.R.id.home && currentPage == Pages.MY_LIST)
-        {
-            Log.e("main activity", " popping back stack");
-            FragmentManager manager = getFragmentManager();
-            FragmentTransaction ft = manager.beginTransaction();
-            //if(currentPage == Pages.MY_LIST)
-                //ft.remove(myListPage);
-            //ft.commit();
-            manager.popBackStack();
-            getActionBar().setDisplayHomeAsUpEnabled(false);
-            getActionBar().setHomeButtonEnabled(false);
-        }
+//        if (id ==android.R.id.home && currentPage == Pages.MY_LIST)
+//        {
+//            Log.e("main activity", " popping back stack");
+//            FragmentManager manager = getFragmentManager();
+//            FragmentTransaction ft = manager.beginTransaction();
+//            //if(currentPage == Pages.MY_LIST)
+//                //ft.remove(myListPage);
+//            //ft.commit();
+//            manager.popBackStack();
+//            getActionBar().setDisplayHomeAsUpEnabled(false);
+//            getActionBar().setHomeButtonEnabled(false);
+//        }
 
 
 
@@ -304,7 +304,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        int orig_id = myListPage.getId();
+        ft.remove(myListPage);
+        ft.commit();
         if (myListPage instanceof MyListFragment) {
             myListPage = EventDetailsFragment.newInstance(eventId);
         }
@@ -312,8 +313,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             MyListCache cache = MyListCache.getInstance();
             myListPage = cache.getMyListFragment();
         }
-        ft.replace(orig_id, myListPage);
-        ft.commit();
 
         mSectionsPagerAdapter.notifyDataSetChanged();
     }

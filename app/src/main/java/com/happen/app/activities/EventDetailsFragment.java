@@ -92,35 +92,12 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d("evetn details", "menu item selected!");
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                FragmentManager manager = getFragmentManager();
-                FragmentTransaction ft = manager.beginTransaction();
-                ft.remove(this);
-                ft.commit();
-                manager.popBackStack();
-                getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
-                getActivity().getActionBar().setHomeButtonEnabled(false);
-
-                return true;
-
-            // Other case statements...
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the MyList fragment layout
         View v = inflater.inflate(R.layout.fragment_event, container, false);
-        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+       // getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         eventText = (TextView)v.findViewById(R.id.event_details);
