@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -88,6 +91,28 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
         this.event = cache.get(objectId);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d("evetn details", "menu item selected!");
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                FragmentManager manager = getFragmentManager();
+                FragmentTransaction ft = manager.beginTransaction();
+                ft.remove(this);
+                ft.commit();
+                manager.popBackStack();
+                getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
+                getActivity().getActionBar().setHomeButtonEnabled(false);
+
+                return true;
+
+            // Other case statements...
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,6 +120,7 @@ public class EventDetailsFragment extends Fragment  implements View.OnClickListe
 
         // Inflate the MyList fragment layout
         View v = inflater.inflate(R.layout.fragment_event, container, false);
+        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 
 
         eventText = (TextView)v.findViewById(R.id.event_details);

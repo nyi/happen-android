@@ -284,6 +284,7 @@ public class MyListFragment extends Fragment implements View.OnClickListener, Po
     public void signOut(){
         listCache = MyListCache.getInstance();
         listCache.clear();
+        ParseUser.logOut();
         Intent i = new Intent(getActivity(), SplashscreenActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear activity stack
         this.startActivity(i);

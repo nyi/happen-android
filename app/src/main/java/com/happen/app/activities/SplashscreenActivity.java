@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +46,7 @@ public class SplashscreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Parse.initialize(this, "T67m6NTwHFuyyNavdRdFGlwNM5UiPE48l3sIP6fP", "GVaSbLvVYagIzZCd7XYLfG0H9lHJBwpUvsUKen7Z");
 
         // Hide the action bar.
         ActionBar actionBar = getActionBar();
@@ -85,6 +87,13 @@ public class SplashscreenActivity extends Activity {
                 loadSignup();
             }
         });
+
+        ParseUser cur = ParseUser.getCurrentUser();
+        if(cur!=null)
+        {
+            onPostExecute(true);
+        }
+
     }
 
     @Override

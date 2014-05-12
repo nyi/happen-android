@@ -69,7 +69,7 @@ public class NewsAdapter extends BaseAdapter{
 
             news = data.get(i);
             name_txt.setText(data.get(i).nameSource);
-
+            vi.setTag(news);
             if(news.type.equals(Util.NEWS_TYPE_ME_TOO)) {
                 txt.setText( meTooText);
                 lower_txt.setText(data.get(i).event);
