@@ -98,7 +98,7 @@ public class UserListFragment extends Fragment {
 
         // Inflate the UserList fragment layout
         View v = inflater.inflate(R.layout.fragment_user_list, container, false);
-        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+       // getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Set up profile picture, full name and user handle
         imageView = (ImageView)v.findViewById(R.id.user_list_picture);
