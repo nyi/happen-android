@@ -272,7 +272,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.friend_item:
-                switchToFriendList((String)v.getTag());
+                switchToFriendList((FriendObject)v.getTag());
                 break;
         }
     }
@@ -301,28 +301,17 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         ParseObject.createWithoutData("FriendRequest", requestId).deleteEventually();
     }
 
-    public void switchToFriendList(String username)
+    public void switchToFriendList(FriendObject friend)
     {
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereEqualTo("username", username);
-        query.findInBackground(new FindCallback<ParseUser>() {
-            public void done(List<ParseUser> object, ParseException e) {
-                if (e == null) {
-                    ParseUser user = object.get(0);
-                    //pager.setUser(user);
-                    //main.switchToFriendList(user);
-                    ((MainActivity) getActivity()).replaceFriendPage(user);
-                } else {
-                    Log.e("FriendListActivity", "could not find user");
-                }
-            }
-        });
+
+          ((MainActivity) getActivity()).replaceFriendPage((ParseUser)friend.getParseObject());
+
     }
 
     public class FriendObject {
         private String username;
         private String fullName;
-        private ParseObject request;
+        private ParseObject parseObject;
         private Bitmap profPic;
         private Boolean empty;
 
@@ -343,7 +332,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             this.username = u;
             this.fullName = f;
             this.profPic = p;
-            this.request = req;
+            this.parseObject = req;
             this.empty = false;
         }
 
@@ -357,9 +346,9 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             return this.fullName;
         }
 
-        public ParseObject getRequest()
+        public ParseObject getParseObject()
         {
-            return this.request;
+            return this.parseObject;
         }
 
         public Bitmap getProfPic() { return this.profPic; }

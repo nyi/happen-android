@@ -74,8 +74,8 @@ public class RequestsAdapter extends BaseAdapter{
             acceptButton.setVisibility(View.VISIBLE);
             declineButton.setVisibility(View.VISIBLE);
             //adds the request object to the button
-            acceptButton.setTag(request.getRequest());
-            declineButton.setTag(request.getRequest());
+            acceptButton.setTag(request.getParseObject());
+            declineButton.setTag(request.getParseObject());
 
             //parent is FriendsFragment, handles the button clicks
             if(parent!=null)

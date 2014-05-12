@@ -68,7 +68,7 @@ public class FriendsAdapter extends BaseAdapter{
             friendName.setText(friend.getFullName());
             friendUsername.setText("@"+friend.getUsername());
             profPic.setImageBitmap(friend.getProfPic());
-            vi.setTag(friend.getUsername());
+            vi.setTag(friend);
             if(parent!=null)
                 vi.setOnClickListener(parent);
         }
